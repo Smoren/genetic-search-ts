@@ -1,9 +1,9 @@
 import type {
   BaseGenome,
   Population,
-  GradeRow,
+  GenomeGradeRow,
   GradeGenerationTask,
-  GenerationScores,
+  GenerationScoreColumn,
   GenerationCallback,
   GeneticSearchConfig,
   MutationStrategyConfig,
@@ -39,9 +39,9 @@ import {
 export type {
   BaseGenome,
   Population,
-  GradeRow,
+  GenomeGradeRow,
   GradeGenerationTask,
-  GenerationScores,
+  GenerationScoreColumn,
   GenerationCallback,
   GeneticSearchConfig,
   MutationStrategyConfig,

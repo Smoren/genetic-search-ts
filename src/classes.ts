@@ -4,7 +4,7 @@ import type {
   StrategyConfig,
   GeneticSearchInterface,
   GenerationCallback,
-  GenerationScores,
+  GenerationScoreColumn,
   Population,
   BaseGenome,
 } from "./types";
@@ -30,7 +30,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     }
   }
 
-  public async runGenerationStep(): Promise<GenerationScores> {
+  public async runGenerationStep(): Promise<GenerationScoreColumn> {
     const results = await this.strategy.runner.run(this.population);
     const scores = this.strategy.scoring.score(results);
 
@@ -78,7 +78,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     for (let i = 0; i < count; i++) {
       const lhs = getRandomArrayItem(genomes);
       const rhs = getRandomArrayItem(genomes);
-      const crossedGenome = this.strategy.crossover.cross(this.nextId(), lhs, rhs);
+      const crossedGenome = this.strategy.crossover.cross(lhs, rhs, this.nextId());
       newPopulation.push(crossedGenome);
     }
 
@@ -90,7 +90,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     for (let i = 0; i < count; i++) {
       const genome = getRandomArrayItem(genomes);
-      const mutatedGenome = this.strategy.mutation.mutate(this.nextId(), genome);
+      const mutatedGenome = this.strategy.mutation.mutate(genome, this.nextId());
       newPopulation.push(mutatedGenome);
     }
 
@@ -148,7 +148,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     }
   }
 
-  public async runGenerationStep(): Promise<GenerationScores> {
+  public async runGenerationStep(): Promise<GenerationScoreColumn> {
     for (const eliminators of this.eliminators) {
       await eliminators.runGenerationStep();
     }

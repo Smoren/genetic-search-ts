@@ -19,7 +19,7 @@ export abstract class BaseMutationStrategy<TGenome extends BaseGenome> implement
     this.config = config;
   }
 
-  public abstract mutate(id: number, genome: TGenome): TGenome;
+  public abstract mutate(genome: TGenome, newGenomeId: number): TGenome;
 }
 
 export abstract class BaseRunnerStrategy<

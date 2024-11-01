@@ -1,4 +1,4 @@
-import { GradeRow } from "./types";
+import { GenomeGradeRow } from "./types";
 
 const EPSILON = 1e-10;
 
@@ -34,7 +34,7 @@ export function getRandomArrayItem<T>(input: T[]): T {
   return input[Math.floor(Math.random() * input.length)];
 }
 
-export function normalizeGradeRow(input: GradeRow, mean: number): number[] {
+export function normalizeGradeRow(input: GenomeGradeRow, mean: number): number[] {
   const max = Math.max(...input, mean);
   const min = Math.min(...input, mean);
 
@@ -48,7 +48,7 @@ export function normalizeGradeRow(input: GradeRow, mean: number): number[] {
   return input.map((x) => (x - mean) / std);
 }
 
-export function normalizeGradeMatrixColumns(input: GradeRow[], mean: GradeRow, inplace: boolean = false): number[][] {
+export function normalizeGradeMatrixColumns(input: GenomeGradeRow[], mean: GenomeGradeRow, inplace: boolean = false): number[][] {
   const result = inplace ? input : fullCopyObject(input);
 
   if (result.length === 0) {
@@ -65,6 +65,6 @@ export function normalizeGradeMatrixColumns(input: GradeRow[], mean: GradeRow, i
   return result;
 }
 
-export function normalizeGradeMatrix(matrix: GradeRow[], reference: GradeRow): number[][] {
+export function normalizeGradeMatrix(matrix: GenomeGradeRow[], reference: GenomeGradeRow): number[][] {
   return normalizeGradeMatrixColumns(matrix, reference).map((row) => row.map((x) => Math.abs(x)));
 }
