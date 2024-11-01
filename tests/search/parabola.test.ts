@@ -12,7 +12,8 @@ import {
   ParabolaMutationStrategy,
   ParabolaPopulateStrategy,
   ParabolaSingleRunnerStrategy,
-  ParabolaReferenceScoringStrategy, ParabolaTransparentScoringStrategy,
+  ParabolaReferenceScoringStrategy,
+  ParabolaTransparentScoringStrategy,
   // ParabolaMultiprocessingRunnerStrategy,
 } from "./fixtures";
 import { createNextIdGetter } from "../../src/utils";
