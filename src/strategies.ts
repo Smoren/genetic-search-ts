@@ -95,7 +95,7 @@ export abstract class BaseCachedMultiprocessingRunnerStrategy<
 
     const results: GenerationGradeMatrix = [];
     for (const input of inputs) {
-      results.push(resultsMap.get(this.getGenomeId(input)) as GenomeGradeRow);
+      results.push(resultsMap.get(this.getGenomeId(input))!);
     }
 
     for (const id of this.cache.keys()) {
