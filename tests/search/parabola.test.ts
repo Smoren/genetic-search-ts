@@ -12,14 +12,15 @@ import {
   ParabolaMutationStrategy,
   ParabolaPopulateStrategy,
   ParabolaSingleRunnerStrategy,
-  ParabolaScoringStrategy,
+  ParabolaReferenceScoringStrategy, ParabolaTransparentScoringStrategy,
   // ParabolaMultiprocessingRunnerStrategy,
 } from "./fixtures";
+import { createNextIdGetter } from "../../src/utils";
 
 describe.each([
   ...dataProviderForGetParabolaMax(),
 ] as Array<[[number, number], [number, number]]>)(
-  'Get Parabola Max Single Process Test',
+  'Get Parabola Max Test',
   ([a, b], [x, y]) => {
     it('', async () => {
       const config: GeneticSearchConfig = {
@@ -33,7 +34,52 @@ describe.each([
         runner: new ParabolaSingleRunnerStrategy({
           task: async (x: number) => [-((x+a)**2) + b],
         }),
-        scoring: new ParabolaScoringStrategy(y),
+        scoring: new ParabolaTransparentScoringStrategy(),
+        mutation: new ParabolaMutationStrategy(),
+        crossover: new ParabolaCrossoverStrategy(),
+      }
+
+      const search = new GeneticSearch(config, strategies, createNextIdGetter());
+
+      expect(search.partitions).toEqual([50, 25, 25]);
+
+      await search.fit({
+        generationsCount: 100,
+        afterStep: () => void 0,
+      });
+
+      const bestGenome = search.bestGenome;
+
+      expect(bestGenome.x).toBeCloseTo(x);
+      expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
+
+      const population = search.population;
+      expect(population.length).toBe(100);
+
+      search.population = population;
+      expect(search.population).toEqual(population);
+    });
+  },
+);
+
+describe.each([
+  ...dataProviderForGetParabolaMax(),
+] as Array<[[number, number], [number, number]]>)(
+  'Get Parabola Max Reference Test',
+  ([a, b], [x, y]) => {
+    it('', async () => {
+      const config: GeneticSearchConfig = {
+        populationSize: 100,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      };
+
+      const strategies: StrategyConfig<ParabolaArgumentGenome> = {
+        populate: new ParabolaPopulateStrategy(),
+        runner: new ParabolaSingleRunnerStrategy({
+          task: async (x: number) => [-((x+a)**2) + b],
+        }),
+        scoring: new ParabolaReferenceScoringStrategy(y),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
       }
@@ -85,7 +131,7 @@ describe.each([
         runner: new ParabolaSingleRunnerStrategy({
           task: async (x: number) => [-((x+a)**2) + b],
         }),
-        scoring: new ParabolaScoringStrategy(y),
+        scoring: new ParabolaReferenceScoringStrategy(y),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
       }

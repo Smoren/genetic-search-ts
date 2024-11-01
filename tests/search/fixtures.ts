@@ -1,13 +1,13 @@
 import {
   BaseGenome, BaseMultiprocessingRunnerStrategy,
   BaseRunnerStrategy,
-  CrossoverStrategyInterface,
+  CrossoverStrategyInterface, GenerationScoreColumn,
   MutationStrategyInterface,
   PopulateStrategyInterface,
   ReferenceLossScoringStrategy,
-  RunnerStrategyConfig,
+  RunnerStrategyConfig, ScoringStrategyInterface,
 } from "../../src";
-import { MultiprocessingRunnerStrategyConfig, NextIdGetter } from "../../src/types";
+import { GenerationGradeMatrix, MultiprocessingRunnerStrategyConfig, NextIdGetter } from "../../src/types";
 
 export type ParabolaArgumentGenome = BaseGenome & {
   id: number;
@@ -54,11 +54,17 @@ export class ParabolaSingleRunnerStrategy extends BaseRunnerStrategy<ParabolaArg
 //   }
 // }
 
-export class ParabolaScoringStrategy extends ReferenceLossScoringStrategy {
+export class ParabolaReferenceScoringStrategy extends ReferenceLossScoringStrategy {
   constructor(reference: number) {
     super({
       reference: [reference],
       weights: [1],
     });
+  }
+}
+
+export class ParabolaTransparentScoringStrategy implements ScoringStrategyInterface {
+  score(results: GenerationGradeMatrix): GenerationScoreColumn {
+    return results.map((result) => result[0]);
   }
 }
