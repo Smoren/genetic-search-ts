@@ -41,7 +41,8 @@
     "genetic",
     "heuristic",
     "heuristic-search",
-    "search-algorithm"
+    "search-algorithm",
+    "multiprocessing"
   ],
   "dependencies": {
     "itertools-ts": "^1.27",

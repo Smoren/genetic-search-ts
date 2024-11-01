@@ -1,4 +1,4 @@
-# Genetic Algorithm Implementation for TypeScript
+# Multiprocessing Genetic Algorithm Implementation for TypeScript
 
 [![npm](https://img.shields.io/npm/v/genetic-search.svg)](https://www.npmjs.com/package/genetic-search)
 [![npm](https://img.shields.io/npm/dm/genetic-search.svg?style=flat)](https://www.npmjs.com/package/genetic-search)
