@@ -3,7 +3,7 @@ import { multi } from 'itertools-ts';
 import {
   BaseGenome,
   Population,
-  MutationStrategyConfig,
+  BaseMutationStrategyConfig,
   MutationStrategyInterface,
   RunnerStrategyInterface,
   MultiprocessingRunnerStrategyConfig,
@@ -16,10 +16,13 @@ import {
 } from "./types";
 import { normalizeGradeMatrix, arrayBinaryOperation, arraySum } from "./utils";
 
-export abstract class BaseMutationStrategy<TGenome extends BaseGenome> implements MutationStrategyInterface<TGenome> {
-  protected readonly config: MutationStrategyConfig;
+export abstract class BaseMutationStrategy<
+  TGenome extends BaseGenome,
+  TConfig extends BaseMutationStrategyConfig,
+> implements MutationStrategyInterface<TGenome> {
+  protected readonly config: TConfig;
 
-  protected constructor(config: MutationStrategyConfig) {
+  protected constructor(config: TConfig) {
     this.config = config;
   }
 
