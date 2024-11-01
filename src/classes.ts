@@ -1,24 +1,24 @@
 import { multi, single } from "itertools-ts";
 import {
   GeneticSearchConfig,
-  StrategyConfig,
+  GeneticSearchStrategyConfig,
   GeneticSearchInterface,
   GenerationScoreColumn,
   Population,
   BaseGenome,
   NextIdGetter,
-  GeneticFitConfig,
+  GeneticSearchFitConfig,
   ComposedGeneticSearchConfig,
 } from "./types";
 import { createNextIdGetter, getRandomArrayItem } from "./utils";
 
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   protected readonly config: GeneticSearchConfig;
-  protected readonly strategy: StrategyConfig<TGenome>;
+  protected readonly strategy: GeneticSearchStrategyConfig<TGenome>;
   protected readonly nextId: NextIdGetter;
   protected _population: Population<TGenome>;
 
-  constructor(config: GeneticSearchConfig, strategy: StrategyConfig<TGenome>, nextIdGetter?: NextIdGetter) {
+  constructor(config: GeneticSearchConfig, strategy: GeneticSearchStrategyConfig<TGenome>, nextIdGetter?: NextIdGetter) {
     this.config = config;
     this.strategy = strategy;
     this.nextId = nextIdGetter ?? createNextIdGetter();
@@ -47,7 +47,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return [countToSurvive, countToCross, countToClone];
   }
 
-  public async fit(config: GeneticFitConfig): Promise<void> {
+  public async fit(config: GeneticSearchFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
       const result = await this.step();
       if (config.afterStep) {
@@ -116,7 +116,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   private readonly eliminators: GeneticSearchInterface<TGenome>[];
   private readonly final: GeneticSearchInterface<TGenome>;
 
-  constructor(config: ComposedGeneticSearchConfig, strategy: StrategyConfig<TGenome>) {
+  constructor(config: ComposedGeneticSearchConfig, strategy: GeneticSearchStrategyConfig<TGenome>) {
     this.eliminators = [...single.repeat(
       () => new GeneticSearch(config.eliminators, strategy),
       config.final.populationSize,
@@ -154,7 +154,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     return result;
   }
 
-  public async fit(config: GeneticFitConfig): Promise<void> {
+  public async fit(config: GeneticSearchFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
       const result = await this.step();
       if (config.afterStep) {

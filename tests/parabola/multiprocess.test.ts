@@ -4,7 +4,7 @@ import {
   ComposedGeneticSearchConfig,
   GeneticSearch,
   GeneticSearchConfig,
-  StrategyConfig,
+  GeneticSearchStrategyConfig,
 } from "../../src";
 import {
   ParabolaArgumentGenome, ParabolaCachedMultiprocessingRunnerStrategy,
@@ -27,7 +27,7 @@ describe('Parabola Multiprocessing', () => {
       crossoverRate: 0.5,
     };
 
-    const strategies: StrategyConfig<ParabolaArgumentGenome> = {
+    const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
       populate: new ParabolaPopulateStrategy(),
       runner: new ParabolaMultiprocessingRunnerStrategy({
         poolSize: 4,
@@ -67,7 +67,7 @@ describe('Parabola Multiprocessing', () => {
       crossoverRate: 0.5,
     };
 
-    const strategies: StrategyConfig<ParabolaArgumentGenome> = {
+    const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
       populate: new ParabolaPopulateStrategy(),
       runner: new ParabolaCachedMultiprocessingRunnerStrategy({
         poolSize: 4,
@@ -114,7 +114,7 @@ describe('Parabola Multiprocessing', () => {
       }
     };
 
-    const strategies: StrategyConfig<ParabolaArgumentGenome> = {
+    const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
       populate: new ParabolaPopulateStrategy(),
       runner: new ParabolaMultiprocessingRunnerStrategy({
         poolSize: 4,

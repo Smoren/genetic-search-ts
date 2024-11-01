@@ -19,7 +19,7 @@ export type GeneticSearchConfig = {
   crossoverRate: number;
 };
 
-export type GeneticFitConfig = {
+export type GeneticSearchFitConfig = {
   generationsCount: number;
   afterStep?: GenerationCallback;
 }
@@ -41,7 +41,7 @@ export type MultiprocessingRunnerStrategyConfig<TTaskConfig> = RunnerStrategyCon
   poolSize: number;
 }
 
-export type StrategyConfig<TGenome extends BaseGenome> = {
+export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
   populate: PopulateStrategyInterface<TGenome>;
   runner: RunnerStrategyInterface<TGenome>;
   scoring: ScoringStrategyInterface;
@@ -78,6 +78,6 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly bestGenome: TGenome;
   readonly partitions: [number, number, number];
   population: Population<TGenome>
-  fit(config: GeneticFitConfig): Promise<void>;
+  fit(config: GeneticSearchFitConfig): Promise<void>;
   step(): Promise<GenerationScoreColumn>;
 }

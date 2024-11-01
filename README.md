@@ -22,7 +22,7 @@ Let's get a max value of the parabola: `y = -(x-12)^2 - 3`.
 ```typescript
 import {
   GeneticSearchConfig,
-  StrategyConfig,
+  GeneticSearchStrategyConfig,
   GeneticSearch,
 } from "genetic-search";
 
@@ -32,7 +32,7 @@ const config: GeneticSearchConfig = {
   crossoverRate: 0.5,
 };
 
-const strategies: StrategyConfig<ParabolaArgumentGenome> = {
+const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
   populate: new ParabolaPopulateStrategy(),
   runner: new ParabolaCachedMultiprocessingRunnerStrategy({
     poolSize: 4,

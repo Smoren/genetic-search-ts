@@ -4,7 +4,7 @@ import {
   ComposedGeneticSearchConfig,
   GeneticSearch,
   GeneticSearchConfig,
-  StrategyConfig,
+  GeneticSearchStrategyConfig,
 } from "../../src";
 import {
   ParabolaArgumentGenome,
@@ -30,7 +30,7 @@ describe.each([
         crossoverRate: 0.5,
       };
 
-      const strategies: StrategyConfig<ParabolaArgumentGenome> = {
+      const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
         runner: new ParabolaSingleRunnerStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[1]+a)**2) + b],
@@ -75,7 +75,7 @@ describe.each([
         crossoverRate: 0.5,
       };
 
-      const strategies: StrategyConfig<ParabolaArgumentGenome> = {
+      const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
         runner: new ParabolaSingleRunnerStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[1]+a)**2) + b],
@@ -127,7 +127,7 @@ describe.each([
         }
       };
 
-      const strategies: StrategyConfig<ParabolaArgumentGenome> = {
+      const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
         runner: new ParabolaSingleRunnerStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[1]+a)**2) + b],
