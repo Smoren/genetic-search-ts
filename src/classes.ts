@@ -23,6 +23,18 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this._population = this.strategy.populate.populate(this.config.populationSize, this.nextId);
   }
 
+  public get bestGenome(): TGenome {
+    return this._population[0];
+  }
+
+  public get population(): Population<TGenome> {
+    return this._population;
+  }
+
+  public set population(population: Population<TGenome>) {
+    this._population = population;
+  }
+
   public async fit(config: GeneticFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
       const result = await this.step();
@@ -40,18 +52,6 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this.refreshPopulation(sortedPopulation);
 
     return sortedScoreColumn;
-  }
-
-  public getBestGenome(): TGenome {
-    return this._population[0];
-  }
-
-  public getPopulation(): Population<TGenome> {
-    return this._population;
-  }
-
-  public setPopulation(population: Population<TGenome>) {
-    this._population = population;
   }
 
   protected sortPopulation(scores: GenerationScoreColumn): [Population<TGenome>, GenerationScoreColumn] {
@@ -119,19 +119,31 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     this.final = final;
   }
 
-  public getPopulation(): Population<TGenome> {
+  public get bestGenome(): TGenome {
+    return this.final.bestGenome;
+  }
+
+  public get population(): Population<TGenome> {
     const result: Population<TGenome> = [];
     for (const eliminators of this.eliminators) {
-      result.push(...eliminators.getPopulation());
+      result.push(...eliminators.population);
     }
     return result;
   }
 
-  public setPopulation(population: Population<TGenome>): void {
+  public set population(population: Population<TGenome>) {
     for (const eliminator of this.eliminators) {
-      eliminator.setPopulation(population.slice(0, eliminator.getPopulation().length));
-      population = population.slice(eliminator.getPopulation().length);
+      eliminator.population = population.slice(0, eliminator.population.length);
+      population = population.slice(eliminator.population.length);
     }
+  }
+
+  public getPopulation(): Population<TGenome> {
+    const result: Population<TGenome> = [];
+    for (const eliminators of this.eliminators) {
+      result.push(...eliminators.population);
+    }
+    return result;
   }
 
   public async fit(config: GeneticFitConfig): Promise<void> {
@@ -147,15 +159,11 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     for (const eliminators of this.eliminators) {
       await eliminators.step();
     }
-    this.final.setPopulation(this.getBestGenomes());
+    this.final.population = this.bestGenomes;
     return await this.final.step();
   }
 
-  public getBestGenome(): TGenome {
-    return this.final.getBestGenome();
-  }
-
-  private getBestGenomes(): Population<TGenome> {
-    return this.eliminators.map((eliminators) => eliminators.getBestGenome());
+  private get bestGenomes(): Population<TGenome> {
+    return this.eliminators.map((eliminators) => eliminators.bestGenome);
   }
 }

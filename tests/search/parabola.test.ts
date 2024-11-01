@@ -42,16 +42,16 @@ describe.each([
         afterStep: () => void 0,
       });
 
-      const bestGenome = search.getBestGenome();
+      const bestGenome = search.bestGenome;
 
       expect(bestGenome.x).toBeCloseTo(x);
       expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
 
-      const population = search.getPopulation();
+      const population = search.population;
       expect(population.length).toBe(100);
 
-      search.setPopulation(population);
-      expect(search.getPopulation()).toEqual(population);
+      search.population = population;
+      expect(search.population).toEqual(population);
     });
   },
 );
@@ -85,16 +85,16 @@ describe.each([
 //         afterStep: () => void 0,
 //       });
 //
-//       const bestGenome = search.getBestGenome();
+//       const bestGenome = search.bestGenome;
 //
 //       expect(bestGenome.x).toBeCloseTo(x);
 //       expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
 //
-//       const population = search.getPopulation();
+//       const population = search.population;
 //       expect(population.length).toBe(100);
 //
-//       search.setPopulation(population);
-//       expect(search.getPopulation()).toEqual(population);
+//       search.population = population;
+//       expect(search.population).toEqual(population);
 //     });
 //   },
 // );

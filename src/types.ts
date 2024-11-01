@@ -70,10 +70,8 @@ export interface ScoringStrategyInterface {
 }
 
 export interface GeneticSearchInterface<TGenome extends BaseGenome> {
+  readonly bestGenome: TGenome;
+  population: Population<TGenome>
   fit(config: GeneticFitConfig): Promise<void>;
   step(): Promise<GenerationScoreColumn>;
-  // TODO use getter and setter
-  getBestGenome(): TGenome;
-  getPopulation(): Population<TGenome>;
-  setPopulation(population: Population<TGenome>): void;
 }
