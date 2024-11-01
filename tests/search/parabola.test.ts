@@ -36,16 +36,12 @@ describe.each([
       }
 
       const search = new GeneticSearch(config, strategies);
-
-      for (let i=0; i<100; ++i) {
-        const scores = await search.step();
-      }
-      // search.run(100, () => {});
+      await search.fit(100, () => {});
 
       const bestGenome = search.getBestGenome();
 
       expect(bestGenome.x).toBeCloseTo(x);
-      expect(-((x+a)**2) + b).toEqual(y);
+      expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
     });
   },
 );
