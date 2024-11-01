@@ -24,6 +24,11 @@ export type GeneticFitConfig = {
   afterStep?: GenerationCallback;
 }
 
+export type ComposedGeneticSearchConfig = {
+  eliminators: GeneticSearchConfig;
+  final: GeneticSearchConfig;
+}
+
 export type BaseMutationStrategyConfig = {
   probability: number;
 }

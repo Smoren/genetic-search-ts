@@ -6,7 +6,9 @@ import {
   GenerationScoreColumn,
   Population,
   BaseGenome,
-  NextIdGetter, GeneticFitConfig,
+  NextIdGetter,
+  GeneticFitConfig,
+  ComposedGeneticSearchConfig,
 } from "./types";
 import { createNextIdGetter, getRandomArrayItem } from "./utils";
 
@@ -114,9 +116,12 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   private readonly eliminators: GeneticSearchInterface<TGenome>[];
   private readonly final: GeneticSearchInterface<TGenome>;
 
-  constructor(eliminators: GeneticSearchInterface<TGenome>[], final: GeneticSearchInterface<TGenome>) {
-    this.eliminators = eliminators;
-    this.final = final;
+  constructor(config: ComposedGeneticSearchConfig, strategy: StrategyConfig<TGenome>) {
+    this.eliminators = [...single.repeat(
+      () => new GeneticSearch(config.eliminators, strategy),
+      config.final.populationSize,
+    )].map((factory) => factory());
+    this.final = new GeneticSearch(config.final, strategy);
   }
 
   public get bestGenome(): TGenome {
@@ -138,14 +143,6 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     }
   }
 
-  public getPopulation(): Population<TGenome> {
-    const result: Population<TGenome> = [];
-    for (const eliminators of this.eliminators) {
-      result.push(...eliminators.population);
-    }
-    return result;
-  }
-
   public async fit(config: GeneticFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
       const result = await this.step();
@@ -159,6 +156,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     for (const eliminators of this.eliminators) {
       await eliminators.step();
     }
+    // TODO: not all, use rates
     this.final.population = this.bestGenomes;
     return await this.final.step();
   }
