@@ -4,11 +4,11 @@ export type BaseGenome = {
 
 export type Population<TGenome extends BaseGenome> = TGenome[];
 
-export type GradeRow = number[];
-export type GradeGenerationTask<TTaskConfig> = (data: TTaskConfig) => Promise<GradeRow>;
-
 export type GenerationScores = number[];
 export type GenerationCallback = (generation: number, result: GenerationScores) => void;
+
+export type GradeRow = number[];
+export type GradeGenerationTask<TTaskConfig> = (data: TTaskConfig) => Promise<GradeRow>;
 
 export type GeneticSearchConfig = {
   populationSize: number;
