@@ -56,6 +56,16 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return sortedScoreColumn;
   }
 
+  public getSizes(): [number, number, number] {
+    const countToSurvive = Math.round(this.config.populationSize * this.config.survivalRate);
+    const countToDie = this.config.populationSize - countToSurvive;
+
+    const countToCross = Math.round(countToDie * this.config.crossoverRate);
+    const countToClone = countToDie - countToCross;
+
+    return [countToSurvive, countToCross, countToClone];
+  }
+
   protected sortPopulation(scores: GenerationScoreColumn): [Population<TGenome>, GenerationScoreColumn] {
     const zipped = multi.zipEqual(this._population, scores);
     const sorted = single.sort(zipped, (lhs, rhs) => rhs[1] - lhs[1]);
@@ -99,16 +109,6 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const mutatedPopulation = this.clone(survivedPopulation, countToClone);
 
     this._population = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
-  }
-
-  protected getSizes(): [number, number, number] {
-    const countToSurvive = Math.round(this.config.populationSize * this.config.survivalRate);
-    const countToDie = this.config.populationSize - countToSurvive;
-
-    const countToCross = Math.round(countToDie * this.config.crossoverRate);
-    const countToClone = countToDie - countToCross;
-
-    return [countToSurvive, countToCross, countToClone];
   }
 }
 
@@ -156,12 +156,17 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     for (const eliminators of this.eliminators) {
       await eliminators.step();
     }
-    // TODO: not all, use rates
-    this.final.population = this.bestGenomes;
+
+    // TODO: not all, use rates (не вполне верно?) мб повторить this.final.step() ???
+    this.final.population = [...this.final.population, ...this.bestGenomes];
     return await this.final.step();
   }
 
-  private get bestGenomes(): Population<TGenome> {
+  public getSizes(): [number, number, number] {
+    return this.final.getSizes();
+  }
+
+  protected get bestGenomes(): Population<TGenome> {
     return this.eliminators.map((eliminators) => eliminators.bestGenome);
   }
 }

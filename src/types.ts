@@ -79,4 +79,5 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   population: Population<TGenome>
   fit(config: GeneticFitConfig): Promise<void>;
   step(): Promise<GenerationScoreColumn>;
+  getSizes(): [number, number, number];
 }
