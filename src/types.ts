@@ -76,8 +76,8 @@ export interface ScoringStrategyInterface {
 
 export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly bestGenome: TGenome;
+  readonly partitions: [number, number, number];
   population: Population<TGenome>
   fit(config: GeneticFitConfig): Promise<void>;
   step(): Promise<GenerationScoreColumn>;
-  getSizes(): [number, number, number];
 }

@@ -39,6 +39,9 @@ describe.each([
       }
 
       const search = new GeneticSearch(config, strategies);
+
+      expect(search.partitions).toEqual([50, 25, 25]);
+
       await search.fit({
         generationsCount: 100,
         afterStep: () => void 0,
@@ -88,6 +91,9 @@ describe.each([
       }
 
       const search = new ComposedGeneticSearch(config, strategies);
+
+      expect(search.partitions).toEqual([50, 30, 20]);
+
       await search.fit({
         generationsCount: 100,
         afterStep: () => void 0,
