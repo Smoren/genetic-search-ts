@@ -157,7 +157,6 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
       await eliminators.step();
     }
 
-    // TODO: not all, use rates (не вполне верно?) мб повторить this.final.step() ???
     this.final.population = [...this.final.population, ...this.bestGenomes];
     return await this.final.step();
   }
