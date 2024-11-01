@@ -2,6 +2,7 @@ import type {
   BaseGenome,
   Population,
   GenomeGradeRow,
+  GenerationGradeMatrix,
   GradeGenerationTask,
   GenerationScoreColumn,
   GenerationCallback,
@@ -19,6 +20,7 @@ import type {
   RunnerStrategyInterface,
   ScoringStrategyInterface,
   GeneticSearchInterface,
+  NextIdGetter,
 } from "./types";
 
 import {
@@ -43,6 +45,7 @@ export type {
   BaseGenome,
   Population,
   GenomeGradeRow,
+  GenerationGradeMatrix,
   GradeGenerationTask,
   GenerationScoreColumn,
   GenerationCallback,
@@ -60,6 +63,7 @@ export type {
   RunnerStrategyInterface,
   ScoringStrategyInterface,
   GeneticSearchInterface,
+  NextIdGetter,
 };
 
 export {
