@@ -1,13 +1,13 @@
 import {
-  BaseGenome,
+  BaseGenome, BaseMultiprocessingRunnerStrategy,
   BaseRunnerStrategy,
   CrossoverStrategyInterface,
   MutationStrategyInterface,
   PopulateStrategyInterface,
   ReferenceLossScoringStrategy,
   RunnerStrategyConfig,
-} from '../../src';
-import { NextIdGetter } from '../../src/types';
+} from "../../src";
+import { MultiprocessingRunnerStrategyConfig, NextIdGetter } from "../../src/types";
 
 export type ParabolaArgumentGenome = BaseGenome & {
   id: number;
@@ -42,11 +42,17 @@ export class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<Par
   }
 }
 
-export class ParabolaRunnerStrategy extends BaseRunnerStrategy<ParabolaArgumentGenome, RunnerStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
+export class ParabolaSingleRunnerStrategy extends BaseRunnerStrategy<ParabolaArgumentGenome, RunnerStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
     return genome.x;
   }
 }
+
+// export class ParabolaMultiprocessingRunnerStrategy extends BaseMultiprocessingRunnerStrategy<ParabolaArgumentGenome, MultiprocessingRunnerStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
+//   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
+//     return genome.x;
+//   }
+// }
 
 export class ParabolaScoringStrategy extends ReferenceLossScoringStrategy {
   constructor(reference: number) {

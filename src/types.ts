@@ -19,6 +19,11 @@ export type GeneticSearchConfig = {
   crossoverRate: number;
 };
 
+export type GeneticFitConfig = {
+  generationsCount: number;
+  afterStep?: GenerationCallback;
+}
+
 export type BaseMutationStrategyConfig = {
   probability: number;
 }
@@ -65,7 +70,7 @@ export interface ScoringStrategyInterface {
 }
 
 export interface GeneticSearchInterface<TGenome extends BaseGenome> {
-  fit(generationsCount: number, afterStep: GenerationCallback): Promise<void>;
+  fit(config: GeneticFitConfig): Promise<void>;
   step(): Promise<GenerationScoreColumn>;
   // TODO use getter and setter
   getBestGenome(): TGenome;

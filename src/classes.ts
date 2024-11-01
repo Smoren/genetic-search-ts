@@ -1,13 +1,12 @@
 import { multi, single } from "itertools-ts";
-import type {
+import {
   GeneticSearchConfig,
   StrategyConfig,
   GeneticSearchInterface,
-  GenerationCallback,
   GenerationScoreColumn,
   Population,
   BaseGenome,
-  NextIdGetter,
+  NextIdGetter, GeneticFitConfig,
 } from "./types";
 import { createNextIdGetter, getRandomArrayItem } from "./utils";
 
@@ -24,9 +23,12 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this._population = this.strategy.populate.populate(this.config.populationSize, this.nextId);
   }
 
-  public async fit(generationsCount: number, afterStep: GenerationCallback): Promise<void> {
-    for (let i=0; i<generationsCount; i++) {
-      afterStep(i, await this.step());
+  public async fit(config: GeneticFitConfig): Promise<void> {
+    for (let i=0; i<config.generationsCount; i++) {
+      const result = await this.step();
+      if (config.afterStep) {
+        config.afterStep(i, result);
+      }
     }
   }
 
@@ -132,9 +134,12 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     }
   }
 
-  public async fit(generationsCount: number, afterStep: GenerationCallback): Promise<void> {
-    for (let i=0; i<generationsCount; i++) {
-      afterStep(i, await this.step());
+  public async fit(config: GeneticFitConfig): Promise<void> {
+    for (let i=0; i<config.generationsCount; i++) {
+      const result = await this.step();
+      if (config.afterStep) {
+        config.afterStep(i, result);
+      }
     }
   }
 
