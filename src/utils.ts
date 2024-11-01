@@ -1,4 +1,4 @@
-import { GenerationGradeMatrix, GenomeGradeRow } from "./types";
+import { GenerationGradeMatrix, GenomeGradeRow, NextIdGetter } from "./types";
 
 const EPSILON = 1e-10;
 
@@ -23,7 +23,7 @@ export function arrayBinaryOperation<T>(lhs: Array<T>, rhs: Array<T>, operator: 
   return result;
 }
 
-export function createNextIdGenerator(): () => number {
+export function createNextIdGetter(): NextIdGetter {
   return (() => {
     let id = 0;
     return () => ++id;

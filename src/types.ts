@@ -4,6 +4,8 @@ export type BaseGenome = {
 
 export type Population<TGenome extends BaseGenome> = TGenome[];
 
+export type NextIdGetter = () => number;
+
 export type GenomeGradeRow = number[];
 export type GenerationScoreColumn = number[];
 export type GenerationGradeMatrix = GenomeGradeRow[];
@@ -65,6 +67,7 @@ export interface ScoringStrategyInterface {
 export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   run(generationsCount: number, afterStep: GenerationCallback): Promise<void>;
   runGenerationStep(): Promise<GenerationScoreColumn>;
+  // TODO use getter and setter
   getBestGenome(): TGenome;
   getPopulation(): Population<TGenome>;
   setPopulation(population: Population<TGenome>): void;

@@ -7,21 +7,22 @@ import type {
   GenerationScoreColumn,
   Population,
   BaseGenome,
+  NextIdGetter,
 } from "./types";
-import { createNextIdGenerator, getRandomArrayItem } from "./utils";
+import { createNextIdGetter, getRandomArrayItem } from "./utils";
 
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
-  protected readonly strategy: StrategyConfig<TGenome>;
-  protected readonly nextId: () => number;
   protected readonly config: GeneticSearchConfig;
-  protected population: Population<TGenome>;
+  protected readonly strategy: StrategyConfig<TGenome>;
+  protected readonly nextId: NextIdGetter;
+  protected _population: Population<TGenome>;
 
   constructor(config: GeneticSearchConfig, strategy: StrategyConfig<TGenome>) {
     this.config = config;
     this.strategy = strategy;
-    this.nextId = createNextIdGenerator();
+    this.nextId = createNextIdGetter();
 
-    this.population = this.createPopulation(this.config.populationSize);
+    this._population = this.createPopulation(this.config.populationSize);
   }
 
   public async run(generationsCount: number, afterStep: GenerationCallback): Promise<void> {
@@ -31,7 +32,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   public async runGenerationStep(): Promise<GenerationScoreColumn> {
-    const results = await this.strategy.runner.run(this.population);
+    const results = await this.strategy.runner.run(this._population);
     const scores = this.strategy.scoring.score(results);
 
     const [sortedPopulation, sortedScores] = this.sortPopulation(scores);
@@ -42,15 +43,15 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   public getBestGenome(): TGenome {
-    return this.population[0];
+    return this._population[0];
   }
 
   public getPopulation(): Population<TGenome> {
-    return this.population;
+    return this._population;
   }
 
   public setPopulation(population: Population<TGenome>) {
-    this.population = population;
+    this._population = population;
   }
 
   protected createPopulation(size: number): Population<TGenome> {
@@ -60,7 +61,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   protected sortPopulation(scores: GenerationScoreColumn): [Population<TGenome>, GenerationScoreColumn] {
-    const zipped = multi.zipEqual(this.population, scores);
+    const zipped = multi.zipEqual(this._population, scores);
     const sorted = single.sort(zipped, (lhs, rhs) => rhs[1] - lhs[1]);
     const sortedArray = [...sorted];
     return [
@@ -101,7 +102,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const crossedPopulation = this.crossover(survivedPopulation, countToCross);
     const mutatedPopulation = this.clone(survivedPopulation, countToClone);
 
-    this.population = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
+    this._population = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
   }
 
   protected getSizes(): [number, number, number] {
