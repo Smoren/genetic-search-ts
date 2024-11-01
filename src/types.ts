@@ -45,7 +45,7 @@ export type GeneticSearchReferenceConfig = {
 };
 
 export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
-  populate(size: number): Population<TGenome>;
+  populate(size: number, nextIdGetter: NextIdGetter): Population<TGenome>;
 }
 
 export interface MutationStrategyInterface<TGenome extends BaseGenome> {

@@ -1,6 +1,7 @@
 import { Pool } from 'multiprocess-pool';
 import { multi } from 'itertools-ts';
 import {
+  BaseGenome,
   Population,
   MutationStrategyConfig,
   MutationStrategyInterface,
@@ -9,7 +10,9 @@ import {
   ScoringStrategyInterface,
   GeneticSearchReferenceConfig,
   RunnerStrategyConfig,
-  BaseGenome, GenerationGradeMatrix, GenomeGradeRow, GenerationScoreColumn,
+  GenerationGradeMatrix,
+  GenomeGradeRow,
+  GenerationScoreColumn,
 } from "./types";
 import { normalizeGradeMatrix, arrayBinaryOperation, arraySum } from "./utils";
 
@@ -40,17 +43,17 @@ export abstract class BaseRunnerStrategy<
   }
 
   protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
-    const result = [];
+    const result: GenerationGradeMatrix = [];
     for (const input of inputs) {
       result.push(await this.config.task(input));
     }
     return result;
   }
 
-  protected abstract createTaskInput(id: number, genome: TGenome): TTaskConfig;
+  protected abstract createTaskInput(genome: TGenome): TTaskConfig;
 
   protected createTasksInputList(population: Population<TGenome>): TTaskConfig[] {
-    return population.map((genome) => this.createTaskInput(genome.id, genome));
+    return population.map((genome) => this.createTaskInput(genome));
   }
 }
 
@@ -75,21 +78,24 @@ export abstract class BaseCachedMultiprocessingRunnerStrategy<
 > extends BaseMultiprocessingRunnerStrategy<TGenome, TConfig, TTaskConfig> {
   protected readonly cache: Map<number, GenomeGradeRow> = new Map();
 
-  protected abstract getTaskId(input: TTaskConfig): number;
+  protected abstract getGenomeId(input: TTaskConfig): number;
 
   protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
-    const resultsMap = new Map(inputs.map((input) => [this.getTaskId(input), this.cache.get(this.getTaskId(input))]));
-    const inputsToRun = inputs.filter((input) => resultsMap.get(this.getTaskId(input)) === undefined);
+    const resultsMap = new Map(inputs.map((input) => [
+      this.getGenomeId(input),
+      this.cache.get(this.getGenomeId(input))
+    ]));
+    const inputsToRun = inputs.filter((input) => resultsMap.get(this.getGenomeId(input)) === undefined);
     const newResults = await super.execTask(inputsToRun);
 
     for (const [input, result] of multi.zip(inputsToRun, newResults)) {
-      this.cache.set(this.getTaskId(input), result);
-      resultsMap.set(this.getTaskId(input), result);
+      this.cache.set(this.getGenomeId(input), result);
+      resultsMap.set(this.getGenomeId(input), result);
     }
 
     const results: GenerationGradeMatrix = [];
     for (const input of inputs) {
-      results.push(resultsMap.get(this.getTaskId(input)) as GenomeGradeRow);
+      results.push(resultsMap.get(this.getGenomeId(input)) as GenomeGradeRow);
     }
 
     for (const id of this.cache.keys()) {
