@@ -11,7 +11,7 @@ export type GenerationScoreColumn = number[];
 export type GenerationGradeMatrix = GenomeGradeRow[];
 
 export type GradeGenerationTask<TTaskConfig> = (data: TTaskConfig) => Promise<GenomeGradeRow>;
-export type GenerationCallback = (generation: number, result: GenerationScoreColumn) => void;
+export type GenerationCallback = (generation: number, scores: GenerationScoreColumn) => void;
 
 export type GeneticSearchConfig = {
   populationSize: number;
