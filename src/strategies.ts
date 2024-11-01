@@ -1,14 +1,15 @@
 import { Pool } from 'multiprocess-pool';
 import { multi } from 'itertools-ts';
-import type {
+import {
   Population,
   MutationStrategyConfig,
   MutationStrategyInterface,
   RunnerStrategyInterface,
+  MultiprocessingRunnerStrategyConfig,
   ScoringStrategyInterface,
   GeneticSearchReferenceConfig,
   RunnerStrategyConfig,
-  BaseGenome,
+  BaseGenome, GenerationGradeMatrix, GenomeGradeRow, GenerationScoreColumn,
 } from "./types";
 import { normalizeGradeMatrix, arrayBinaryOperation, arraySum } from "./utils";
 
@@ -33,12 +34,12 @@ export abstract class BaseRunnerStrategy<
     this.config = config;
   }
 
-  public async run(population: Population<TGenome>): Promise<number[][]> {
+  public async run(population: Population<TGenome>): Promise<GenerationGradeMatrix> {
     const inputs = this.createTasksInputList(population);
     return await this.execTask(inputs);
   }
 
-  protected async execTask(inputs: TTaskConfig[]): Promise<number[][]> {
+  protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
     const result = [];
     for (const input of inputs) {
       result.push(await this.config.task(input));
@@ -55,12 +56,12 @@ export abstract class BaseRunnerStrategy<
 
 export abstract class BaseMultiprocessingRunnerStrategy<
   TGenome extends BaseGenome,
-  TConfig extends RunnerStrategyConfig<TTaskConfig>,
+  TConfig extends MultiprocessingRunnerStrategyConfig<TTaskConfig>,
   TTaskConfig,
 > extends BaseRunnerStrategy<TGenome, TConfig, TTaskConfig> {
-  protected async execTask(inputs: TTaskConfig[]): Promise<number[][]> {
+  protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
     const pool = new Pool(this.config.poolSize);
-    const result: number[][] = await pool.map(inputs, this.config.task);
+    const result: GenerationGradeMatrix = await pool.map(inputs, this.config.task);
     pool.close();
 
     return result;
@@ -69,14 +70,14 @@ export abstract class BaseMultiprocessingRunnerStrategy<
 
 export abstract class BaseCachedMultiprocessingRunnerStrategy<
   TGenome extends BaseGenome,
-  TConfig extends RunnerStrategyConfig<TTaskConfig>,
+  TConfig extends MultiprocessingRunnerStrategyConfig<TTaskConfig>,
   TTaskConfig,
 > extends BaseMultiprocessingRunnerStrategy<TGenome, TConfig, TTaskConfig> {
-  protected readonly cache: Map<number, number[]> = new Map();
+  protected readonly cache: Map<number, GenomeGradeRow> = new Map();
 
   protected abstract getTaskId(input: TTaskConfig): number;
 
-  protected async execTask(inputs: TTaskConfig[]): Promise<number[][]> {
+  protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
     const resultsMap = new Map(inputs.map((input) => [this.getTaskId(input), this.cache.get(this.getTaskId(input))]));
     const inputsToRun = inputs.filter((input) => resultsMap.get(this.getTaskId(input)) === undefined);
     const newResults = await super.execTask(inputsToRun);
@@ -86,9 +87,9 @@ export abstract class BaseCachedMultiprocessingRunnerStrategy<
       resultsMap.set(this.getTaskId(input), result);
     }
 
-    const results: number[][] = [];
+    const results: GenerationGradeMatrix = [];
     for (const input of inputs) {
-      results.push(resultsMap.get(this.getTaskId(input)) as number[]);
+      results.push(resultsMap.get(this.getTaskId(input)) as GenomeGradeRow);
     }
 
     for (const id of this.cache.keys()) {
@@ -108,16 +109,16 @@ export class ReferenceLossScoringStrategy implements ScoringStrategyInterface {
     this.referenceConfig = referenceConfig;
   }
 
-  score(results: number[][]): number[] {
-    const normalizedLosses = this.getNormalizedLosses(results);
+  score(results: GenerationGradeMatrix): GenerationScoreColumn {
+    const normalizedLosses = this.formatLosses(results);
     return normalizedLosses.map((x) => -arraySum(x));
   }
 
-  private getNormalizedLosses(results: number[][]): number[][] {
+  protected formatLosses(results: GenerationGradeMatrix): GenerationGradeMatrix {
     return normalizeGradeMatrix(results, this.referenceConfig.reference).map((result) => this.weighRow(result));
   }
 
-  private weighRow(result: number[]): number[] {
+  protected weighRow(result: GenomeGradeRow): GenomeGradeRow {
     return arrayBinaryOperation(result, this.referenceConfig.weights, (x, y) => x * y);
   }
 }

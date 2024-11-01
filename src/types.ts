@@ -6,6 +6,7 @@ export type Population<TGenome extends BaseGenome> = TGenome[];
 
 export type GenomeGradeRow = number[];
 export type GenerationScoreColumn = number[];
+export type GenerationGradeMatrix = GenomeGradeRow[];
 
 export type GradeGenerationTask<TTaskConfig> = (data: TTaskConfig) => Promise<GenomeGradeRow>;
 export type GenerationCallback = (generation: number, result: GenerationScoreColumn) => void;
@@ -21,8 +22,11 @@ export type MutationStrategyConfig = {
 }
 
 export type RunnerStrategyConfig<TTaskConfig> = {
-  poolSize: number; // TODO
   task: GradeGenerationTask<TTaskConfig>;
+}
+
+export type MultiprocessingRunnerStrategyConfig<TTaskConfig> = RunnerStrategyConfig<TTaskConfig> & {
+  poolSize: number;
 }
 
 export type StrategyConfig<TGenome extends BaseGenome> = {
@@ -51,11 +55,11 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
 }
 
 export interface RunnerStrategyInterface<TGenome extends BaseGenome> {
-  run(population: Population<TGenome>): Promise<GenomeGradeRow[]>;
+  run(population: Population<TGenome>): Promise<GenerationGradeMatrix>;
 }
 
 export interface ScoringStrategyInterface {
-  score(results: GenomeGradeRow[]): GenerationScoreColumn;
+  score(results: GenerationGradeMatrix): GenerationScoreColumn;
 }
 
 export interface GeneticSearchInterface<TGenome extends BaseGenome> {

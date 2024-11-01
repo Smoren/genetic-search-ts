@@ -34,14 +34,11 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const results = await this.strategy.runner.run(this.population);
     const scores = this.strategy.scoring.score(results);
 
-    const [
-      sortedPopulation,
-      sortedNormalizedLosses,
-    ] = this.sortPopulation(scores);
+    const [sortedPopulation, sortedScores] = this.sortPopulation(scores);
 
     this.refreshPopulation(sortedPopulation);
 
-    return sortedNormalizedLosses;
+    return sortedScores;
   }
 
   public getBestGenome(): TGenome {
@@ -62,8 +59,8 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
       .map((x) => ({ ...x, id: this.nextId() }));
   }
 
-  protected sortPopulation(scores: number[]): [Population<TGenome>, number[]] {
-    const zipped = multi.zip(this.population, scores);
+  protected sortPopulation(scores: GenerationScoreColumn): [Population<TGenome>, GenerationScoreColumn] {
+    const zipped = multi.zipEqual(this.population, scores);
     const sorted = single.sort(zipped, (lhs, rhs) => rhs[1] - lhs[1]);
     const sortedArray = [...sorted];
     return [
@@ -107,7 +104,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this.population = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
   }
 
-  protected getSizes(): number[] {
+  protected getSizes(): [number, number, number] {
     const countToSurvive = Math.round(this.config.populationSize * this.config.survivalRate);
     const countToDie = this.config.populationSize - countToSurvive;
 
