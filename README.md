@@ -20,6 +20,12 @@ Usage example
 Let's get a max value of the parabola: `y = -(x-12)^2 - 3`.
 
 ```typescript
+import {
+  GeneticSearchConfig,
+  StrategyConfig,
+  GeneticSearch,
+} from "genetic-search";
+
 const config: GeneticSearchConfig = {
   populationSize: 100,
   survivalRate: 0.5,
