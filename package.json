@@ -1,7 +1,7 @@
 {
   "name": "genetic-search",
   "version": "0.2.1",
-  "description": "Multiprocessing Genetic algorithm implementation library",
+  "description": "Multiprocessing genetic algorithm implementation library",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -37,7 +37,6 @@
   "keywords": [
     "algorithm",
     "evolutionary-programming",
-    "genetic",
     "genetic",
     "heuristic",
     "heuristic-search",
