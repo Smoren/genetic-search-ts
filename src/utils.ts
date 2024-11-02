@@ -34,21 +34,34 @@ export function getRandomArrayItem<T>(input: T[]): T {
   return input[Math.floor(Math.random() * input.length)];
 }
 
-export function normalizeGradeRow(input: GenomeGradeRow, mean: number): GenomeGradeRow {
-  const max = Math.max(...input, mean);
-  const min = Math.min(...input, mean);
+export function normalizeGradeRow(input: GenomeGradeRow, reference: number): GenomeGradeRow {
+  // Find the minimum and maximum values in the array
+  const minVal = Math.min(...input);
+  const maxVal = Math.max(...input);
 
-  let std = 1;
-  if (!isClose(min, max)) {
-    std = max - min;
-  }
+  // Calculate the maximum distance relative to the reference
+  const maxDistance = Math.max(Math.abs(maxVal - reference), Math.abs(minVal - reference));
+  const denominator = maxDistance || 1;
 
-  return input.map((x) => (x - mean) / std);
+  return input.map(num => {
+    // Normalize each number to the range from -1 to 1, where reference = 0
+    return (num - reference) / denominator;
+  });
+
+  // const max = Math.max(...input, reference);
+  // const min = Math.min(...input, reference);
+  //
+  // let std = 1;
+  // if (!isClose(min, max)) {
+  //   std = max - min;
+  // }
+  //
+  // return input.map((x) => (x - reference) / std);
 }
 
 export function normalizeGradeMatrixColumns(
   input: GenerationGradeMatrix,
-  mean: GenomeGradeRow,
+  reference: GenomeGradeRow,
   inplace: boolean = false,
 ): GenerationGradeMatrix {
   const result = inplace ? input : fullCopyObject(input);
@@ -58,7 +71,7 @@ export function normalizeGradeMatrixColumns(
   }
 
   for (let i = 0; i < result[0].length; i++) {
-    const columnNormalized = normalizeGradeRow(result.map((row) => row[i]), mean[i]);
+    const columnNormalized = normalizeGradeRow(result.map((row) => row[i]), reference[i]);
     for (let j = 0; j < result.length; j++) {
       result[j][i] = columnNormalized[j];
     }
