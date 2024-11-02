@@ -1,12 +1,6 @@
 import { GenerationGradeMatrix, GenomeGradeRow, NextIdGetter } from "./types";
 
-const EPSILON = 1e-10;
-
 export const fullCopyObject = <T extends Record<string, any>>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
-
-export function isClose(lhs: number, rhs: number) {
-  return Math.abs(lhs - rhs) < EPSILON * 10;
-}
 
 export function arraySum(input: number[]): number {
   return input.reduce((acc, val) => acc + val, 0);
@@ -62,9 +56,8 @@ export function normalizeGradeRow(input: GenomeGradeRow, reference: number): Gen
 export function normalizeGradeMatrixColumns(
   input: GenerationGradeMatrix,
   reference: GenomeGradeRow,
-  inplace: boolean = false,
 ): GenerationGradeMatrix {
-  const result = inplace ? input : fullCopyObject(input);
+  const result = fullCopyObject(input);
 
   if (result.length === 0) {
     return result;
@@ -80,6 +73,12 @@ export function normalizeGradeMatrixColumns(
   return result;
 }
 
-export function normalizeGradeMatrix(matrix: GenerationGradeMatrix, reference: GenomeGradeRow): GenerationGradeMatrix {
-  return normalizeGradeMatrixColumns(matrix, reference).map((row) => row.map((x) => Math.abs(x)));
+export function normalizeGradeMatrix(matrix: GenerationGradeMatrix, reference: GenomeGradeRow, abs: boolean = true): GenerationGradeMatrix {
+  const result = normalizeGradeMatrixColumns(matrix, reference);
+
+  if (abs) {
+    return result.map((row) => row.map((x) => Math.abs(x)));
+  }
+
+  return result;
 }

@@ -62,7 +62,7 @@ describe.each([
   'Function normalizeGradeMatrix Test',
   (input, mean, expected) => {
     it('', async () => {
-      const actual = normalizeGradeMatrix(input, mean);
+      const actual = normalizeGradeMatrix(input, mean, false);
       for (const [rowActual, rowExpected] of multi.zip(actual, expected)) {
         expectNumberArrayToBeClose(rowActual, rowExpected);
       }
@@ -90,6 +90,28 @@ function dataProviderForNormalizeGradeMatrix(): Array<[number[][], number[], num
     ],
     [
       [
+        [2, 2, 2],
+        [2, 2, 2],
+      ],
+      [0, 0, 0],
+      [
+        [1, 1, 1],
+        [1, 1, 1],
+      ],
+    ],
+    [
+      [
+        [-2, -2, -2],
+        [-2, -2, -2],
+      ],
+      [0, 0, 0],
+      [
+        [-1, -1, -1],
+        [-1, -1, -1],
+      ],
+    ],
+    [
+      [
         [1, 2, 3],
         [3, 4, 5],
       ],
@@ -110,17 +132,150 @@ function dataProviderForNormalizeGradeMatrix(): Array<[number[][], number[], num
         [1, 1, 1],
       ],
     ],
-    // TODO fix:
-    // [
-    //   [
-    //     [1, 2, 3],
-    //     [3, 4, 5],
-    //   ],
-    //   [3, 4, 5],
-    //   [
-    //     [-1, -1, -1],
-    //     [0, 0, 0],
-    //   ],
-    // ],
+    [
+      [
+        [1, 2, 3],
+        [3, 4, 5],
+      ],
+      [3, 4, 5],
+      [
+        [-1, -1, -1],
+        [0, 0, 0],
+      ],
+    ],
+    [
+      [
+        [1, 2, 3],
+        [3, 4, 5],
+      ],
+      [-1, 0, 1],
+      [
+        [0.5, 0.5, 0.5],
+        [1, 1, 1],
+      ],
+    ],
+    [
+      [
+        [1, 2, 3],
+        [3, 4, 5],
+      ],
+      [5, 6, 7],
+      [
+        [-1, -1, -1],
+        [-0.5, -0.5, -0.5],
+      ],
+    ],
+  ];
+}
+
+describe.each([
+  ...dataProviderForNormalizeGradeMatrixWithAbs(),
+] as Array<[number[][], number[], number[][]]>)(
+  'Function normalizeGradeMatrix With Abs Test',
+  (input, mean, expected) => {
+    it('', async () => {
+      const actual = normalizeGradeMatrix(input, mean, true);
+      for (const [rowActual, rowExpected] of multi.zip(actual, expected)) {
+        expectNumberArrayToBeClose(rowActual, rowExpected);
+      }
+    });
+  },
+);
+
+function dataProviderForNormalizeGradeMatrixWithAbs(): Array<[number[][], number[], number[][]]> {
+  return [
+    [
+      [],
+      [],
+      [],
+    ],
+    [
+      [
+        [0, 0, 0],
+        [0, 0, 0],
+      ],
+      [0, 0, 0],
+      [
+        [0, 0, 0],
+        [0, 0, 0],
+      ],
+    ],
+    [
+      [
+        [2, 2, 2],
+        [2, 2, 2],
+      ],
+      [0, 0, 0],
+      [
+        [1, 1, 1],
+        [1, 1, 1],
+      ],
+    ],
+    [
+      [
+        [-2, -2, -2],
+        [-2, -2, -2],
+      ],
+      [0, 0, 0],
+      [
+        [1, 1, 1],
+        [1, 1, 1],
+      ],
+    ],
+    [
+      [
+        [1, 2, 3],
+        [3, 4, 5],
+      ],
+      [2, 3, 4],
+      [
+        [1, 1, 1],
+        [1, 1, 1],
+      ],
+    ],
+    [
+      [
+        [1, 2, 3],
+        [3, 4, 5],
+      ],
+      [1, 2, 3],
+      [
+        [0, 0, 0],
+        [1, 1, 1],
+      ],
+    ],
+    [
+      [
+        [1, 2, 3],
+        [3, 4, 5],
+      ],
+      [3, 4, 5],
+      [
+        [1, 1, 1],
+        [0, 0, 0],
+      ],
+    ],
+    [
+      [
+        [1, 2, 3],
+        [3, 4, 5],
+      ],
+      [-1, 0, 1],
+      [
+        [0.5, 0.5, 0.5],
+        [1, 1, 1],
+      ],
+    ],
+    [
+      [
+        [1, 2, 3],
+        [3, 4, 5],
+      ],
+      [5, 6, 7],
+      [
+        [1, 1, 1],
+        [0.5, 0.5, 0.5],
+      ],
+    ],
   ];
 }
