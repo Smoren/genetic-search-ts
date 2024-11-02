@@ -43,7 +43,7 @@ const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
   crossover: new ParabolaCrossoverStrategy(),
 }
 
-const search = new GeneticSearch(config, strategies, createNextIdGetter());
+const search = new GeneticSearch(config, strategies);
 await search.fit({
   generationsCount: 100,
   afterStep: (generation, scores) => console.log(
