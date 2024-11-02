@@ -41,8 +41,6 @@ export function normalizeGradeRow(input: GenomeGradeRow, mean: number): GenomeGr
   let std = 1;
   if (!isClose(min, max)) {
     std = max - min;
-  } else if (!isClose(mean, max)) {
-    std = Math.abs(max - mean);
   }
 
   return input.map((x) => (x - mean) / std);
