@@ -13,7 +13,8 @@ import {
   ParabolaPopulateStrategy,
   ParabolaSingleRunnerStrategy,
   ParabolaReferenceScoringStrategy,
-  ParabolaTransparentScoringStrategy, ParabolaTaskConfig,
+  ParabolaTransparentScoringStrategy,
+  ParabolaTaskConfig,
   // @ts-ignore
 } from "./fixtures";
 import { createNextIdGetter } from "../../src/utils";
