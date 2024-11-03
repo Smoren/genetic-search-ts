@@ -145,50 +145,50 @@ describe('Parabola Multiprocessing', () => {
   }, 30000);
 
   // TODO do not works! Bad implementation of ComposedGeneticSearch
-  // it('Get Parabola Max Composed Cached Multiprocessing Test', () => {
-  //   const [a, b] = [12, -3];
-  //   const [x, y] = [-12, -3];
-  //
-  //   const config: ComposedGeneticSearchConfig = {
-  //     eliminators: {
-  //       populationSize: 10,
-  //       survivalRate: 0.5,
-  //       crossoverRate: 0.5,
-  //     },
-  //     final: {
-  //       populationSize: 10,
-  //       survivalRate: 0.5,
-  //       crossoverRate: 0.5,
-  //     }
-  //   };
-  //
-  //   const strategies: StrategyConfig<ParabolaArgumentGenome> = {
-  //     populate: new ParabolaPopulateStrategy(),
-  //     runner: new ParabolaCachedMultiprocessingRunnerStrategy({
-  //       poolSize: 4,
-  //       task: (data: ParabolaTaskConfig) => Promise.resolve([-((data[1]+12)**2) - 3]),
-  //     }),
-  //     scoring: new ParabolaTransparentScoringStrategy(),
-  //     mutation: new ParabolaMutationStrategy(),
-  //     crossover: new ParabolaCrossoverStrategy(),
-  //   }
-  //
-  //   const search = new ComposedGeneticSearch(config, strategies);
-  //
-  //   return search.fit({
-  //     generationsCount: 20,
-  //     afterStep: () => void 0,
-  //   }).then(() => {
-  //     const bestGenome = search.bestGenome;
-  //
-  //     expect(bestGenome.x).toBeCloseTo(x);
-  //     expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
-  //
-  //     const population = search.population;
-  //     expect(population.length).toBe(100);
-  //
-  //     search.population = population;
-  //     expect(search.population).toEqual(population);
-  //   });
-  // }, 30000);
+  it('Get Parabola Max Composed Cached Multiprocessing Test', () => {
+    const [a, b] = [12, -3];
+    const [x, y] = [-12, -3];
+
+    const config: ComposedGeneticSearchConfig = {
+      eliminators: {
+        populationSize: 10,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      },
+      final: {
+        populationSize: 10,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      }
+    };
+
+    const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
+      populate: new ParabolaPopulateStrategy(),
+      runner: new ParabolaCachedMultiprocessingRunnerStrategy({
+        poolSize: 4,
+        task: (data: ParabolaTaskConfig) => Promise.resolve([-((data[1]+12)**2) - 3]),
+      }),
+      scoring: new ParabolaTransparentScoringStrategy(),
+      mutation: new ParabolaMutationStrategy(),
+      crossover: new ParabolaCrossoverStrategy(),
+    }
+
+    const search = new ComposedGeneticSearch(config, strategies);
+
+    return search.fit({
+      generationsCount: 20,
+      afterStep: () => void 0,
+    }).then(() => {
+      const bestGenome = search.bestGenome;
+
+      expect(bestGenome.x).toBeCloseTo(x);
+      expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
+
+      const population = search.population;
+      expect(population.length).toBe(100);
+
+      search.population = population;
+      expect(search.population).toEqual(population);
+    });
+  }, 30000);
 });

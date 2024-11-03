@@ -134,12 +134,17 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   private readonly eliminators: GeneticSearchInterface<TGenome>[];
   private readonly final: GeneticSearchInterface<TGenome>;
 
-  constructor(config: ComposedGeneticSearchConfig, strategy: GeneticSearchStrategyConfig<TGenome>) {
+  constructor(
+    config: ComposedGeneticSearchConfig,
+    strategy: GeneticSearchStrategyConfig<TGenome>,
+    nextIdGetter?: NextIdGetter,
+  ) {
+    nextIdGetter = nextIdGetter ?? createNextIdGetter();
     this.eliminators = [...single.repeat(
-      () => new GeneticSearch(config.eliminators, strategy),
+      () => new GeneticSearch(config.eliminators, strategy, nextIdGetter),
       config.final.populationSize,
     )].map((factory) => factory());
-    this.final = new GeneticSearch(config.final, strategy);
+    this.final = new GeneticSearch(config.final, strategy, nextIdGetter);
   }
 
   public get bestGenome(): TGenome {
