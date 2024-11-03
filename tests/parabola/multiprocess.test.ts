@@ -144,7 +144,6 @@ describe('Parabola Multiprocessing', () => {
     });
   }, 30000);
 
-  // TODO do not works! Bad implementation of ComposedGeneticSearch
   it('Get Parabola Max Composed Cached Multiprocessing Test', () => {
     const [a, b] = [12, -3];
     const [x, y] = [-12, -3];

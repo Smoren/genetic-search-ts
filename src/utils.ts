@@ -41,16 +41,6 @@ export function normalizeGradeRow(input: GenomeGradeRow, reference: number): Gen
     // Normalize each number to the range from -1 to 1, where reference = 0
     return (num - reference) / denominator;
   });
-
-  // const max = Math.max(...input, reference);
-  // const min = Math.min(...input, reference);
-  //
-  // let std = 1;
-  // if (!isClose(min, max)) {
-  //   std = max - min;
-  // }
-  //
-  // return input.map((x) => (x - reference) / std);
 }
 
 export function normalizeGradeMatrixColumns(
