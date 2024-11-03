@@ -74,10 +74,13 @@ export interface ScoringStrategyInterface {
   score(results: GenerationGradeMatrix): GenerationScoreColumn;
 }
 
-export interface GeneticSearchInterface<TGenome extends BaseGenome> {
+export interface GeneticSortInterface<TGenome extends BaseGenome> {
   readonly bestGenome: TGenome;
-  readonly partitions: [number, number, number];
   population: Population<TGenome>
-  fit(config: GeneticSearchFitConfig): Promise<void>;
   step(): Promise<GenerationScoreColumn>;
+}
+
+export interface GeneticSearchInterface<TGenome extends BaseGenome> extends GeneticSortInterface<TGenome> {
+  readonly partitions: [number, number, number];
+  fit(config: GeneticSearchFitConfig): Promise<void>;
 }

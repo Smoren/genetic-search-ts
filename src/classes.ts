@@ -9,20 +9,23 @@ import {
   NextIdGetter,
   GeneticSearchFitConfig,
   ComposedGeneticSearchConfig,
+  GeneticSortInterface,
 } from "./types";
 import { createNextIdGetter, getRandomArrayItem } from "./utils";
 
-export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
-  protected readonly config: GeneticSearchConfig;
+export class GeneticSort<TGenome extends BaseGenome> implements GeneticSortInterface<TGenome> {
   protected readonly strategy: GeneticSearchStrategyConfig<TGenome>;
   protected readonly nextId: NextIdGetter;
   protected _population: Population<TGenome>;
 
-  constructor(config: GeneticSearchConfig, strategy: GeneticSearchStrategyConfig<TGenome>, nextIdGetter?: NextIdGetter) {
-    this.config = config;
+  constructor(
+    population: Population<TGenome>,
+    strategy: GeneticSearchStrategyConfig<TGenome>,
+    nextIdGetter?: NextIdGetter,
+  ) {
+    this._population = population;
     this.strategy = strategy;
     this.nextId = nextIdGetter ?? createNextIdGetter();
-    this._population = this.strategy.populate.populate(this.config.populationSize, this.nextId);
   }
 
   public get bestGenome(): TGenome {
@@ -35,25 +38,6 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
   public set population(population: Population<TGenome>) {
     this._population = population;
-  }
-
-  public get partitions(): [number, number, number] {
-    const countToSurvive = Math.round(this.config.populationSize * this.config.survivalRate);
-    const countToDie = this.config.populationSize - countToSurvive;
-
-    const countToCross = Math.round(countToDie * this.config.crossoverRate);
-    const countToClone = countToDie - countToCross;
-
-    return [countToSurvive, countToCross, countToClone];
-  }
-
-  public async fit(config: GeneticSearchFitConfig): Promise<void> {
-    for (let i=0; i<config.generationsCount; i++) {
-      const result = await this.step();
-      if (config.afterStep) {
-        config.afterStep(i, result);
-      }
-    }
   }
 
   public async step(): Promise<GenerationScoreColumn> {
@@ -74,6 +58,40 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
       [...single.map(sortedArray, (x) => x[0])],
       [...single.map(sortedArray, (x) => x[1])],
     ];
+  }
+
+  protected refreshPopulation(sortedPopulation: Population<TGenome>): void {
+    this._population = sortedPopulation;
+  }
+}
+
+export class GeneticSearch<TGenome extends BaseGenome> extends GeneticSort<TGenome> implements GeneticSearchInterface<TGenome> {
+  protected readonly config: GeneticSearchConfig;
+
+  constructor(config: GeneticSearchConfig, strategy: GeneticSearchStrategyConfig<TGenome>, nextIdGetter?: NextIdGetter) {
+    nextIdGetter = nextIdGetter ?? createNextIdGetter();
+    const population = strategy.populate.populate(config.populationSize, nextIdGetter);
+    super(population, strategy, nextIdGetter);
+    this.config = config;
+  }
+
+  public get partitions(): [number, number, number] {
+    const countToSurvive = Math.round(this.config.populationSize * this.config.survivalRate);
+    const countToDie = this.config.populationSize - countToSurvive;
+
+    const countToCross = Math.round(countToDie * this.config.crossoverRate);
+    const countToClone = countToDie - countToCross;
+
+    return [countToSurvive, countToCross, countToClone];
+  }
+
+  public async fit(config: GeneticSearchFitConfig): Promise<void> {
+    for (let i=0; i<config.generationsCount; i++) {
+      const result = await this.step();
+      if (config.afterStep) {
+        config.afterStep(i, result);
+      }
+    }
   }
 
   protected crossover(genomes: Population<TGenome>, count: number): Population<TGenome> {
