@@ -12,7 +12,7 @@ import {
   RunnerStrategyConfig,
   ScoringStrategyInterface,
   MultiprocessingRunnerStrategyConfig,
-  NextIdGetter,
+  NextIdGetter, BaseMutationStrategy, BaseMutationStrategyConfig,
 } from "../../src";
 
 export type ParabolaArgumentGenome = BaseGenome & {
@@ -36,7 +36,11 @@ export class ParabolaPopulateStrategy implements PopulateStrategyInterface<Parab
   }
 }
 
-export class ParabolaMutationStrategy implements MutationStrategyInterface<ParabolaArgumentGenome> {
+export class ParabolaMutationStrategy extends BaseMutationStrategy<ParabolaArgumentGenome, BaseMutationStrategyConfig> {
+  constructor() {
+    super({ probability: 1 });
+  }
+
   mutate(genome: ParabolaArgumentGenome, newGenomeId: number): ParabolaArgumentGenome {
     return { x: genome.x + Math.random() * 10 - 5, id: newGenomeId };
   }

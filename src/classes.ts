@@ -1,4 +1,4 @@
-import { multi, single } from "itertools-ts";
+import { multi, set, single } from "itertools-ts";
 import {
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
@@ -191,7 +191,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
       await eliminators.step();
     }
 
-    this.final.population = [...this.final.population, ...this.bestGenomes];
+    this.final.population = [...set.distinct([...this.final.population, ...this.bestGenomes], (x) => x.id)];
     return await this.final.step();
   }
 
