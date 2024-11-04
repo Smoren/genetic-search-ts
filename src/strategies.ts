@@ -48,7 +48,9 @@ export abstract class BaseRunnerStrategy<
   protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
     const result: GenerationGradeMatrix = [];
     for (const input of inputs) {
-      result.push(await this.config.task(input));
+      const taskResult = await this.config.task(input);
+      this.config.onTaskResult?.(taskResult);
+      result.push(taskResult);
     }
     return result;
   }
@@ -67,7 +69,9 @@ export abstract class BaseMultiprocessingRunnerStrategy<
 > extends BaseRunnerStrategy<TGenome, TConfig, TTaskConfig> {
   protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
     const pool = new Pool(this.config.poolSize);
-    const result: GenerationGradeMatrix = await pool.map(inputs, this.config.task);
+    const result: GenerationGradeMatrix = await pool.map(inputs, this.config.task, {
+      onResult: (result: any) => this.config.onTaskResult?.(result as GenomeGradeRow),
+    });
     pool.close();
 
     return result;

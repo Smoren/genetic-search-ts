@@ -35,6 +35,7 @@ export type BaseMutationStrategyConfig = {
 
 export type RunnerStrategyConfig<TTaskConfig> = {
   task: GradeGenerationTask<TTaskConfig>;
+  onTaskResult?: (result: GenomeGradeRow) => void;
 }
 
 export type MultiprocessingRunnerStrategyConfig<TTaskConfig> = RunnerStrategyConfig<TTaskConfig> & {

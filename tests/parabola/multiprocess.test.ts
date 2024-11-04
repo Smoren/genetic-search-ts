@@ -32,6 +32,7 @@ describe('Parabola Multiprocessing', () => {
       runner: new ParabolaMultiprocessingRunnerStrategy({
         poolSize: 4,
         task: (x: ParabolaTaskConfig) => Promise.resolve([-((x[1]+12)**2) - 3]),
+        onTaskResult: () => void 0,
       }),
       scoring: new ParabolaTransparentScoringStrategy(),
       mutation: new ParabolaMutationStrategy(),

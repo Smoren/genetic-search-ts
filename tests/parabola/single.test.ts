@@ -35,6 +35,7 @@ describe.each([
         populate: new ParabolaPopulateStrategy(),
         runner: new ParabolaSingleRunnerStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[1]+a)**2) + b],
+          onTaskResult: (result) => void 0,
         }),
         scoring: new ParabolaTransparentScoringStrategy(),
         mutation: new ParabolaMutationStrategy(),
