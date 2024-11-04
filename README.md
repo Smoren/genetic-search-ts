@@ -37,6 +37,7 @@ const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
   runner: new ParabolaCachedMultiprocessingRunnerStrategy({
     poolSize: 4,
     task: async (data: ParabolaTaskConfig) => [-((data[1] - 12)**2) - 3],
+    onTaskResult: (result) => console.log('task result', result),
   }),
   scoring: new ParabolaTransparentScoringStrategy(),
   mutation: new ParabolaMutationStrategy(),
