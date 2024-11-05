@@ -6,7 +6,6 @@ import {
   GenerationGradeMatrix,
   CrossoverStrategyInterface,
   GenerationScoreColumn,
-  MutationStrategyInterface,
   PopulateStrategyInterface,
   ReferenceLossScoringStrategy,
   RunnerStrategyConfig,

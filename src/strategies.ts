@@ -45,6 +45,10 @@ export abstract class BaseRunnerStrategy<
     return await this.execTask(inputs);
   }
 
+  public clone(): RunnerStrategyInterface<TGenome> {
+    return new (this.constructor as any)(this.config);
+  }
+
   protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
     const result: GenerationGradeMatrix = [];
     for (const input of inputs) {

@@ -141,10 +141,10 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   ) {
     nextIdGetter = nextIdGetter ?? createNextIdGetter();
     this.eliminators = [...single.repeat(
-      () => new GeneticSearch(config.eliminators, strategy, nextIdGetter),
+      () => new GeneticSearch(config.eliminators, this.cloneStrategy(strategy), nextIdGetter),
       config.final.populationSize,
     )].map((factory) => factory());
-    this.final = new GeneticSearch(config.final, strategy, nextIdGetter);
+    this.final = new GeneticSearch(config.final, this.cloneStrategy(strategy), nextIdGetter);
   }
 
   public get bestGenome(): TGenome {
@@ -197,5 +197,15 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
 
   protected get bestGenomes(): Population<TGenome> {
     return this.eliminators.map((eliminators) => eliminators.bestGenome);
+  }
+
+  protected cloneStrategy(strategy: GeneticSearchStrategyConfig<TGenome>): GeneticSearchStrategyConfig<TGenome> {
+    return {
+      populate: strategy.populate,
+      runner: strategy.runner.clone(),
+      scoring: strategy.scoring,
+      mutation: strategy.mutation,
+      crossover: strategy.crossover,
+    };
   }
 }

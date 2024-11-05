@@ -69,6 +69,7 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
 
 export interface RunnerStrategyInterface<TGenome extends BaseGenome> {
   run(population: Population<TGenome>): Promise<GenerationGradeMatrix>;
+  clone(): RunnerStrategyInterface<TGenome>;
 }
 
 export interface ScoringStrategyInterface {
