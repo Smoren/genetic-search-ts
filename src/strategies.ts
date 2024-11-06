@@ -5,16 +5,16 @@ import {
   Population,
   BaseMutationStrategyConfig,
   MutationStrategyInterface,
-  RunnerStrategyInterface,
-  MultiprocessingRunnerStrategyConfig,
-  ScoringStrategyInterface,
+  MetricsStrategyInterface,
+  MultiprocessingMetricsStrategyConfig,
+  FitnessStrategyInterface,
   GeneticSearchReferenceConfig,
-  RunnerStrategyConfig,
-  GenerationGradeMatrix,
-  GenomeGradeRow,
-  GenerationScoreColumn,
+  MetricsStrategyConfig,
+  GenerationMetricsMatrix,
+  GenomeMetricsRow,
+  GenerationFitnessColumn,
 } from "./types";
-import { normalizeGradeMatrix, arrayBinaryOperation, arraySum } from "./utils";
+import { normalizeMetricsMatrix, arrayBinaryOperation, arraySum } from "./utils";
 
 export abstract class BaseMutationStrategy<
   TGenome extends BaseGenome,
@@ -29,28 +29,28 @@ export abstract class BaseMutationStrategy<
   public abstract mutate(genome: TGenome, newGenomeId: number): TGenome;
 }
 
-export abstract class BaseRunnerStrategy<
+export abstract class BaseMetricsStrategy<
   TGenome extends BaseGenome,
-  TConfig extends RunnerStrategyConfig<TTaskConfig>,
+  TConfig extends MetricsStrategyConfig<TTaskConfig>,
   TTaskConfig,
-> implements RunnerStrategyInterface<TGenome> {
+> implements MetricsStrategyInterface<TGenome> {
   protected readonly config: TConfig;
 
   constructor(config: TConfig) {
     this.config = config;
   }
 
-  public async run(population: Population<TGenome>): Promise<GenerationGradeMatrix> {
+  public async run(population: Population<TGenome>): Promise<GenerationMetricsMatrix> {
     const inputs = this.createTasksInputList(population);
     return await this.execTask(inputs);
   }
 
-  public clone(): RunnerStrategyInterface<TGenome> {
+  public clone(): MetricsStrategyInterface<TGenome> {
     return new (this.constructor as any)(this.config);
   }
 
-  protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
-    const result: GenerationGradeMatrix = [];
+  protected async execTask(inputs: TTaskConfig[]): Promise<GenerationMetricsMatrix> {
+    const result: GenerationMetricsMatrix = [];
     for (const input of inputs) {
       const taskResult = await this.config.task(input);
       this.config.onTaskResult?.(taskResult);
@@ -66,15 +66,15 @@ export abstract class BaseRunnerStrategy<
   }
 }
 
-export abstract class BaseMultiprocessingRunnerStrategy<
+export abstract class BaseMultiprocessingMetricsStrategy<
   TGenome extends BaseGenome,
-  TConfig extends MultiprocessingRunnerStrategyConfig<TTaskConfig>,
+  TConfig extends MultiprocessingMetricsStrategyConfig<TTaskConfig>,
   TTaskConfig,
-> extends BaseRunnerStrategy<TGenome, TConfig, TTaskConfig> {
-  protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
+> extends BaseMetricsStrategy<TGenome, TConfig, TTaskConfig> {
+  protected async execTask(inputs: TTaskConfig[]): Promise<GenerationMetricsMatrix> {
     const pool = new Pool(this.config.poolSize);
-    const result: GenerationGradeMatrix = await pool.map(inputs, this.config.task, {
-      onResult: (result: any) => this.config.onTaskResult?.(result as GenomeGradeRow),
+    const result: GenerationMetricsMatrix = await pool.map(inputs, this.config.task, {
+      onResult: (result: any) => this.config.onTaskResult?.(result as GenomeMetricsRow),
     });
     pool.close();
 
@@ -82,16 +82,16 @@ export abstract class BaseMultiprocessingRunnerStrategy<
   }
 }
 
-export abstract class BaseCachedMultiprocessingRunnerStrategy<
+export abstract class BaseCachedMultiprocessingMetricsStrategy<
   TGenome extends BaseGenome,
-  TConfig extends MultiprocessingRunnerStrategyConfig<TTaskConfig>,
+  TConfig extends MultiprocessingMetricsStrategyConfig<TTaskConfig>,
   TTaskConfig,
-> extends BaseMultiprocessingRunnerStrategy<TGenome, TConfig, TTaskConfig> {
-  protected readonly cache: Map<number, GenomeGradeRow> = new Map();
+> extends BaseMultiprocessingMetricsStrategy<TGenome, TConfig, TTaskConfig> {
+  protected readonly cache: Map<number, GenomeMetricsRow> = new Map();
 
   protected abstract getGenomeId(input: TTaskConfig): number;
 
-  protected async execTask(inputs: TTaskConfig[]): Promise<GenerationGradeMatrix> {
+  protected async execTask(inputs: TTaskConfig[]): Promise<GenerationMetricsMatrix> {
     const resultsMap = new Map(inputs.map((input) => [
       this.getGenomeId(input),
       this.cache.get(this.getGenomeId(input))
@@ -104,7 +104,7 @@ export abstract class BaseCachedMultiprocessingRunnerStrategy<
       resultsMap.set(this.getGenomeId(input), result);
     }
 
-    const results: GenerationGradeMatrix = [];
+    const results: GenerationMetricsMatrix = [];
     for (const input of inputs) {
       results.push(resultsMap.get(this.getGenomeId(input))!);
     }
@@ -119,23 +119,23 @@ export abstract class BaseCachedMultiprocessingRunnerStrategy<
   }
 }
 
-export class ReferenceLossScoringStrategy implements ScoringStrategyInterface {
+export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {
   private referenceConfig: GeneticSearchReferenceConfig;
 
   constructor(referenceConfig: GeneticSearchReferenceConfig) {
     this.referenceConfig = referenceConfig;
   }
 
-  score(results: GenerationGradeMatrix): GenerationScoreColumn {
+  score(results: GenerationMetricsMatrix): GenerationFitnessColumn {
     const normalizedLosses = this.formatLosses(results);
     return normalizedLosses.map((x) => -arraySum(x));
   }
 
-  protected formatLosses(results: GenerationGradeMatrix): GenerationGradeMatrix {
-    return normalizeGradeMatrix(results, this.referenceConfig.reference).map((result) => this.weighRow(result));
+  protected formatLosses(results: GenerationMetricsMatrix): GenerationMetricsMatrix {
+    return normalizeMetricsMatrix(results, this.referenceConfig.reference).map((result) => this.weighRow(result));
   }
 
-  protected weighRow(result: GenomeGradeRow): GenomeGradeRow {
+  protected weighRow(result: GenomeMetricsRow): GenomeMetricsRow {
     return arrayBinaryOperation(result, this.referenceConfig.weights, (x, y) => x * y);
   }
 }

@@ -11,7 +11,7 @@ Setup
 -----
 
 ```bash
-npm i itertools-ts
+npm i genetic-search
 ```
 
 Usage example
@@ -34,12 +34,12 @@ const config: GeneticSearchConfig = {
 
 const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
   populate: new ParabolaPopulateStrategy(),
-  runner: new ParabolaCachedMultiprocessingRunnerStrategy({
+  metrics: new ParabolaCachedMultiprocessingMetricsStrategy({
     poolSize: 4,
-    task: async (data: ParabolaTaskConfig) => [-((data[1] - 12)**2) - 3],
+    task: async (data) => [-((data[1] - 12)**2) - 3],
     onTaskResult: (result) => console.log('task result', result),
   }),
-  scoring: new ParabolaTransparentScoringStrategy(),
+  fitness: new ParabolaMaxValueFitnessStrategy(),
   mutation: new ParabolaMutationStrategy(),
   crossover: new ParabolaCrossoverStrategy(),
 }
@@ -61,55 +61,56 @@ Strategies implementation:
 ```typescript
 import {
   BaseGenome,
-  BaseMultiprocessingRunnerStrategy,
-  BaseCachedMultiprocessingRunnerStrategy,
-  BaseRunnerStrategy,
-  GenerationGradeMatrix,
+  BaseMultiprocessingMetricsStrategy,
+  BaseCachedMultiprocessingMetricsStrategy,
+  BaseMetricsStrategy,
+  GenerationMetricsMatrix,
   CrossoverStrategyInterface,
-  GenerationScoreColumn,
-  MutationStrategyInterface,
+  GenerationFitnessColumn,
   PopulateStrategyInterface,
-  ReferenceLossScoringStrategy,
-  RunnerStrategyConfig,
-  ScoringStrategyInterface,
-  MultiprocessingRunnerStrategyConfig,
+  ReferenceLossFitnessStrategy,
+  MetricsStrategyConfig,
+  FitnessStrategyInterface,
+  MultiprocessingMetricsStrategyConfig,
   NextIdGetter,
+  BaseMutationStrategy,
+  BaseMutationStrategyConfig,
 } from "genetic-search";
 
-type ParabolaArgumentGenome = BaseGenome & {
+export type ParabolaArgumentGenome = BaseGenome & {
   id: number;
   x: number;
 }
 
-type ParabolaTaskConfig = [number, number];
+export type ParabolaTaskConfig = [number, number];
 
-class ParabolaPopulateStrategy implements PopulateStrategyInterface<ParabolaArgumentGenome> {
+export class ParabolaPopulateStrategy implements PopulateStrategyInterface<ParabolaArgumentGenome> {
   populate(size: number, nextIdGetter: NextIdGetter): ParabolaArgumentGenome[] {
-    const createRandomParabolaArgument = (id: number): ParabolaArgumentGenome => {
-      return { id, x: Math.random() * 200 - 100 };
-    }
-
     const result: ParabolaArgumentGenome[] = [];
     for (let i=0; i<size; ++i) {
-      result.push(createRandomParabolaArgument(nextIdGetter()));
+      result.push({ id: nextIdGetter(), x: Math.random() * 200 - 100 });
     }
     return result;
   }
 }
 
-class ParabolaMutationStrategy implements MutationStrategyInterface<ParabolaArgumentGenome> {
+export class ParabolaMutationStrategy extends BaseMutationStrategy<ParabolaArgumentGenome, BaseMutationStrategyConfig> {
+  constructor() {
+    super({ probability: 1 });
+  }
+
   mutate(genome: ParabolaArgumentGenome, newGenomeId: number): ParabolaArgumentGenome {
     return { x: genome.x + Math.random() * 10 - 5, id: newGenomeId };
   }
 }
 
-class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<ParabolaArgumentGenome> {
+export class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<ParabolaArgumentGenome> {
   cross(lhs: ParabolaArgumentGenome, rhs: ParabolaArgumentGenome, newGenomeId: number): ParabolaArgumentGenome {
     return { x: (lhs.x + rhs.x) / 2, id: newGenomeId };
   }
 }
 
-class ParabolaCachedMultiprocessingRunnerStrategy extends BaseCachedMultiprocessingRunnerStrategy<ParabolaArgumentGenome, MultiprocessingRunnerStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
+export class ParabolaCachedMultiprocessingMetricsStrategy extends BaseCachedMultiprocessingMetricsStrategy<ParabolaArgumentGenome, MultiprocessingMetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
     return [genome.id, genome.x];
   }
@@ -119,11 +120,12 @@ class ParabolaCachedMultiprocessingRunnerStrategy extends BaseCachedMultiprocess
   }
 }
 
-class ParabolaTransparentScoringStrategy implements ScoringStrategyInterface {
-  score(results: GenerationGradeMatrix): GenerationScoreColumn {
+export class ParabolaMaxValueFitnessStrategy implements FitnessStrategyInterface {
+  score(results: GenerationMetricsMatrix): GenerationFitnessColumn {
     return results.map((result) => result[0]);
   }
 }
+
 ```
 
 

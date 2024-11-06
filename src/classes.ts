@@ -3,29 +3,26 @@ import {
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
   GeneticSearchInterface,
-  GenerationScoreColumn,
+  GenerationFitnessColumn,
   Population,
   BaseGenome,
   NextIdGetter,
   GeneticSearchFitConfig,
   ComposedGeneticSearchConfig,
-  GeneticSortInterface,
 } from "./types";
 import { createNextIdGetter, getRandomArrayItem } from "./utils";
 
-export class GeneticSort<TGenome extends BaseGenome> implements GeneticSortInterface<TGenome> {
+export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
+  protected readonly config: GeneticSearchConfig;
   protected readonly strategy: GeneticSearchStrategyConfig<TGenome>;
   protected readonly nextId: NextIdGetter;
   protected _population: Population<TGenome>;
 
-  constructor(
-    population: Population<TGenome>,
-    strategy: GeneticSearchStrategyConfig<TGenome>,
-    nextIdGetter?: NextIdGetter,
-  ) {
-    this._population = population;
-    this.strategy = strategy;
+  constructor(config: GeneticSearchConfig, strategy: GeneticSearchStrategyConfig<TGenome>, nextIdGetter?: NextIdGetter) {
     this.nextId = nextIdGetter ?? createNextIdGetter();
+    this._population = strategy.populate.populate(config.populationSize, this.nextId);
+    this.strategy = strategy;
+    this.config = config;
   }
 
   public get bestGenome(): TGenome {
@@ -40,41 +37,6 @@ export class GeneticSort<TGenome extends BaseGenome> implements GeneticSortInter
     this._population = population;
   }
 
-  public async step(): Promise<GenerationScoreColumn> {
-    const gradeMatrix = await this.strategy.runner.run(this._population);
-    const scoreColumn = this.strategy.scoring.score(gradeMatrix);
-
-    const [sortedPopulation, sortedScoreColumn] = this.sortPopulation(scoreColumn);
-    this.refreshPopulation(sortedPopulation);
-
-    return sortedScoreColumn;
-  }
-
-  protected sortPopulation(scores: GenerationScoreColumn): [Population<TGenome>, GenerationScoreColumn] {
-    const zipped = multi.zipEqual(this._population, scores);
-    const sorted = single.sort(zipped, (lhs, rhs) => rhs[1] - lhs[1]);
-    const sortedArray = [...sorted];
-    return [
-      [...single.map(sortedArray, (x) => x[0])],
-      [...single.map(sortedArray, (x) => x[1])],
-    ];
-  }
-
-  protected refreshPopulation(sortedPopulation: Population<TGenome>): void {
-    this._population = sortedPopulation;
-  }
-}
-
-export class GeneticSearch<TGenome extends BaseGenome> extends GeneticSort<TGenome> implements GeneticSearchInterface<TGenome> {
-  protected readonly config: GeneticSearchConfig;
-
-  constructor(config: GeneticSearchConfig, strategy: GeneticSearchStrategyConfig<TGenome>, nextIdGetter?: NextIdGetter) {
-    nextIdGetter = nextIdGetter ?? createNextIdGetter();
-    const population = strategy.populate.populate(config.populationSize, nextIdGetter);
-    super(population, strategy, nextIdGetter);
-    this.config = config;
-  }
-
   public get partitions(): [number, number, number] {
     const countToSurvive = Math.round(this.config.populationSize * this.config.survivalRate);
     const countToDie = this.config.populationSize - countToSurvive;
@@ -87,11 +49,34 @@ export class GeneticSearch<TGenome extends BaseGenome> extends GeneticSort<TGeno
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
-      const result = await this.step();
+      const result = await this.fitStep();
       if (config.afterStep) {
         config.afterStep(i, result);
       }
+      if (config.stopCondition && config.stopCondition(result)) {
+        break;
+      }
     }
+  }
+
+  public async fitStep(): Promise<GenerationFitnessColumn> {
+    const metricsMatrix = await this.strategy.metrics.run(this._population);
+    const fitnessColumn = this.strategy.fitness.score(metricsMatrix);
+
+    const [sortedPopulation, sortedFitnessColumn] = this.sortPopulation(fitnessColumn);
+    this.refreshPopulation(sortedPopulation);
+
+    return sortedFitnessColumn;
+  }
+
+  protected sortPopulation(scores: GenerationFitnessColumn): [Population<TGenome>, GenerationFitnessColumn] {
+    const zipped = multi.zipEqual(this._population, scores);
+    const sorted = single.sort(zipped, (lhs, rhs) => rhs[1] - lhs[1]);
+    const sortedArray = [...sorted];
+    return [
+      [...single.map(sortedArray, (x) => x[0])],
+      [...single.map(sortedArray, (x) => x[1])],
+    ];
   }
 
   protected crossover(genomes: Population<TGenome>, count: number): Population<TGenome> {
@@ -179,20 +164,23 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
-      const result = await this.step();
+      const result = await this.fitStep();
       if (config.afterStep) {
         config.afterStep(i, result);
+      }
+      if (config.stopCondition && config.stopCondition(result)) {
+        break;
       }
     }
   }
 
-  public async step(): Promise<GenerationScoreColumn> {
+  public async fitStep(): Promise<GenerationFitnessColumn> {
     for (const eliminators of this.eliminators) {
-      await eliminators.step();
+      await eliminators.fitStep();
     }
 
     this.final.population = [...set.distinct([...this.final.population, ...this.bestGenomes], (x) => x.id)];
-    return await this.final.step();
+    return await this.final.fitStep();
   }
 
   protected get bestGenomes(): Population<TGenome> {
@@ -202,8 +190,8 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   protected cloneStrategy(strategy: GeneticSearchStrategyConfig<TGenome>): GeneticSearchStrategyConfig<TGenome> {
     return {
       populate: strategy.populate,
-      runner: strategy.runner.clone(),
-      scoring: strategy.scoring,
+      metrics: strategy.metrics.clone(),
+      fitness: strategy.fitness,
       mutation: strategy.mutation,
       crossover: strategy.crossover,
     };

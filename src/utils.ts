@@ -1,4 +1,4 @@
-import { GenerationGradeMatrix, GenomeGradeRow, NextIdGetter } from "./types";
+import { GenerationMetricsMatrix, GenomeMetricsRow, NextIdGetter } from "./types";
 
 export const fullCopyObject = <T extends Record<string, any>>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
 
@@ -28,7 +28,7 @@ export function getRandomArrayItem<T>(input: T[]): T {
   return input[Math.floor(Math.random() * input.length)];
 }
 
-export function normalizeGradeRow(input: GenomeGradeRow, reference: number): GenomeGradeRow {
+export function normalizeMetricsRow(input: GenomeMetricsRow, reference: number): GenomeMetricsRow {
   // Find the minimum and maximum values in the array
   const minVal = Math.min(...input);
   const maxVal = Math.max(...input);
@@ -43,10 +43,10 @@ export function normalizeGradeRow(input: GenomeGradeRow, reference: number): Gen
   });
 }
 
-export function normalizeGradeMatrixColumns(
-  input: GenerationGradeMatrix,
-  reference: GenomeGradeRow,
-): GenerationGradeMatrix {
+export function normalizeMetricsMatrixColumns(
+  input: GenerationMetricsMatrix,
+  reference: GenomeMetricsRow,
+): GenerationMetricsMatrix {
   const result = fullCopyObject(input);
 
   if (result.length === 0) {
@@ -54,7 +54,7 @@ export function normalizeGradeMatrixColumns(
   }
 
   for (let i = 0; i < result[0].length; i++) {
-    const columnNormalized = normalizeGradeRow(result.map((row) => row[i]), reference[i]);
+    const columnNormalized = normalizeMetricsRow(result.map((row) => row[i]), reference[i]);
     for (let j = 0; j < result.length; j++) {
       result[j][i] = columnNormalized[j];
     }
@@ -63,8 +63,8 @@ export function normalizeGradeMatrixColumns(
   return result;
 }
 
-export function normalizeGradeMatrix(matrix: GenerationGradeMatrix, reference: GenomeGradeRow, abs: boolean = true): GenerationGradeMatrix {
-  const result = normalizeGradeMatrixColumns(matrix, reference);
+export function normalizeMetricsMatrix(matrix: GenerationMetricsMatrix, reference: GenomeMetricsRow, abs: boolean = true): GenerationMetricsMatrix {
+  const result = normalizeMetricsMatrixColumns(matrix, reference);
 
   if (abs) {
     return result.map((row) => row.map((x) => Math.abs(x)));

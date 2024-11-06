@@ -1,17 +1,19 @@
 import {
   BaseGenome,
-  BaseMultiprocessingRunnerStrategy,
-  BaseCachedMultiprocessingRunnerStrategy,
-  BaseRunnerStrategy,
-  GenerationGradeMatrix,
+  BaseMultiprocessingMetricsStrategy,
+  BaseCachedMultiprocessingMetricsStrategy,
+  BaseMetricsStrategy,
+  GenerationMetricsMatrix,
   CrossoverStrategyInterface,
-  GenerationScoreColumn,
+  GenerationFitnessColumn,
   PopulateStrategyInterface,
-  ReferenceLossScoringStrategy,
-  RunnerStrategyConfig,
-  ScoringStrategyInterface,
-  MultiprocessingRunnerStrategyConfig,
-  NextIdGetter, BaseMutationStrategy, BaseMutationStrategyConfig,
+  ReferenceLossFitnessStrategy,
+  MetricsStrategyConfig,
+  FitnessStrategyInterface,
+  MultiprocessingMetricsStrategyConfig,
+  NextIdGetter,
+  BaseMutationStrategy,
+  BaseMutationStrategyConfig,
 } from "../../src";
 
 export type ParabolaArgumentGenome = BaseGenome & {
@@ -51,19 +53,19 @@ export class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<Par
   }
 }
 
-export class ParabolaSingleRunnerStrategy extends BaseRunnerStrategy<ParabolaArgumentGenome, RunnerStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
+export class ParabolaSingleMetricsStrategy extends BaseMetricsStrategy<ParabolaArgumentGenome, MetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
     return [genome.id, genome.x];
   }
 }
 
-export class ParabolaMultiprocessingRunnerStrategy extends BaseMultiprocessingRunnerStrategy<ParabolaArgumentGenome, MultiprocessingRunnerStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
+export class ParabolaMultiprocessingMetricsStrategy extends BaseMultiprocessingMetricsStrategy<ParabolaArgumentGenome, MultiprocessingMetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
     return [genome.id, genome.x];
   }
 }
 
-export class ParabolaCachedMultiprocessingRunnerStrategy extends BaseCachedMultiprocessingRunnerStrategy<ParabolaArgumentGenome, MultiprocessingRunnerStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
+export class ParabolaCachedMultiprocessingMetricsStrategy extends BaseCachedMultiprocessingMetricsStrategy<ParabolaArgumentGenome, MultiprocessingMetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
     return [genome.id, genome.x];
   }
@@ -73,7 +75,7 @@ export class ParabolaCachedMultiprocessingRunnerStrategy extends BaseCachedMulti
   }
 }
 
-export class ParabolaReferenceScoringStrategy extends ReferenceLossScoringStrategy {
+export class ParabolaReferenceFitnessStrategy extends ReferenceLossFitnessStrategy {
   constructor(reference: number) {
     super({
       reference: [reference],
@@ -82,8 +84,8 @@ export class ParabolaReferenceScoringStrategy extends ReferenceLossScoringStrate
   }
 }
 
-export class ParabolaTransparentScoringStrategy implements ScoringStrategyInterface {
-  score(results: GenerationGradeMatrix): GenerationScoreColumn {
+export class ParabolaMaxValueFitnessStrategy implements FitnessStrategyInterface {
+  score(results: GenerationMetricsMatrix): GenerationFitnessColumn {
     return results.map((result) => result[0]);
   }
 }

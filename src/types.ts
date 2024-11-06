@@ -6,12 +6,12 @@ export type Population<TGenome extends BaseGenome> = TGenome[];
 
 export type NextIdGetter = () => number;
 
-export type GenomeGradeRow = number[];
-export type GenerationScoreColumn = number[];
-export type GenerationGradeMatrix = GenomeGradeRow[];
+export type GenomeMetricsRow = number[];
+export type GenerationFitnessColumn = number[];
+export type GenerationMetricsMatrix = GenomeMetricsRow[];
 
-export type GradeGenerationTask<TTaskConfig> = (data: TTaskConfig) => Promise<GenomeGradeRow>;
-export type GenerationCallback = (generation: number, scores: GenerationScoreColumn) => void;
+export type CalcMetricsTask<TTaskConfig> = (data: TTaskConfig) => Promise<GenomeMetricsRow>;
+export type GenerationCallback = (generation: number, scores: GenerationFitnessColumn) => void;
 
 export type GeneticSearchConfig = {
   populationSize: number;
@@ -22,6 +22,7 @@ export type GeneticSearchConfig = {
 export type GeneticSearchFitConfig = {
   generationsCount: number;
   afterStep?: GenerationCallback;
+  stopCondition?: (scores: GenerationFitnessColumn) => boolean;
 }
 
 export type ComposedGeneticSearchConfig = {
@@ -33,26 +34,26 @@ export type BaseMutationStrategyConfig = {
   probability: number;
 }
 
-export type RunnerStrategyConfig<TTaskConfig> = {
-  task: GradeGenerationTask<TTaskConfig>;
-  onTaskResult?: (result: GenomeGradeRow) => void;
+export type MetricsStrategyConfig<TTaskConfig> = {
+  task: CalcMetricsTask<TTaskConfig>;
+  onTaskResult?: (result: GenomeMetricsRow) => void;
 }
 
-export type MultiprocessingRunnerStrategyConfig<TTaskConfig> = RunnerStrategyConfig<TTaskConfig> & {
+export type MultiprocessingMetricsStrategyConfig<TTaskConfig> = MetricsStrategyConfig<TTaskConfig> & {
   poolSize: number;
 }
 
 export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
   populate: PopulateStrategyInterface<TGenome>;
-  runner: RunnerStrategyInterface<TGenome>;
-  scoring: ScoringStrategyInterface;
+  metrics: MetricsStrategyInterface<TGenome>;
+  fitness: FitnessStrategyInterface;
   mutation: MutationStrategyInterface<TGenome>;
   crossover: CrossoverStrategyInterface<TGenome>;
 }
 
 export type GeneticSearchReferenceConfig = {
-  reference: GenomeGradeRow;
-  weights: GenomeGradeRow;
+  reference: GenomeMetricsRow;
+  weights: GenomeMetricsRow;
 };
 
 export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
@@ -67,22 +68,19 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
   cross(lhs: TGenome, rhs: TGenome, newGenomeId: number): TGenome;
 }
 
-export interface RunnerStrategyInterface<TGenome extends BaseGenome> {
-  run(population: Population<TGenome>): Promise<GenerationGradeMatrix>;
-  clone(): RunnerStrategyInterface<TGenome>;
+export interface MetricsStrategyInterface<TGenome extends BaseGenome> {
+  run(population: Population<TGenome>): Promise<GenerationMetricsMatrix>;
+  clone(): MetricsStrategyInterface<TGenome>;
 }
 
-export interface ScoringStrategyInterface {
-  score(results: GenerationGradeMatrix): GenerationScoreColumn;
+export interface FitnessStrategyInterface {
+  score(results: GenerationMetricsMatrix): GenerationFitnessColumn;
 }
 
-export interface GeneticSortInterface<TGenome extends BaseGenome> {
+export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly bestGenome: TGenome;
-  population: Population<TGenome>
-  step(): Promise<GenerationScoreColumn>;
-}
-
-export interface GeneticSearchInterface<TGenome extends BaseGenome> extends GeneticSortInterface<TGenome> {
   readonly partitions: [number, number, number];
+  population: Population<TGenome>
+  fitStep(): Promise<GenerationFitnessColumn>;
   fit(config: GeneticSearchFitConfig): Promise<void>;
 }

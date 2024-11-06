@@ -7,14 +7,15 @@ import {
   GeneticSearchStrategyConfig,
 } from "../../src";
 import {
-  ParabolaArgumentGenome, ParabolaCachedMultiprocessingRunnerStrategy,
+  ParabolaArgumentGenome, ParabolaCachedMultiprocessingMetricsStrategy,
   ParabolaCrossoverStrategy,
-  ParabolaMultiprocessingRunnerStrategy,
+  ParabolaMultiprocessingMetricsStrategy,
   ParabolaMutationStrategy,
   ParabolaPopulateStrategy, ParabolaTaskConfig,
-  ParabolaTransparentScoringStrategy,
+  ParabolaMaxValueFitnessStrategy,
   // @ts-ignore
 } from "./fixtures";
+import { createNextIdGetter } from "../../src/utils";
 
 describe('Parabola Multiprocessing', () => {
   it('Get Parabola Max Multiprocessing Test', () => {
@@ -29,12 +30,12 @@ describe('Parabola Multiprocessing', () => {
 
     const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
       populate: new ParabolaPopulateStrategy(),
-      runner: new ParabolaMultiprocessingRunnerStrategy({
+      metrics: new ParabolaMultiprocessingMetricsStrategy({
         poolSize: 4,
         task: (x: ParabolaTaskConfig) => Promise.resolve([-((x[1]+12)**2) - 3]),
         onTaskResult: () => void 0,
       }),
-      scoring: new ParabolaTransparentScoringStrategy(),
+      fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),
       crossover: new ParabolaCrossoverStrategy(),
     }
@@ -70,11 +71,11 @@ describe('Parabola Multiprocessing', () => {
 
     const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
       populate: new ParabolaPopulateStrategy(),
-      runner: new ParabolaCachedMultiprocessingRunnerStrategy({
+      metrics: new ParabolaCachedMultiprocessingMetricsStrategy({
         poolSize: 4,
         task: (x: ParabolaTaskConfig) => Promise.resolve([-((x[1]+12)**2) - 3]),
       }),
-      scoring: new ParabolaTransparentScoringStrategy(),
+      fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),
       crossover: new ParabolaCrossoverStrategy(),
     }
@@ -84,6 +85,7 @@ describe('Parabola Multiprocessing', () => {
     return search.fit({
       generationsCount: 100,
       afterStep: () => void 0,
+      stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
     }).then(() => {
       const bestGenome = search.bestGenome;
 
@@ -117,11 +119,11 @@ describe('Parabola Multiprocessing', () => {
 
     const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
       populate: new ParabolaPopulateStrategy(),
-      runner: new ParabolaMultiprocessingRunnerStrategy({
+      metrics: new ParabolaMultiprocessingMetricsStrategy({
         poolSize: 4,
         task: (data: ParabolaTaskConfig) => Promise.resolve([-((data[1]+12)**2) - 3]),
       }),
-      scoring: new ParabolaTransparentScoringStrategy(),
+      fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),
       crossover: new ParabolaCrossoverStrategy(),
     }
@@ -131,6 +133,7 @@ describe('Parabola Multiprocessing', () => {
     return search.fit({
       generationsCount: 20,
       afterStep: () => void 0,
+      stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
     }).then(() => {
       const bestGenome = search.bestGenome;
 
@@ -164,20 +167,21 @@ describe('Parabola Multiprocessing', () => {
 
     const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
       populate: new ParabolaPopulateStrategy(),
-      runner: new ParabolaCachedMultiprocessingRunnerStrategy({
+      metrics: new ParabolaCachedMultiprocessingMetricsStrategy({
         poolSize: 4,
         task: (data: ParabolaTaskConfig) => Promise.resolve([-((data[1]+12)**2) - 3]),
       }),
-      scoring: new ParabolaTransparentScoringStrategy(),
+      fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),
       crossover: new ParabolaCrossoverStrategy(),
     }
 
-    const search = new ComposedGeneticSearch(config, strategies);
+    const search = new ComposedGeneticSearch(config, strategies, createNextIdGetter());
 
     return search.fit({
       generationsCount: 20,
       afterStep: () => void 0,
+      stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
     }).then(() => {
       const bestGenome = search.bestGenome;
 

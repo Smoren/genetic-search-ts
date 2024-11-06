@@ -1,22 +1,22 @@
 import { describe, expect, it } from "@jest/globals";
-import { normalizeGradeMatrix, normalizeGradeRow } from "../../src";
+import { normalizeMetricsMatrix, normalizeMetricsRow } from "../../src";
 // @ts-ignore
 import { expectNumberArrayToBeClose } from "../helpers";
 import { multi } from "itertools-ts";
 
 describe.each([
-  ...dataProviderForNormalizeGradeRow(),
+  ...dataProviderForNormalizeMetricsRow(),
 ] as Array<[number[], number, number[]]>)(
-  'Function normalizeGradeRow Test',
+  'Function normalizeMetricsRow Test',
   (input, mean, expected) => {
     it('', async () => {
-      const actual = normalizeGradeRow(input, mean);
+      const actual = normalizeMetricsRow(input, mean);
       expectNumberArrayToBeClose(actual, expected);
     });
   },
 );
 
-function dataProviderForNormalizeGradeRow(): Array<[number[], number, number[]]> {
+function dataProviderForNormalizeMetricsRow(): Array<[number[], number, number[]]> {
   return [
     [
       [0, 0, 0, 0, 0],
@@ -57,12 +57,12 @@ function dataProviderForNormalizeGradeRow(): Array<[number[], number, number[]]>
 }
 
 describe.each([
-  ...dataProviderForNormalizeGradeMatrix(),
+  ...dataProviderForNormalizeMetricsMatrix(),
 ] as Array<[number[][], number[], number[][]]>)(
-  'Function normalizeGradeMatrix Test',
+  'Function normalizeMetricsMatrix Test',
   (input, mean, expected) => {
     it('', async () => {
-      const actual = normalizeGradeMatrix(input, mean, false);
+      const actual = normalizeMetricsMatrix(input, mean, false);
       for (const [rowActual, rowExpected] of multi.zip(actual, expected)) {
         expectNumberArrayToBeClose(rowActual, rowExpected);
       }
@@ -70,7 +70,7 @@ describe.each([
   },
 );
 
-function dataProviderForNormalizeGradeMatrix(): Array<[number[][], number[], number[][]]> {
+function dataProviderForNormalizeMetricsMatrix(): Array<[number[][], number[], number[][]]> {
   return [
     [
       [],
@@ -169,12 +169,12 @@ function dataProviderForNormalizeGradeMatrix(): Array<[number[][], number[], num
 }
 
 describe.each([
-  ...dataProviderForNormalizeGradeMatrixWithAbs(),
+  ...dataProviderForNormalizeMetricsMatrixWithAbs(),
 ] as Array<[number[][], number[], number[][]]>)(
-  'Function normalizeGradeMatrix With Abs Test',
+  'Function normalizeMetricsMatrix With Abs Test',
   (input, mean, expected) => {
     it('', async () => {
-      const actual = normalizeGradeMatrix(input, mean, true);
+      const actual = normalizeMetricsMatrix(input, mean, true);
       for (const [rowActual, rowExpected] of multi.zip(actual, expected)) {
         expectNumberArrayToBeClose(rowActual, rowExpected);
       }
@@ -182,7 +182,7 @@ describe.each([
   },
 );
 
-function dataProviderForNormalizeGradeMatrixWithAbs(): Array<[number[][], number[], number[][]]> {
+function dataProviderForNormalizeMetricsMatrixWithAbs(): Array<[number[][], number[], number[][]]> {
   return [
     [
       [],
