@@ -5,13 +5,27 @@ type ZipTuple<TValue, TFiller> = {
 };
 
 type Comparable = string | number | boolean | Array<unknown>;
+type Comparator<T> = (lhs: T, rhs: T) => number;
 
-export function* zip<T extends Array<Iterable<unknown>>>(
-  ...iterables: T
-): Iterable<ZipTuple<T, never>> {
+export function* sort<T>(data: Iterable<T>, comparator: Comparator<T>): Iterable<T> {
+  const result = [...data];
+  result.sort(comparator);
+  for (const datum of result) {
+    yield datum;
+  }
+}
+
+export function* repeat<T>(item: T, repetitions: number): Iterable<T> {
+  for (let i = repetitions; i > 0; --i) {
+    yield item;
+  }
+}
+
+export function* zip<T extends Array<Iterable<unknown>>>(...iterables: T): Iterable<ZipTuple<T, never>> {
+  const iterators = iterables.map(iterable => iterable[Symbol.iterator]());
+
   iterate: while (true) {
     const tuple = [];
-    const iterators = iterables.map(iterable => iterable[Symbol.iterator]());
 
     for (const iterator of iterators) {
       const next = iterator.next();
@@ -25,7 +39,7 @@ export function* zip<T extends Array<Iterable<unknown>>>(
   }
 }
 
-export function* distinct<T>(
+export function* distinctBy<T>(
   data: Iterable<T>,
   compareBy: (datum: T) => Comparable,
 ): Iterable<T> {

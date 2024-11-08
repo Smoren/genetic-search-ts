@@ -1,4 +1,3 @@
-import { set, single } from "itertools-ts";
 import {
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
@@ -11,7 +10,7 @@ import {
   ComposedGeneticSearchConfig,
 } from "./types";
 import { createNextIdGetter, getRandomArrayItem } from "./utils";
-import { zip } from "./itertools";
+import { zip, distinctBy, sort, repeat } from "./itertools";
 
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   protected readonly config: GeneticSearchConfig;
@@ -72,11 +71,11 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
   protected sortPopulation(scores: GenerationFitnessColumn): [Population<TGenome>, GenerationFitnessColumn] {
     const zipped = zip(this._population, scores);
-    const sorted = single.sort(zipped, (lhs, rhs) => rhs[1] - lhs[1]);
+    const sorted = sort(zipped, (lhs, rhs) => rhs[1] - lhs[1]);
     const sortedArray = [...sorted];
     return [
-      [...single.map(sortedArray, (x) => x[0])],
-      [...single.map(sortedArray, (x) => x[1])],
+      sortedArray.map((x) => x[0]),
+      sortedArray.map((x) => x[1]),
     ];
   }
 
@@ -126,7 +125,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     nextIdGetter?: NextIdGetter,
   ) {
     nextIdGetter = nextIdGetter ?? createNextIdGetter();
-    this.eliminators = [...single.repeat(
+    this.eliminators = [...repeat(
       () => new GeneticSearch(config.eliminators, this.cloneStrategy(strategy), nextIdGetter),
       config.final.populationSize,
     )].map((factory) => factory());
@@ -180,7 +179,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
       await eliminators.fitStep();
     }
 
-    this.final.population = [...set.distinct([...this.final.population, ...this.bestGenomes], (x) => x.id)];
+    this.final.population = [...distinctBy([...this.final.population, ...this.bestGenomes], (x) => x.id)];
     return await this.final.fitStep();
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "genetic-search",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Multiprocessing genetic algorithm implementation library",
   "license": "MIT",
   "repository": {
@@ -44,8 +44,7 @@
     "multiprocessing"
   ],
   "dependencies": {
-    "itertools-ts": "^1.27",
-    "multiprocess-pool": "^1.4.5"
+    "multiprocess-pool": "^1.4"
   },
   "devDependencies": {
     "@borderless/ts-scripts": "^0.13.6",

@@ -1,5 +1,4 @@
 import { Pool } from 'multiprocess-pool';
-import { multi } from 'itertools-ts';
 import {
   BaseGenome,
   Population,
@@ -15,6 +14,7 @@ import {
   GenerationFitnessColumn,
 } from "./types";
 import { normalizeMetricsMatrix, arrayBinaryOperation, arraySum } from "./utils";
+import { zip } from "./itertools";
 
 export abstract class BaseMutationStrategy<
   TGenome extends BaseGenome,
@@ -99,7 +99,7 @@ export abstract class BaseCachedMultiprocessingMetricsStrategy<
     const inputsToRun = inputs.filter((input) => resultsMap.get(this.getGenomeId(input)) === undefined);
     const newResults = await super.execTask(inputsToRun);
 
-    for (const [input, result] of multi.zip(inputsToRun, newResults)) {
+    for (const [input, result] of zip(inputsToRun, newResults)) {
       this.cache.set(this.getGenomeId(input), result);
       resultsMap.set(this.getGenomeId(input), result);
     }

@@ -1,8 +1,8 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, it } from "@jest/globals";
 import { normalizeMetricsMatrix, normalizeMetricsRow } from "../../src";
 // @ts-ignore
 import { expectNumberArrayToBeClose } from "../helpers";
-import { multi } from "itertools-ts";
+import { zip } from "../../src/itertools";
 
 describe.each([
   ...dataProviderForNormalizeMetricsRow(),
@@ -63,7 +63,7 @@ describe.each([
   (input, mean, expected) => {
     it('', async () => {
       const actual = normalizeMetricsMatrix(input, mean, false);
-      for (const [rowActual, rowExpected] of multi.zip(actual, expected)) {
+      for (const [rowActual, rowExpected] of zip(actual, expected)) {
         expectNumberArrayToBeClose(rowActual, rowExpected);
       }
     });
@@ -175,7 +175,7 @@ describe.each([
   (input, mean, expected) => {
     it('', async () => {
       const actual = normalizeMetricsMatrix(input, mean, true);
-      for (const [rowActual, rowExpected] of multi.zip(actual, expected)) {
+      for (const [rowActual, rowExpected] of zip(actual, expected)) {
         expectNumberArrayToBeClose(rowActual, rowExpected);
       }
     });
