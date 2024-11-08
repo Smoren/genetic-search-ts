@@ -1,4 +1,4 @@
-import { multi, set, single } from "itertools-ts";
+import { set, single } from "itertools-ts";
 import {
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
@@ -11,6 +11,7 @@ import {
   ComposedGeneticSearchConfig,
 } from "./types";
 import { createNextIdGetter, getRandomArrayItem } from "./utils";
+import { zip } from "./itertools";
 
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   protected readonly config: GeneticSearchConfig;
@@ -70,7 +71,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   protected sortPopulation(scores: GenerationFitnessColumn): [Population<TGenome>, GenerationFitnessColumn] {
-    const zipped = multi.zipEqual(this._population, scores);
+    const zipped = zip(this._population, scores);
     const sorted = single.sort(zipped, (lhs, rhs) => rhs[1] - lhs[1]);
     const sortedArray = [...sorted];
     return [
