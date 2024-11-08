@@ -49,6 +49,9 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
+      if (config.beforeStep) {
+        config.beforeStep(i);
+      }
       const result = await this.fitStep();
       if (config.afterStep) {
         config.afterStep(i, result);
@@ -164,6 +167,9 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
+      if (config.beforeStep) {
+        config.beforeStep(i);
+      }
       const result = await this.fitStep();
       if (config.afterStep) {
         config.afterStep(i, result);

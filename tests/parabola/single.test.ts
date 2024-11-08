@@ -48,6 +48,7 @@ describe.each([
 
       await search.fit({
         generationsCount: 100,
+        beforeStep: () => void 0,
         afterStep: () => void 0,
         stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
       });
@@ -94,6 +95,7 @@ describe.each([
 
       await search.fit({
         generationsCount: 100,
+        beforeStep: () => void 0,
         afterStep: () => void 0,
       });
 
@@ -146,6 +148,7 @@ describe.each([
 
       await search.fit({
         generationsCount: 100,
+        beforeStep: () => void 0,
         afterStep: () => void 0,
       });
 

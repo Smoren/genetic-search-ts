@@ -11,7 +11,8 @@ export type GenerationFitnessColumn = number[];
 export type GenerationMetricsMatrix = GenomeMetricsRow[];
 
 export type CalcMetricsTask<TTaskConfig> = (data: TTaskConfig) => Promise<GenomeMetricsRow>;
-export type GenerationCallback = (generation: number, scores: GenerationFitnessColumn) => void;
+export type GenerationBeforeCallback = (generation: number) => void;
+export type GenerationAfterCallback = (generation: number, scores: GenerationFitnessColumn) => void;
 
 export type GeneticSearchConfig = {
   populationSize: number;
@@ -21,7 +22,8 @@ export type GeneticSearchConfig = {
 
 export type GeneticSearchFitConfig = {
   generationsCount: number;
-  afterStep?: GenerationCallback;
+  beforeStep?: GenerationBeforeCallback;
+  afterStep?: GenerationAfterCallback;
   stopCondition?: (scores: GenerationFitnessColumn) => boolean;
 }
 

@@ -44,6 +44,7 @@ describe('Parabola Multiprocessing', () => {
 
     return search.fit({
       generationsCount: 100,
+      beforeStep: () => void 0,
       afterStep: () => void 0,
     }).then(() => {
       const bestGenome = search.bestGenome;
