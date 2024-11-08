@@ -35,12 +35,15 @@
     "tests"
   ],
   "keywords": [
+    "genetic algorithm",
+    "genetic-algorithm",
     "algorithm",
     "evolutionary-programming",
     "genetic",
     "heuristic",
     "heuristic-search",
     "search-algorithm",
+    "machine-learning",
     "multiprocessing"
   ],
   "dependencies": {
