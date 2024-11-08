@@ -47,8 +47,9 @@ const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
 const search = new GeneticSearch(config, strategies);
 await search.fit({
   generationsCount: 100,
+  beforeStep: (generation) => console.log(`Generation ${generation} started`),
   afterStep: (generation, scores) => console.log(
-    `generation: ${generation+1}, best id: #${search.bestGenome.id}, best score: ${scores[0]}`
+    `generation: ${generation+1}, best id: #${search.bestGenome.id}, best score: ${scores[0]}`,
   ),
 });
 
