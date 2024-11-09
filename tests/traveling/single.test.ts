@@ -18,6 +18,8 @@ import {
   getPermutations,
   // @ts-ignore
 } from "./fixtures";
+// @ts-ignore
+import { dataProviderForTravelingSalesman } from "./data";
 
 describe.each([
   ...dataProviderForTravelingSalesman(),
@@ -97,49 +99,3 @@ describe.each([
     });
   },
 );
-
-function dataProviderForTravelingSalesman(): Array<[number[][]]> {
-  return [
-    [
-      [
-        [0, 10, 15, 20],
-        [10, 0, 35, 25],
-        [15, 35, 0, 30],
-        [20, 25, 30, 0],
-      ],
-    ],
-    [
-      [
-        [0, 2, 9, 10],
-        [1, 0, 6, 4],
-        [15, 7, 0, 8],
-        [6, 3, 12, 0],
-      ]
-    ],
-    [
-      [
-        [0, 29, 20, 21],
-        [29, 0, 15, 17],
-        [20, 15, 0, 28],
-        [21, 17, 28, 0],
-      ],
-    ],
-    [
-      [
-        [0, 3, 4, 2],
-        [3, 0, 4, 6],
-        [4, 4, 0, 7],
-        [2, 6, 7, 0],
-      ],
-    ],
-    [
-      [
-        [0, 1, 2, 3, 4],
-        [1, 0, 5, 6, 7],
-        [2, 5, 0, 8, 9],
-        [3, 6, 8, 0, 10],
-        [4, 7, 9, 10, 0],
-      ],
-    ],
-  ];
-}

@@ -7,11 +7,13 @@ import {
   GeneticSearchStrategyConfig,
 } from "../../src";
 import {
-  ParabolaArgumentGenome, ParabolaCachedMultiprocessingMetricsStrategy,
+  ParabolaArgumentGenome,
+  ParabolaCachedMultiprocessingMetricsStrategy,
   ParabolaCrossoverStrategy,
   ParabolaMultiprocessingMetricsStrategy,
   ParabolaMutationStrategy,
-  ParabolaPopulateStrategy, ParabolaTaskConfig,
+  ParabolaPopulateStrategy,
+  ParabolaTaskConfig,
   ParabolaMaxValueFitnessStrategy,
   // @ts-ignore
 } from "./fixtures";
