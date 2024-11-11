@@ -63,8 +63,29 @@ describe.each([
       const population = search.population;
       expect(population.length).toBe(100);
 
-      search.population = population;
-      expect(search.population).toEqual(population);
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, true);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, false);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, true);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+      }
     });
   },
 );
@@ -109,8 +130,29 @@ describe.each([
       const population = search.population;
       expect(population.length).toBe(100);
 
-      search.population = population;
-      expect(search.population).toEqual(population);
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, true);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, false);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, true);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+      }
     });
   },
 );
@@ -162,8 +204,29 @@ describe.each([
       const population = search.population;
       expect(population.length).toBe(100);
 
-      search.population = population;
-      expect(search.population).toEqual(population);
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, true);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, false);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, true);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+      }
     });
   },
 );

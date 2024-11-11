@@ -57,7 +57,7 @@ describe('Parabola Multiprocessing', () => {
       const population = search.population;
       expect(population.length).toBe(100);
 
-      search.population = population;
+      search.setPopulation(population, true);
       expect(search.population).toEqual(population);
     });
   }, 30000);
@@ -98,7 +98,7 @@ describe('Parabola Multiprocessing', () => {
       const population = search.population;
       expect(population.length).toBe(100);
 
-      search.population = population;
+      search.setPopulation(population, false);
       expect(search.population).toEqual(population);
     });
   }, 30000);
@@ -146,7 +146,7 @@ describe('Parabola Multiprocessing', () => {
       const population = search.population;
       expect(population.length).toBe(100);
 
-      search.population = population;
+      search.setPopulation(population, false);
       expect(search.population).toEqual(population);
     });
   }, 30000);
@@ -194,7 +194,7 @@ describe('Parabola Multiprocessing', () => {
       const population = search.population;
       expect(population.length).toBe(100);
 
-      search.population = population;
+      search.setPopulation(population, false);
       expect(search.population).toEqual(population);
     });
   }, 30000);

@@ -33,8 +33,15 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return this._population;
   }
 
-  public set population(population: Population<TGenome>) {
-    this._population = population;
+  public setPopulation(population: Population<TGenome>, renewIds: boolean = true): void {
+    if (renewIds) {
+      this._population = population.map((genome) => {
+        genome.id = this.nextId();
+        return genome;
+      });
+    } else {
+      this._population = population;
+    }
   }
 
   public get partitions(): [number, number, number] {
@@ -147,9 +154,9 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     return result;
   }
 
-  public set population(population: Population<TGenome>) {
+  public setPopulation(population: Population<TGenome>, renewIds: boolean = true): void {
     for (const eliminator of this.eliminators) {
-      eliminator.population = population.slice(0, eliminator.population.length);
+      eliminator.setPopulation(population.slice(0, eliminator.population.length), renewIds);
       population = population.slice(eliminator.population.length);
     }
   }
@@ -185,7 +192,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
       await eliminators.fitStep();
     }
 
-    this.final.population = [...distinctBy([...this.final.population, ...this.bestGenomes], (x) => x.id)];
+    this.final.setPopulation([...distinctBy([...this.final.population, ...this.bestGenomes], (x) => x.id)], false);
     return await this.final.fitStep();
   }
 

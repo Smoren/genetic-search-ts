@@ -82,7 +82,8 @@ export interface FitnessStrategyInterface {
 export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly bestGenome: TGenome;
   readonly partitions: [number, number, number];
-  population: Population<TGenome>
+  readonly population: Population<TGenome>
+  setPopulation(population: Population<TGenome>, renewIds?: boolean): void;
   fitStep(): Promise<GenerationFitnessColumn>;
   fit(config: GeneticSearchFitConfig): Promise<void>;
 }
