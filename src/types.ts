@@ -83,7 +83,7 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly bestGenome: TGenome;
   readonly partitions: [number, number, number];
   readonly population: Population<TGenome>
-  setPopulation(population: Population<TGenome>, renewIds?: boolean): void;
+  setPopulation(population: Population<TGenome>, renewIds: boolean): void;
   fitStep(): Promise<GenerationFitnessColumn>;
   fit(config: GeneticSearchFitConfig): Promise<void>;
 }
