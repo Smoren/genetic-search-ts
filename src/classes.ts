@@ -148,6 +148,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
 
   public get population(): Population<TGenome> {
     const result: Population<TGenome> = [];
+    result.push(...this.final.population);
     for (const eliminators of this.eliminators) {
       result.push(...eliminators.population);
     }
@@ -155,6 +156,8 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   }
 
   public setPopulation(population: Population<TGenome>, renewIds: boolean = true): void {
+    this.final.setPopulation(population.slice(0, this.final.population.length), renewIds);
+    population = population.slice(this.final.population.length);
     for (const eliminator of this.eliminators) {
       eliminator.setPopulation(population.slice(0, eliminator.population.length), renewIds);
       population = population.slice(eliminator.population.length);

@@ -202,7 +202,7 @@ describe.each([
       expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
 
       const population = search.population;
-      expect(population.length).toBe(100);
+      expect(population.length).toBe(110);
 
       {
         const oldFirstIdx = population[0].id;
