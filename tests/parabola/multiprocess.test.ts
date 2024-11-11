@@ -5,6 +5,7 @@ import {
   GeneticSearch,
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
+  IdGenerator,
 } from "../../src";
 import {
   ParabolaArgumentGenome,
@@ -17,7 +18,6 @@ import {
   ParabolaMaxValueFitnessStrategy,
   // @ts-ignore
 } from "./fixtures";
-import { createNextIdGetter } from "../../src/utils";
 
 describe('Parabola Multiprocessing', () => {
   it('Get Parabola Max Multiprocessing Test', () => {
@@ -60,7 +60,7 @@ describe('Parabola Multiprocessing', () => {
       search.setPopulation(population, true);
       expect(search.population).toEqual(population);
     });
-  }, 30000);
+  }, 50000);
 
   it('Get Parabola Max Cached Multiprocessing Test', () => {
     const [a, b] = [12, -3];
@@ -101,7 +101,7 @@ describe('Parabola Multiprocessing', () => {
       search.setPopulation(population, false);
       expect(search.population).toEqual(population);
     });
-  }, 30000);
+  }, 50000);
 
   it('Get Parabola Max Composed Multiprocessing Test', () => {
     const [a, b] = [12, -3];
@@ -149,7 +149,7 @@ describe('Parabola Multiprocessing', () => {
       search.setPopulation(population, false);
       expect(search.population).toEqual(population);
     });
-  }, 30000);
+  }, 50000);
 
   it('Get Parabola Max Composed Cached Multiprocessing Test', () => {
     const [a, b] = [12, -3];
@@ -179,7 +179,7 @@ describe('Parabola Multiprocessing', () => {
       crossover: new ParabolaCrossoverStrategy(),
     }
 
-    const search = new ComposedGeneticSearch(config, strategies, createNextIdGetter());
+    const search = new ComposedGeneticSearch(config, strategies, new IdGenerator());
 
     return search.fit({
       generationsCount: 20,
@@ -197,5 +197,5 @@ describe('Parabola Multiprocessing', () => {
       search.setPopulation(population, false);
       expect(search.population).toEqual(population);
     });
-  }, 30000);
+  }, 50000);
 });

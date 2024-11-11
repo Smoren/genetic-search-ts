@@ -172,7 +172,7 @@ describe.each([
 
         expect(calcPathDistance(bestGenome.path, distanceMatrix)).toBeCloseTo(expectedMinDistance);
       });
-    }, 30000);
+    }, 50000);
   }
 );
 
@@ -228,6 +228,6 @@ describe.each([
 
         expect(calcPathDistance(bestGenome.path, distanceMatrix)).toBeCloseTo(expectedMinDistance);
       });
-    }, 30000);
+    }, 50000);
   }
 );

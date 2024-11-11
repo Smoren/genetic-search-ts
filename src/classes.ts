@@ -5,22 +5,38 @@ import {
   GenerationFitnessColumn,
   Population,
   BaseGenome,
-  NextIdGetter,
   GeneticSearchFitConfig,
   ComposedGeneticSearchConfig,
+  IdGeneratorInterface,
 } from "./types";
-import { createNextIdGetter, getRandomArrayItem } from "./utils";
+import { getRandomArrayItem } from "./utils";
 import { zip, distinctBy, sort, repeat } from "./itertools";
+
+export class IdGenerator<TGenome extends BaseGenome> implements IdGeneratorInterface<TGenome> {
+  private id: number = 1;
+
+  nextId(): number {
+    return this.id++;
+  }
+
+  reset(population: TGenome[]): void {
+    this.id = population.reduce((max, genome) => Math.max(max, genome.id), 0) + 1;
+  }
+}
 
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   protected readonly config: GeneticSearchConfig;
   protected readonly strategy: GeneticSearchStrategyConfig<TGenome>;
-  protected readonly nextId: NextIdGetter;
+  protected readonly idGenerator: IdGeneratorInterface<TGenome>;
   protected _population: Population<TGenome>;
 
-  constructor(config: GeneticSearchConfig, strategy: GeneticSearchStrategyConfig<TGenome>, nextIdGetter?: NextIdGetter) {
-    this.nextId = nextIdGetter ?? createNextIdGetter();
-    this._population = strategy.populate.populate(config.populationSize, this.nextId);
+  constructor(
+    config: GeneticSearchConfig,
+    strategy: GeneticSearchStrategyConfig<TGenome>,
+    idGenerator?: IdGeneratorInterface<TGenome>,
+  ) {
+    this.idGenerator = idGenerator ?? new IdGenerator();
+    this._population = strategy.populate.populate(config.populationSize, this.idGenerator);
     this.strategy = strategy;
     this.config = config;
   }
@@ -33,15 +49,15 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return this._population;
   }
 
-  public setPopulation(population: Population<TGenome>, renewIds: boolean = true): void {
-    if (renewIds) {
-      this._population = population.map((genome) => {
-        genome.id = this.nextId();
-        return genome;
-      });
-    } else {
-      this._population = population;
+  public set population(population: Population<TGenome>) {
+    this.setPopulation(population);
+  }
+
+  public setPopulation(population: Population<TGenome>, resetIdGenerator: boolean = true): void {
+    if (resetIdGenerator) {
+      this.idGenerator.reset(this._population);
     }
+    this._population = population;
   }
 
   public get partitions(): [number, number, number] {
@@ -95,7 +111,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     for (let i = 0; i < count; i++) {
       const lhs = getRandomArrayItem(genomes);
       const rhs = getRandomArrayItem(genomes);
-      const crossedGenome = this.strategy.crossover.cross(lhs, rhs, this.nextId());
+      const crossedGenome = this.strategy.crossover.cross(lhs, rhs, this.idGenerator.nextId());
       newPopulation.push(crossedGenome);
     }
 
@@ -107,7 +123,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     for (let i = 0; i < count; i++) {
       const genome = getRandomArrayItem(genomes);
-      const mutatedGenome = this.strategy.mutation.mutate(genome, this.nextId());
+      const mutatedGenome = this.strategy.mutation.mutate(genome, this.idGenerator.nextId());
       newPopulation.push(mutatedGenome);
     }
 
@@ -128,18 +144,19 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 export class ComposedGeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   private readonly eliminators: GeneticSearchInterface<TGenome>[];
   private readonly final: GeneticSearchInterface<TGenome>;
+  private readonly idGenerator: IdGeneratorInterface<TGenome>;
 
   constructor(
     config: ComposedGeneticSearchConfig,
     strategy: GeneticSearchStrategyConfig<TGenome>,
-    nextIdGetter?: NextIdGetter,
+    idGenerator?: IdGenerator<TGenome>,
   ) {
-    nextIdGetter = nextIdGetter ?? createNextIdGetter();
+    this.idGenerator = idGenerator ?? new IdGenerator<TGenome>();
     this.eliminators = [...repeat(
-      () => new GeneticSearch(config.eliminators, this.cloneStrategy(strategy), nextIdGetter),
+      () => new GeneticSearch(config.eliminators, this.cloneStrategy(strategy), this.idGenerator),
       config.final.populationSize,
     )].map((factory) => factory());
-    this.final = new GeneticSearch(config.final, this.cloneStrategy(strategy), nextIdGetter);
+    this.final = new GeneticSearch(config.final, this.cloneStrategy(strategy), this.idGenerator);
   }
 
   public get bestGenome(): TGenome {
@@ -155,11 +172,18 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     return result;
   }
 
-  public setPopulation(population: Population<TGenome>, renewIds: boolean = true): void {
-    this.final.setPopulation(population.slice(0, this.final.population.length), renewIds);
+  public set population(population: Population<TGenome>) {
+    this.setPopulation(population);
+  }
+
+  public setPopulation(population: Population<TGenome>, resetIdGenerator: boolean = true): void {
+    if (resetIdGenerator) {
+      this.idGenerator.reset(population);
+    }
+    this.final.setPopulation(population.slice(0, this.final.population.length), false);
     population = population.slice(this.final.population.length);
     for (const eliminator of this.eliminators) {
-      eliminator.setPopulation(population.slice(0, eliminator.population.length), renewIds);
+      eliminator.setPopulation(population.slice(0, eliminator.population.length), false);
       population = population.slice(eliminator.population.length);
     }
   }

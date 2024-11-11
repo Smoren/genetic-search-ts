@@ -11,9 +11,9 @@ import {
   MetricsStrategyConfig,
   MultiprocessingMetricsStrategyConfig,
   MutationStrategyInterface,
-  NextIdGetter,
   PopulateStrategyInterface,
   Population,
+  IdGeneratorInterface,
 } from "../../src";
 
 export type TravelingGenome = BaseGenome & {
@@ -63,11 +63,11 @@ export class TravelingPopulateStrategy implements PopulateStrategyInterface<Trav
     this.pathSize = pathSize;
   }
 
-  populate(size: number, nextIdGetter: NextIdGetter): Population<TravelingGenome> {
+  populate(size: number, idGenerator: IdGeneratorInterface<TravelingGenome>): Population<TravelingGenome> {
     const population = [];
     for (let i = 0; i < size; i++) {
       const path = Array.from({length: this.pathSize}, (_, index) => index).sort();
-      population.push({id: nextIdGetter(), path});
+      population.push({id: idGenerator.nextId(), path});
     }
     return population;
   }

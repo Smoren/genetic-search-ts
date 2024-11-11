@@ -11,9 +11,9 @@ import {
   MetricsStrategyConfig,
   FitnessStrategyInterface,
   MultiprocessingMetricsStrategyConfig,
-  NextIdGetter,
   BaseMutationStrategy,
   BaseMutationStrategyConfig,
+  IdGeneratorInterface,
 } from "../../src";
 
 export type ParabolaArgumentGenome = BaseGenome & {
@@ -28,10 +28,10 @@ function createRandomParabolaArgument(id: number): ParabolaArgumentGenome {
 }
 
 export class ParabolaPopulateStrategy implements PopulateStrategyInterface<ParabolaArgumentGenome> {
-  populate(size: number, nextIdGetter: NextIdGetter): ParabolaArgumentGenome[] {
+  populate(size: number, idGenerator: IdGeneratorInterface<ParabolaArgumentGenome>): ParabolaArgumentGenome[] {
     const result: ParabolaArgumentGenome[] = [];
     for (let i=0; i<size; ++i) {
-      result.push(createRandomParabolaArgument(nextIdGetter()));
+      result.push(createRandomParabolaArgument(idGenerator.nextId()));
     }
     return result;
   }

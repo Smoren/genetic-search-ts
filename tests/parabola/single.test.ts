@@ -1,10 +1,13 @@
 import { describe, expect, it } from "@jest/globals";
-import {
-  ComposedGeneticSearch,
+import type {
   ComposedGeneticSearchConfig,
-  GeneticSearch,
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
+} from "../../src";
+import {
+  ComposedGeneticSearch,
+  GeneticSearch,
+  IdGenerator,
 } from "../../src";
 import {
   ParabolaArgumentGenome,
@@ -17,7 +20,6 @@ import {
   ParabolaTaskConfig,
   // @ts-ignore
 } from "./fixtures";
-import { createNextIdGetter } from "../../src/utils";
 // @ts-ignore
 import { dataProviderForGetParabolaMax } from "./data";
 
@@ -44,7 +46,7 @@ describe.each([
         crossover: new ParabolaCrossoverStrategy(),
       }
 
-      const search = new GeneticSearch(config, strategies, createNextIdGetter());
+      const search = new GeneticSearch(config, strategies, new IdGenerator());
 
       expect(search.partitions).toEqual([50, 25, 25]);
 
@@ -68,7 +70,7 @@ describe.each([
         search.setPopulation(population);
         const newFirstIdx = search.population[0].id;
         expect(search.population).toEqual(population);
-        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
       }
 
       {
@@ -84,7 +86,7 @@ describe.each([
         search.setPopulation(population, true);
         const newFirstIdx = search.population[0].id;
         expect(search.population).toEqual(population);
-        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
       }
     });
   },
@@ -135,7 +137,7 @@ describe.each([
         search.setPopulation(population);
         const newFirstIdx = search.population[0].id;
         expect(search.population).toEqual(population);
-        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
       }
 
       {
@@ -151,7 +153,15 @@ describe.each([
         search.setPopulation(population, true);
         const newFirstIdx = search.population[0].id;
         expect(search.population).toEqual(population);
-        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.population = population;
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
       }
     });
   },
@@ -209,7 +219,7 @@ describe.each([
         search.setPopulation(population);
         const newFirstIdx = search.population[0].id;
         expect(search.population).toEqual(population);
-        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
       }
 
       {
@@ -225,7 +235,15 @@ describe.each([
         search.setPopulation(population, true);
         const newFirstIdx = search.population[0].id;
         expect(search.population).toEqual(population);
-        expect(oldFirstIdx).not.toEqual(newFirstIdx);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.population = population;
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
       }
     });
   },

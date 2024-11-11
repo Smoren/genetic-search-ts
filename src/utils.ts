@@ -1,4 +1,4 @@
-import { GenerationMetricsMatrix, GenomeMetricsRow, NextIdGetter } from "./types";
+import { GenerationMetricsMatrix, GenomeMetricsRow } from "./types";
 
 export const fullCopyObject = <T extends Record<string, any>>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
 
@@ -15,13 +15,6 @@ export function arrayBinaryOperation<T>(lhs: Array<T>, rhs: Array<T>, operator: 
   }
 
   return result;
-}
-
-export function createNextIdGetter(): NextIdGetter {
-  return (() => {
-    let id = 0;
-    return () => ++id;
-  })();
 }
 
 export function getRandomArrayItem<T>(input: T[]): T {

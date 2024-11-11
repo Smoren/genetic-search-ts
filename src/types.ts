@@ -4,8 +4,6 @@ export type BaseGenome = {
 
 export type Population<TGenome extends BaseGenome> = TGenome[];
 
-export type NextIdGetter = () => number;
-
 export type GenomeMetricsRow = number[];
 export type GenerationFitnessColumn = number[];
 export type GenerationMetricsMatrix = GenomeMetricsRow[];
@@ -59,7 +57,7 @@ export type GeneticSearchReferenceConfig = {
 };
 
 export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
-  populate(size: number, nextIdGetter: NextIdGetter): Population<TGenome>;
+  populate(size: number, idGenerator: IdGeneratorInterface<TGenome>): Population<TGenome>;
 }
 
 export interface MutationStrategyInterface<TGenome extends BaseGenome> {
@@ -82,8 +80,13 @@ export interface FitnessStrategyInterface {
 export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly bestGenome: TGenome;
   readonly partitions: [number, number, number];
-  readonly population: Population<TGenome>
-  setPopulation(population: Population<TGenome>, renewIds: boolean): void;
+  population: Population<TGenome>
+  setPopulation(population: Population<TGenome>, resetIdGenerator: boolean): void;
   fitStep(): Promise<GenerationFitnessColumn>;
   fit(config: GeneticSearchFitConfig): Promise<void>;
+}
+
+export interface IdGeneratorInterface<TGenome extends BaseGenome> {
+  nextId(): number;
+  reset(population: TGenome[]): void;
 }

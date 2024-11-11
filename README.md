@@ -20,11 +20,8 @@ Usage example
 Let's get a max value of the parabola: `y = -(x-12)^2 - 3`.
 
 ```typescript
-import {
-  GeneticSearchConfig,
-  GeneticSearchStrategyConfig,
-  GeneticSearch,
-} from "genetic-search";
+import type { GeneticSearchStrategyConfig, GeneticSearchConfig } from "../src";
+import { GeneticSearch } from "../src";
 
 const config: GeneticSearchConfig = {
   populationSize: 100,
@@ -60,22 +57,19 @@ console.log('Best genome:', bestGenome);
 Strategies implementation:
 
 ```typescript
-import {
+import type {
   BaseGenome,
-  BaseMultiprocessingMetricsStrategy,
-  BaseCachedMultiprocessingMetricsStrategy,
-  BaseMetricsStrategy,
-  GenerationMetricsMatrix,
-  CrossoverStrategyInterface,
-  GenerationFitnessColumn,
-  PopulateStrategyInterface,
-  ReferenceLossFitnessStrategy,
-  MetricsStrategyConfig,
-  FitnessStrategyInterface,
   MultiprocessingMetricsStrategyConfig,
-  NextIdGetter,
-  BaseMutationStrategy,
-  BaseMutationStrategyConfig,
+  GenerationFitnessColumn,
+  CrossoverStrategyInterface,
+  FitnessStrategyInterface,
+  GenerationMetricsMatrix,
+  MutationStrategyInterface,
+  PopulateStrategyInterface,
+  IdGeneratorInterface,
+} from "genetic-search";
+import {
+  BaseCachedMultiprocessingMetricsStrategy,
 } from "genetic-search";
 
 export type ParabolaArgumentGenome = BaseGenome & {
@@ -86,10 +80,10 @@ export type ParabolaArgumentGenome = BaseGenome & {
 export type ParabolaTaskConfig = [number, number];
 
 export class ParabolaPopulateStrategy implements PopulateStrategyInterface<ParabolaArgumentGenome> {
-  populate(size: number, nextIdGetter: NextIdGetter): ParabolaArgumentGenome[] {
+  populate(size: number, idGenerator: IdGeneratorInterface<ParabolaArgumentGenome>): ParabolaArgumentGenome[] {
     const result: ParabolaArgumentGenome[] = [];
-    for (let i=0; i<size; ++i) {
-      result.push({ id: nextIdGetter(), x: Math.random() * 200 - 100 });
+    for (let i = 0; i < size; ++i) {
+      result.push({id: idGenerator.nextId(), x: Math.random() * 200 - 100});
     }
     return result;
   }
@@ -97,13 +91,13 @@ export class ParabolaPopulateStrategy implements PopulateStrategyInterface<Parab
 
 export class ParabolaMutationStrategy implements MutationStrategyInterface<ParabolaArgumentGenome> {
   mutate(genome: ParabolaArgumentGenome, newGenomeId: number): ParabolaArgumentGenome {
-    return { x: genome.x + Math.random() * 10 - 5, id: newGenomeId };
+    return {x: genome.x + Math.random() * 10 - 5, id: newGenomeId};
   }
 }
 
 export class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<ParabolaArgumentGenome> {
   cross(lhs: ParabolaArgumentGenome, rhs: ParabolaArgumentGenome, newGenomeId: number): ParabolaArgumentGenome {
-    return { x: (lhs.x + rhs.x) / 2, id: newGenomeId };
+    return {x: (lhs.x + rhs.x) / 2, id: newGenomeId};
   }
 }
 
@@ -122,9 +116,7 @@ export class ParabolaMaxValueFitnessStrategy implements FitnessStrategyInterface
     return results.map((result) => result[0]);
   }
 }
-
 ```
-
 
 Unit testing
 ------------

@@ -20,12 +20,13 @@ import type {
   MetricsStrategyInterface,
   FitnessStrategyInterface,
   GeneticSearchInterface,
-  NextIdGetter,
+  IdGeneratorInterface,
 } from "./types";
 
 import {
   GeneticSearch,
   ComposedGeneticSearch,
+  IdGenerator,
 } from "./classes";
 
 import {
@@ -63,7 +64,7 @@ export type {
   MetricsStrategyInterface,
   FitnessStrategyInterface,
   GeneticSearchInterface,
-  NextIdGetter,
+  IdGeneratorInterface,
 };
 
 export {
@@ -74,6 +75,7 @@ export {
   BaseMultiprocessingMetricsStrategy,
   BaseCachedMultiprocessingMetricsStrategy,
   ReferenceLossFitnessStrategy,
+  IdGenerator,
   normalizeMetricsRow,
   normalizeMetricsMatrix,
 }
