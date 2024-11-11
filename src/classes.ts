@@ -55,7 +55,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
   public setPopulation(population: Population<TGenome>, resetIdGenerator: boolean = true): void {
     if (resetIdGenerator) {
-      this.idGenerator.reset(this._population);
+      this.idGenerator.reset(population);
     }
     this._population = population;
   }
