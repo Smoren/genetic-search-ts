@@ -132,7 +132,7 @@ describe.each([
 
       {
         const oldFirstIdx = population[0].id;
-        search.setPopulation(population, true);
+        search.setPopulation(population);
         const newFirstIdx = search.population[0].id;
         expect(search.population).toEqual(population);
         expect(oldFirstIdx).not.toEqual(newFirstIdx);
