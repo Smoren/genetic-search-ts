@@ -97,4 +97,6 @@ export interface MetricsCacheInterface {
   get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined;
   set(genomeId: number, metrics: GenomeMetricsRow): void;
   clear(excludeGenomeIds: number[]): void;
+  export(): Record<number, unknown>;
+  import(data: Record<number, unknown>): void;
 }

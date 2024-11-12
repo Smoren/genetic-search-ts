@@ -1,19 +1,27 @@
 import { GenomeMetricsRow, MetricsCacheInterface } from "./types";
 
 export class DummyMetricsCache implements MetricsCacheInterface {
+  ready(_: number): GenomeMetricsRow | undefined {
+    return undefined;
+  }
+
   get(_: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined {
     return defaultValue;
   }
 
-  ready(): GenomeMetricsRow | undefined {
-    return undefined;
-  }
-
-  set(): void {
+  set(_: number, __: GenomeMetricsRow): void {
     return;
   }
 
-  clear(): void {
+  clear(_: number[]): void {
+    return;
+  }
+
+  export(): Record<number, never> {
+    return {};
+  }
+
+  import(_: Record<number, never>): void {
     return;
   }
 }
@@ -41,6 +49,17 @@ export class SimpleMetricsCache implements MetricsCacheInterface {
       if (!excludeIdsSet.has(id)) {
         this.cache.delete(id);
       }
+    }
+  }
+
+  export(): Record<number, GenomeMetricsRow> {
+    return Object.fromEntries(this.cache);
+  }
+
+  import(data: Record<number, GenomeMetricsRow>): void {
+    this.cache.clear();
+    for (const [id, cacheItem] of Object.entries(data)) {
+      this.cache.set(Number(id), cacheItem);
     }
   }
 }
@@ -76,6 +95,17 @@ export class AverageMetricsCache implements MetricsCacheInterface {
       if (!excludeIdsSet.has(id)) {
         this.cache.delete(id);
       }
+    }
+  }
+
+  export(): Record<number, [GenomeMetricsRow, number]> {
+    return Object.fromEntries(this.cache);
+  }
+
+  import(data: Record<number, [GenomeMetricsRow, number]>): void {
+    this.cache.clear();
+    for (const [id, cacheItem] of Object.entries(data)) {
+      this.cache.set(Number(id), cacheItem);
     }
   }
 }
