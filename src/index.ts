@@ -31,6 +31,12 @@ import {
 } from "./classes";
 
 import {
+  DummyMetricsCache,
+  SimpleMetricsCache,
+  AverageMetricsCache,
+} from "./cache";
+
+import {
   BaseMutationStrategy,
   BaseMetricsStrategy,
   BaseMultiprocessingMetricsStrategy,
@@ -78,6 +84,9 @@ export {
   BaseCachedMultiprocessingMetricsStrategy,
   ReferenceLossFitnessStrategy,
   IdGenerator,
+  DummyMetricsCache,
+  SimpleMetricsCache,
+  AverageMetricsCache,
   normalizeMetricsRow,
   normalizeMetricsMatrix,
 }

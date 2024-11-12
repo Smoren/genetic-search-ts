@@ -92,7 +92,7 @@ export interface IdGeneratorInterface<TGenome extends BaseGenome> {
 }
 
 export interface MetricsCacheInterface<TGenome extends BaseGenome> {
-  has(genome: TGenome): boolean;
+  ready(genome: TGenome): boolean;
   get(genome: TGenome): GenomeMetricsRow;
   set(genome: TGenome, metrics: GenomeMetricsRow): void;
   clear(exclude: TGenome[]): void;

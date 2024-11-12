@@ -5,7 +5,7 @@ export class DummyMetricsCache<TGenome extends BaseGenome> implements MetricsCac
     throw new Error(`Genome with id ${genome.id} not found in cache`);
   }
 
-  has(): boolean {
+  ready(): boolean {
     return false;
   }
 
@@ -28,7 +28,7 @@ export class SimpleMetricsCache<TGenome extends BaseGenome> implements MetricsCa
     return this.cache.get(genome.id)!;
   }
 
-  has(genome: TGenome): boolean {
+  ready(genome: TGenome): boolean {
     return this.cache.has(genome.id);
   }
 
@@ -57,7 +57,7 @@ export class AverageMetricsCache<TGenome extends BaseGenome> implements MetricsC
     return row.map((x) => x / count);
   }
 
-  has(): boolean {
+  ready(): boolean {
     return false;
   }
 
