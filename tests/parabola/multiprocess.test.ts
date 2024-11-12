@@ -5,11 +5,10 @@ import {
   GeneticSearch,
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
-  IdGenerator,
+  IdGenerator, SimpleMetricsCache,
 } from "../../src";
 import {
   ParabolaArgumentGenome,
-  ParabolaCachedMultiprocessingMetricsStrategy,
   ParabolaCrossoverStrategy,
   ParabolaMultiprocessingMetricsStrategy,
   ParabolaMutationStrategy,
@@ -34,7 +33,7 @@ describe('Parabola Multiprocessing', () => {
       populate: new ParabolaPopulateStrategy(),
       metrics: new ParabolaMultiprocessingMetricsStrategy({
         poolSize: 4,
-        task: (x: ParabolaTaskConfig) => Promise.resolve([-((x[1]+12)**2) - 3]),
+        task: (x: ParabolaTaskConfig) => Promise.resolve([-((x[0]+12)**2) - 3]),
         onTaskResult: () => void 0,
       }),
       fitness: new ParabolaMaxValueFitnessStrategy(),
@@ -74,9 +73,10 @@ describe('Parabola Multiprocessing', () => {
 
     const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
       populate: new ParabolaPopulateStrategy(),
-      metrics: new ParabolaCachedMultiprocessingMetricsStrategy({
+      metrics: new ParabolaMultiprocessingMetricsStrategy({
         poolSize: 4,
-        task: (x: ParabolaTaskConfig) => Promise.resolve([-((x[1]+12)**2) - 3]),
+        task: (x: ParabolaTaskConfig) => Promise.resolve([-((x[0]+12)**2) - 3]),
+        cache: new SimpleMetricsCache(),
       }),
       fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),
@@ -124,7 +124,7 @@ describe('Parabola Multiprocessing', () => {
       populate: new ParabolaPopulateStrategy(),
       metrics: new ParabolaMultiprocessingMetricsStrategy({
         poolSize: 4,
-        task: (data: ParabolaTaskConfig) => Promise.resolve([-((data[1]+12)**2) - 3]),
+        task: (data: ParabolaTaskConfig) => Promise.resolve([-((data[0]+12)**2) - 3]),
       }),
       fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),
@@ -170,9 +170,10 @@ describe('Parabola Multiprocessing', () => {
 
     const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
       populate: new ParabolaPopulateStrategy(),
-      metrics: new ParabolaCachedMultiprocessingMetricsStrategy({
+      metrics: new ParabolaMultiprocessingMetricsStrategy({
         poolSize: 4,
-        task: (data: ParabolaTaskConfig) => Promise.resolve([-((data[1]+12)**2) - 3]),
+        task: (data: ParabolaTaskConfig) => Promise.resolve([-((data[0]+12)**2) - 3]),
+        cache: new SimpleMetricsCache(),
       }),
       fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),

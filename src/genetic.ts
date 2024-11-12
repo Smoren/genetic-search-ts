@@ -218,7 +218,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   protected cloneStrategy(strategy: GeneticSearchStrategyConfig<TGenome>): GeneticSearchStrategyConfig<TGenome> {
     return {
       populate: strategy.populate,
-      metrics: strategy.metrics.clone(),
+      metrics: strategy.metrics,
       fitness: strategy.fitness,
       mutation: strategy.mutation,
       crossover: strategy.crossover,

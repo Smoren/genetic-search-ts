@@ -71,7 +71,6 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
 
 export interface MetricsStrategyInterface<TGenome extends BaseGenome> {
   run(population: Population<TGenome>): Promise<GenerationMetricsMatrix>;
-  clone(): MetricsStrategyInterface<TGenome>;
 }
 
 export interface FitnessStrategyInterface {
@@ -97,4 +96,5 @@ export interface MetricsCacheInterface {
   get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined;
   set(genomeId: number, metrics: GenomeMetricsRow): void;
   clear(excludeGenomeIds: number[]): void;
+  // TODO forbidClearCache
 }

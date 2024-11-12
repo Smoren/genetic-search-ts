@@ -39,7 +39,6 @@ import {
   BaseMutationStrategy,
   BaseMetricsStrategy,
   BaseMultiprocessingMetricsStrategy,
-  BaseCachedMultiprocessingMetricsStrategy,
   ReferenceLossFitnessStrategy,
 } from './strategies';
 
@@ -81,7 +80,6 @@ export {
   BaseMutationStrategy,
   BaseMetricsStrategy,
   BaseMultiprocessingMetricsStrategy,
-  BaseCachedMultiprocessingMetricsStrategy,
   ReferenceLossFitnessStrategy,
   IdGenerator,
   DummyMetricsCache,

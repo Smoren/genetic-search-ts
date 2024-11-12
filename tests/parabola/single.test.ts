@@ -39,7 +39,7 @@ describe.each([
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
         metrics: new ParabolaSingleMetricsStrategy({
-          task: async (data: ParabolaTaskConfig) => [-((data[1]+a)**2) + b],
+          task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
           onTaskResult: () => void 0,
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
@@ -108,7 +108,7 @@ describe.each([
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
         metrics: new ParabolaSingleMetricsStrategy({
-          task: async (data: ParabolaTaskConfig) => [-((data[1]+a)**2) + b],
+          task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
           onTaskResult: () => void 0,
           cache: new SimpleMetricsCache(),
         }),
@@ -178,7 +178,7 @@ describe.each([
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
         metrics: new ParabolaSingleMetricsStrategy({
-          task: async (data: ParabolaTaskConfig) => [-((data[1]+a)**2) + b],
+          task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
           onTaskResult: () => void 0,
           cache: new AverageMetricsCache(),
         }),
@@ -248,7 +248,7 @@ describe.each([
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
         metrics: new ParabolaSingleMetricsStrategy({
-          task: async (data: ParabolaTaskConfig) => [-((data[1]+a)**2) + b],
+          task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
         }),
         fitness: new ParabolaReferenceFitnessStrategy(y),
         mutation: new ParabolaMutationStrategy(),
@@ -330,7 +330,7 @@ describe.each([
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
         metrics: new ParabolaSingleMetricsStrategy({
-          task: async (data: ParabolaTaskConfig) => [-((data[1]+a)**2) + b],
+          task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
         }),
         fitness: new ParabolaReferenceFitnessStrategy(y),
         mutation: new ParabolaMutationStrategy(),

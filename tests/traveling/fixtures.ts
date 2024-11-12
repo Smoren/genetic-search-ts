@@ -1,5 +1,4 @@
 import {
-  BaseCachedMultiprocessingMetricsStrategy,
   BaseGenome,
   BaseMetricsStrategy,
   BaseMultiprocessingMetricsStrategy,
@@ -21,7 +20,7 @@ export type TravelingGenome = BaseGenome & {
   path: number[];
 }
 
-export type TravelingTaskConfig = [number, number[], number[][]];
+export type TravelingTaskConfig = [number[], number[][]];
 
 export type TravelingSingleMetricsStrategyConfig = MetricsStrategyConfig<TravelingTaskConfig> & {
   distanceMatrix: number[][];
@@ -32,7 +31,7 @@ export type TravelingMultiprocessingMetricsStrategyConfig = MultiprocessingMetri
 }
 
 export function travelingMetricsTask(data: TravelingTaskConfig): Promise<GenomeMetricsRow> {
-  const [_, path, distanceMatrix] = data;
+  const [path, distanceMatrix] = data;
   let totalDistance = 0;
 
   for (let i = 0; i < path.length; i++) {
@@ -124,7 +123,7 @@ export class TravelingSingleMetricsStrategy extends BaseMetricsStrategy<
   TravelingTaskConfig
 > {
   protected createTaskInput(genome: TravelingGenome): TravelingTaskConfig {
-    return [genome.id, genome.path, this.config.distanceMatrix];
+    return [genome.path, this.config.distanceMatrix];
   }
 }
 
@@ -134,21 +133,7 @@ export class TravelingMultiprocessingMetricsStrategy extends BaseMultiprocessing
   TravelingTaskConfig
 > {
   protected createTaskInput(genome: TravelingGenome): TravelingTaskConfig {
-    return [genome.id, genome.path, this.config.distanceMatrix];
-  }
-}
-
-export class TravelingCachedMultiprocessingMetricsStrategy extends BaseCachedMultiprocessingMetricsStrategy<
-  TravelingGenome,
-  TravelingMultiprocessingMetricsStrategyConfig,
-  TravelingTaskConfig
-> {
-  protected createTaskInput(genome: TravelingGenome): TravelingTaskConfig {
-    return [genome.id, genome.path, this.config.distanceMatrix];
-  }
-
-  protected getGenomeId(input: TravelingTaskConfig): number {
-    return input[0];
+    return [genome.path, this.config.distanceMatrix];
   }
 }
 

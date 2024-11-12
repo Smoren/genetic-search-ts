@@ -1,16 +1,15 @@
 import { describe, expect, it } from "@jest/globals";
 import {
+  AverageMetricsCache,
   ComposedGeneticSearch,
   ComposedGeneticSearchConfig,
   GeneticSearch,
   GeneticSearchConfig,
-  GeneticSearchStrategyConfig,
+  GeneticSearchStrategyConfig, SimpleMetricsCache,
 } from "../../src";
 import {
   calcPathDistance,
   getPermutations,
-  travelingMetricsTask,
-  TravelingCachedMultiprocessingMetricsStrategy,
   TravelingCrossoverStrategy,
   TravelingFitnessStrategy,
   TravelingGenome,
@@ -39,7 +38,7 @@ describe.each([
         metrics: new TravelingMultiprocessingMetricsStrategy({
           poolSize: 4,
           task: (data) => {
-            const [_, path, distanceMatrix] = data;
+            const [path, distanceMatrix] = data;
             let totalDistance = 0;
 
             for (let i = 0; i < path.length; i++) {
@@ -85,10 +84,12 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<TravelingGenome> = {
         populate: new TravelingPopulateStrategy(distanceMatrix.length),
-        metrics: new TravelingCachedMultiprocessingMetricsStrategy({
+        metrics: new TravelingMultiprocessingMetricsStrategy({
           poolSize: 4,
+          cache: new SimpleMetricsCache(),
+          distanceMatrix,
           task: (data) => {
-            const [_, path, distanceMatrix] = data;
+            const [path, distanceMatrix] = data;
             let totalDistance = 0;
 
             for (let i = 0; i < path.length; i++) {
@@ -99,7 +100,6 @@ describe.each([
 
             return Promise.resolve([1 / totalDistance]);
           },
-          distanceMatrix,
         }),
         fitness: new TravelingFitnessStrategy(),
         mutation: new TravelingMutationStrategy(),
@@ -144,7 +144,7 @@ describe.each([
         metrics: new TravelingMultiprocessingMetricsStrategy({
           poolSize: 4,
           task: (data) => {
-            const [_, path, distanceMatrix] = data;
+            const [path, distanceMatrix] = data;
             let totalDistance = 0;
 
             for (let i = 0; i < path.length; i++) {
@@ -197,10 +197,12 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<TravelingGenome> = {
         populate: new TravelingPopulateStrategy(distanceMatrix.length),
-        metrics: new TravelingCachedMultiprocessingMetricsStrategy({
+        metrics: new TravelingMultiprocessingMetricsStrategy({
           poolSize: 4,
+          cache: new AverageMetricsCache(),
+          distanceMatrix,
           task: (data) => {
-            const [_, path, distanceMatrix] = data;
+            const [path, distanceMatrix] = data;
             let totalDistance = 0;
 
             for (let i = 0; i < path.length; i++) {
@@ -211,7 +213,6 @@ describe.each([
 
             return Promise.resolve([1 / totalDistance]);
           },
-          distanceMatrix,
         }),
         fitness: new TravelingFitnessStrategy(),
         mutation: new TravelingMutationStrategy(),

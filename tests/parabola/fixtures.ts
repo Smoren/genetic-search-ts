@@ -1,7 +1,6 @@
 import {
   BaseGenome,
   BaseMultiprocessingMetricsStrategy,
-  BaseCachedMultiprocessingMetricsStrategy,
   BaseMetricsStrategy,
   GenerationMetricsMatrix,
   CrossoverStrategyInterface,
@@ -21,7 +20,7 @@ export type ParabolaArgumentGenome = BaseGenome & {
   x: number;
 }
 
-export type ParabolaTaskConfig = [number, number];
+export type ParabolaTaskConfig = [number];
 
 function createRandomParabolaArgument(id: number): ParabolaArgumentGenome {
   return { id, x: Math.random() * 200 - 100 };
@@ -55,23 +54,13 @@ export class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<Par
 
 export class ParabolaSingleMetricsStrategy extends BaseMetricsStrategy<ParabolaArgumentGenome, MetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
-    return [genome.id, genome.x];
+    return [genome.x];
   }
 }
 
 export class ParabolaMultiprocessingMetricsStrategy extends BaseMultiprocessingMetricsStrategy<ParabolaArgumentGenome, MultiprocessingMetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
-    return [genome.id, genome.x];
-  }
-}
-
-export class ParabolaCachedMultiprocessingMetricsStrategy extends BaseCachedMultiprocessingMetricsStrategy<ParabolaArgumentGenome, MultiprocessingMetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
-  protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
-    return [genome.id, genome.x];
-  }
-
-  protected getGenomeId(input: ParabolaTaskConfig): number {
-    return input[0];
+    return [genome.x];
   }
 }
 
