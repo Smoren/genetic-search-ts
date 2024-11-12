@@ -1,12 +1,12 @@
-import { BaseGenome, GenomeMetricsRow, MetricsCacheInterface } from "./types";
+import { GenomeMetricsRow, MetricsCacheInterface } from "./types";
 
-export class DummyMetricsCache<TGenome extends BaseGenome> implements MetricsCacheInterface<TGenome> {
-  get(genome: TGenome): GenomeMetricsRow {
-    throw new Error(`Genome with id ${genome.id} not found in cache`);
+export class DummyMetricsCache implements MetricsCacheInterface {
+  get(_: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined {
+    return defaultValue;
   }
 
-  ready(): boolean {
-    return false;
+  ready(): GenomeMetricsRow | undefined {
+    return undefined;
   }
 
   set(): void {
@@ -18,26 +18,25 @@ export class DummyMetricsCache<TGenome extends BaseGenome> implements MetricsCac
   }
 }
 
-export class SimpleMetricsCache<TGenome extends BaseGenome> implements MetricsCacheInterface<TGenome> {
+export class SimpleMetricsCache implements MetricsCacheInterface {
   protected readonly cache: Map<number, GenomeMetricsRow> = new Map();
 
-  get(genome: TGenome): GenomeMetricsRow {
-    if (!this.cache.has(genome.id)) {
-      throw new Error(`Genome with id ${genome.id} not found in cache`);
-    }
-    return this.cache.get(genome.id)!;
+  get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined {
+    return this.cache.has(genomeId)
+      ? this.cache.get(genomeId)!
+      : defaultValue;
   }
 
-  ready(genome: TGenome): boolean {
-    return this.cache.has(genome.id);
+  ready(genomeId: number): GenomeMetricsRow | undefined {
+    return this.cache.has(genomeId) ? this.get(genomeId) : undefined;
   }
 
-  set(genome: TGenome, metrics: GenomeMetricsRow): void {
-    this.cache.set(genome.id, metrics);
+  set(genomeId: number, metrics: GenomeMetricsRow): void {
+    this.cache.set(genomeId, metrics);
   }
 
-  clear(exclude: TGenome[]): void {
-    const excludeIdsSet = new Set(exclude.map((genome) => genome.id));
+  clear(excludeGenomeIds: number[]): void {
+    const excludeIdsSet = new Set(excludeGenomeIds);
     for (const id of this.cache.keys()) {
       if (!excludeIdsSet.has(id)) {
         this.cache.delete(id);
@@ -46,33 +45,33 @@ export class SimpleMetricsCache<TGenome extends BaseGenome> implements MetricsCa
   }
 }
 
-export class AverageMetricsCache<TGenome extends BaseGenome> implements MetricsCacheInterface<TGenome> {
+export class AverageMetricsCache implements MetricsCacheInterface {
   protected readonly cache: Map<number, [GenomeMetricsRow, number]> = new Map();
 
-  get(genome: TGenome): GenomeMetricsRow {
-    if (!this.cache.has(genome.id)) {
-      throw new Error(`Genome with id ${genome.id} not found in cache`);
+  get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined {
+    if (!this.cache.has(genomeId)) {
+      return defaultValue;
     }
-    const [row, count] = this.cache.get(genome.id)!;
+    const [row, count] = this.cache.get(genomeId)!;
     return row.map((x) => x / count);
   }
 
-  ready(): boolean {
-    return false;
+  ready(): GenomeMetricsRow | undefined {
+    return undefined;
   }
 
-  set(genome: TGenome, metrics: GenomeMetricsRow): void {
-    if (!this.cache.has(genome.id)) {
-      this.cache.set(genome.id, [metrics, 1]);
+  set(genomeId: number, metrics: GenomeMetricsRow): void {
+    if (!this.cache.has(genomeId)) {
+      this.cache.set(genomeId, [metrics, 1]);
       return;
     }
 
-    const [row, count] = this.cache.get(genome.id)!;
-    this.cache.set(genome.id, [row.map((x, i) => x + metrics[i]), count + 1]);
+    const [row, count] = this.cache.get(genomeId)!;
+    this.cache.set(genomeId, [row.map((x, i) => x + metrics[i]), count + 1]);
   }
 
-  clear(exclude: TGenome[]): void {
-    const excludeIdsSet = new Set(exclude.map((genome) => genome.id));
+  clear(excludeGenomeIds: number[]): void {
+    const excludeIdsSet = new Set(excludeGenomeIds);
     for (const id of this.cache.keys()) {
       if (!excludeIdsSet.has(id)) {
         this.cache.delete(id);

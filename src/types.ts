@@ -37,6 +37,7 @@ export type BaseMutationStrategyConfig = {
 export type MetricsStrategyConfig<TTaskConfig> = {
   task: CalcMetricsTask<TTaskConfig>;
   onTaskResult?: (result: GenomeMetricsRow) => void;
+  cache?: MetricsCacheInterface;
 }
 
 export type MultiprocessingMetricsStrategyConfig<TTaskConfig> = MetricsStrategyConfig<TTaskConfig> & {
@@ -91,9 +92,9 @@ export interface IdGeneratorInterface<TGenome extends BaseGenome> {
   reset(population: TGenome[]): void;
 }
 
-export interface MetricsCacheInterface<TGenome extends BaseGenome> {
-  ready(genome: TGenome): boolean;
-  get(genome: TGenome): GenomeMetricsRow;
-  set(genome: TGenome, metrics: GenomeMetricsRow): void;
-  clear(exclude: TGenome[]): void;
+export interface MetricsCacheInterface {
+  ready(genomeId: number): GenomeMetricsRow | undefined;
+  get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined;
+  set(genomeId: number, metrics: GenomeMetricsRow): void;
+  clear(excludeGenomeIds: number[]): void;
 }
