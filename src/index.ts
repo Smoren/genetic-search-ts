@@ -21,6 +21,7 @@ import type {
   FitnessStrategyInterface,
   GeneticSearchInterface,
   IdGeneratorInterface,
+  MetricsCacheInterface,
 } from "./types";
 
 import {
@@ -65,6 +66,7 @@ export type {
   FitnessStrategyInterface,
   GeneticSearchInterface,
   IdGeneratorInterface,
+  MetricsCacheInterface,
 };
 
 export {

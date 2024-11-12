@@ -90,3 +90,10 @@ export interface IdGeneratorInterface<TGenome extends BaseGenome> {
   nextId(): number;
   reset(population: TGenome[]): void;
 }
+
+export interface MetricsCacheInterface<TGenome extends BaseGenome> {
+  has(genome: TGenome): boolean;
+  get(genome: TGenome): GenomeMetricsRow;
+  set(genome: TGenome, metrics: GenomeMetricsRow): void;
+  clear(exclude: TGenome[]): void;
+}
