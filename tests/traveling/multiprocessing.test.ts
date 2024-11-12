@@ -5,7 +5,9 @@ import {
   ComposedGeneticSearchConfig,
   GeneticSearch,
   GeneticSearchConfig,
-  GeneticSearchStrategyConfig, SimpleMetricsCache,
+  GeneticSearchStrategyConfig,
+  DummyMetricsCache,
+  SimpleMetricsCache,
 } from "../../src";
 import {
   calcPathDistance,
@@ -37,6 +39,7 @@ describe.each([
         populate: new TravelingPopulateStrategy(distanceMatrix.length),
         metrics: new TravelingMultiprocessingMetricsStrategy({
           poolSize: 4,
+          distanceMatrix,
           task: (data) => {
             const [path, distanceMatrix] = data;
             let totalDistance = 0;
@@ -49,11 +52,11 @@ describe.each([
 
             return Promise.resolve([1 / totalDistance]);
           },
-          distanceMatrix,
         }),
         fitness: new TravelingFitnessStrategy(),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
+        cache: new DummyMetricsCache(),
       }
 
       const search = new GeneticSearch(config, strategies);
@@ -86,7 +89,6 @@ describe.each([
         populate: new TravelingPopulateStrategy(distanceMatrix.length),
         metrics: new TravelingMultiprocessingMetricsStrategy({
           poolSize: 4,
-          cache: new SimpleMetricsCache(),
           distanceMatrix,
           task: (data) => {
             const [path, distanceMatrix] = data;
@@ -104,6 +106,7 @@ describe.each([
         fitness: new TravelingFitnessStrategy(),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
+        cache: new SimpleMetricsCache(),
       }
 
       const search = new GeneticSearch(config, strategies);
@@ -143,6 +146,7 @@ describe.each([
         populate: new TravelingPopulateStrategy(distanceMatrix.length),
         metrics: new TravelingMultiprocessingMetricsStrategy({
           poolSize: 4,
+          distanceMatrix,
           task: (data) => {
             const [path, distanceMatrix] = data;
             let totalDistance = 0;
@@ -155,11 +159,11 @@ describe.each([
 
             return Promise.resolve([1 / totalDistance]);
           },
-          distanceMatrix,
         }),
         fitness: new TravelingFitnessStrategy(),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
+        cache: new DummyMetricsCache(),
       }
 
       const search = new ComposedGeneticSearch(config, strategies);
@@ -199,7 +203,6 @@ describe.each([
         populate: new TravelingPopulateStrategy(distanceMatrix.length),
         metrics: new TravelingMultiprocessingMetricsStrategy({
           poolSize: 4,
-          cache: new AverageMetricsCache(),
           distanceMatrix,
           task: (data) => {
             const [path, distanceMatrix] = data;
@@ -217,6 +220,7 @@ describe.each([
         fitness: new TravelingFitnessStrategy(),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
+        cache: new AverageMetricsCache(),
       }
 
       const search = new ComposedGeneticSearch(config, strategies);

@@ -37,7 +37,6 @@ export type BaseMutationStrategyConfig = {
 export type MetricsStrategyConfig<TTaskConfig> = {
   task: CalcMetricsTask<TTaskConfig>;
   onTaskResult?: (result: GenomeMetricsRow) => void;
-  cache?: MetricsCacheInterface;
 }
 
 export type MultiprocessingMetricsStrategyConfig<TTaskConfig> = MetricsStrategyConfig<TTaskConfig> & {
@@ -50,6 +49,7 @@ export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
   fitness: FitnessStrategyInterface;
   mutation: MutationStrategyInterface<TGenome>;
   crossover: CrossoverStrategyInterface<TGenome>;
+  cache: MetricsCacheInterface;
 }
 
 export type GeneticSearchReferenceConfig = {
@@ -70,7 +70,7 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
 }
 
 export interface MetricsStrategyInterface<TGenome extends BaseGenome> {
-  run(population: Population<TGenome>): Promise<GenerationMetricsMatrix>;
+  run(population: Population<TGenome>, cache: MetricsCacheInterface): Promise<GenerationMetricsMatrix>;
 }
 
 export interface FitnessStrategyInterface {
@@ -83,6 +83,7 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   population: Population<TGenome>
   setPopulation(population: Population<TGenome>, resetIdGenerator: boolean): void;
   fitStep(): Promise<GenerationFitnessColumn>;
+  clearCache(): void;
   fit(config: GeneticSearchFitConfig): Promise<void>;
 }
 
@@ -96,5 +97,4 @@ export interface MetricsCacheInterface {
   get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined;
   set(genomeId: number, metrics: GenomeMetricsRow): void;
   clear(excludeGenomeIds: number[]): void;
-  // TODO forbidClearCache
 }

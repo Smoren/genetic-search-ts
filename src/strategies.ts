@@ -16,7 +16,6 @@ import {
 } from "./types";
 import { normalizeMetricsMatrix, arrayBinaryOperation, arraySum } from "./utils";
 import { zip } from "./itertools";
-import { DummyMetricsCache } from "./cache";
 
 export abstract class BaseMutationStrategy<
   TGenome extends BaseGenome,
@@ -37,25 +36,20 @@ export abstract class BaseMetricsStrategy<
   TTaskConfig,
 > implements MetricsStrategyInterface<TGenome> {
   protected readonly config: TConfig;
-  protected readonly cache: MetricsCacheInterface;
 
   constructor(config: TConfig) {
-    this.cache = config.cache ?? new DummyMetricsCache();
     this.config = config;
   }
 
-  public async run(population: Population<TGenome>): Promise<GenerationMetricsMatrix> {
-    // TODO: clear cache on new population
-    // this.cache.clear(population.map((genome) => genome.id));
-
-    const resultsMap = new Map(population.map((genome) => [genome.id, this.cache.ready(genome.id)]));
+  public async run(population: Population<TGenome>, cache: MetricsCacheInterface): Promise<GenerationMetricsMatrix> {
+    const resultsMap = new Map(population.map((genome) => [genome.id, cache.ready(genome.id)]));
 
     const genomesToRun = population.filter((genome) => resultsMap.get(genome.id) === undefined);
     const newResults = await this.execTasks(genomesToRun.map((genome) => this.createTaskInput(genome)));
 
     for (const [genome, result] of zip(genomesToRun, newResults)) {
-      this.cache.set(genome.id, result);
-      resultsMap.set(genome.id, this.cache.get(genome.id, result));
+      cache.set(genome.id, result);
+      resultsMap.set(genome.id, cache.get(genome.id, result));
     }
 
     return population.map((genome) => resultsMap.get(genome.id)!);

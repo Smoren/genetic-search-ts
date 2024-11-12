@@ -5,7 +5,9 @@ import {
   ComposedGeneticSearchConfig,
   GeneticSearch,
   GeneticSearchConfig,
-  GeneticSearchStrategyConfig, SimpleMetricsCache,
+  GeneticSearchStrategyConfig,
+  DummyMetricsCache,
+  SimpleMetricsCache,
 } from "../../src";
 import {
   TravelingCrossoverStrategy,
@@ -43,6 +45,7 @@ describe.each([
         fitness: new TravelingFitnessStrategy(),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
+        cache: new DummyMetricsCache(),
       }
 
       const search = new GeneticSearch(config, strategies);
@@ -75,11 +78,11 @@ describe.each([
         metrics: new TravelingSingleMetricsStrategy({
           task: travelingMetricsTask,
           distanceMatrix,
-          cache: new SimpleMetricsCache(),
         }),
         fitness: new TravelingFitnessStrategy(),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
+        cache: new SimpleMetricsCache(),
       }
 
       const search = new GeneticSearch(config, strategies);
@@ -112,11 +115,11 @@ describe.each([
         metrics: new TravelingSingleMetricsStrategy({
           task: travelingMetricsTask,
           distanceMatrix,
-          cache: new AverageMetricsCache(),
         }),
         fitness: new TravelingFitnessStrategy(),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
+        cache: new AverageMetricsCache(),
       }
 
       const search = new GeneticSearch(config, strategies);
@@ -160,6 +163,7 @@ describe.each([
         fitness: new TravelingFitnessStrategy(),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
+        cache: new DummyMetricsCache(),
       }
 
       const search = new ComposedGeneticSearch(config, strategies);

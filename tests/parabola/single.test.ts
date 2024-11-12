@@ -3,7 +3,9 @@ import {
   AverageMetricsCache,
   ComposedGeneticSearchConfig,
   GeneticSearchConfig,
-  GeneticSearchStrategyConfig, SimpleMetricsCache,
+  GeneticSearchStrategyConfig,
+  DummyMetricsCache,
+  SimpleMetricsCache,
 } from "../../src";
 import {
   ComposedGeneticSearch,
@@ -45,6 +47,7 @@ describe.each([
         fitness: new ParabolaMaxValueFitnessStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
+        cache: new DummyMetricsCache(),
       }
 
       const search = new GeneticSearch(config, strategies, new IdGenerator());
@@ -110,11 +113,11 @@ describe.each([
         metrics: new ParabolaSingleMetricsStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
           onTaskResult: () => void 0,
-          cache: new SimpleMetricsCache(),
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
+        cache: new SimpleMetricsCache(),
       }
 
       const search = new GeneticSearch(config, strategies, new IdGenerator());
@@ -180,11 +183,11 @@ describe.each([
         metrics: new ParabolaSingleMetricsStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
           onTaskResult: () => void 0,
-          cache: new AverageMetricsCache(),
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
+        cache: new AverageMetricsCache(),
       }
 
       const search = new GeneticSearch(config, strategies, new IdGenerator());
@@ -253,6 +256,7 @@ describe.each([
         fitness: new ParabolaReferenceFitnessStrategy(y),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
+        cache: new DummyMetricsCache(),
       }
 
       const search = new GeneticSearch(config, strategies);
@@ -335,6 +339,7 @@ describe.each([
         fitness: new ParabolaReferenceFitnessStrategy(y),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
+        cache: new DummyMetricsCache(),
       }
 
       const search = new ComposedGeneticSearch(config, strategies);

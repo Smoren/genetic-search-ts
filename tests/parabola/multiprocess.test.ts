@@ -5,7 +5,9 @@ import {
   GeneticSearch,
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
-  IdGenerator, SimpleMetricsCache,
+  IdGenerator,
+  DummyMetricsCache,
+  SimpleMetricsCache,
 } from "../../src";
 import {
   ParabolaArgumentGenome,
@@ -39,6 +41,7 @@ describe('Parabola Multiprocessing', () => {
       fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),
       crossover: new ParabolaCrossoverStrategy(),
+      cache: new DummyMetricsCache(),
     }
 
     const search = new GeneticSearch(config, strategies);
@@ -76,11 +79,11 @@ describe('Parabola Multiprocessing', () => {
       metrics: new ParabolaMultiprocessingMetricsStrategy({
         poolSize: 4,
         task: (x: ParabolaTaskConfig) => Promise.resolve([-((x[0]+12)**2) - 3]),
-        cache: new SimpleMetricsCache(),
       }),
       fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),
       crossover: new ParabolaCrossoverStrategy(),
+      cache: new SimpleMetricsCache(),
     }
 
     const search = new GeneticSearch(config, strategies);
@@ -129,6 +132,7 @@ describe('Parabola Multiprocessing', () => {
       fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),
       crossover: new ParabolaCrossoverStrategy(),
+      cache: new DummyMetricsCache(),
     }
 
     const search = new ComposedGeneticSearch(config, strategies);
@@ -173,11 +177,11 @@ describe('Parabola Multiprocessing', () => {
       metrics: new ParabolaMultiprocessingMetricsStrategy({
         poolSize: 4,
         task: (data: ParabolaTaskConfig) => Promise.resolve([-((data[0]+12)**2) - 3]),
-        cache: new SimpleMetricsCache(),
       }),
       fitness: new ParabolaMaxValueFitnessStrategy(),
       mutation: new ParabolaMutationStrategy(),
       crossover: new ParabolaCrossoverStrategy(),
+      cache: new SimpleMetricsCache(),
     }
 
     const search = new ComposedGeneticSearch(config, strategies, new IdGenerator());

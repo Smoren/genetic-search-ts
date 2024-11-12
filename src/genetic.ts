@@ -60,6 +60,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
+      this.clearCache();
       if (config.beforeStep) {
         config.beforeStep(i);
       }
@@ -74,13 +75,17 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   public async fitStep(): Promise<GenerationFitnessColumn> {
-    const metricsMatrix = await this.strategy.metrics.run(this._population);
+    const metricsMatrix = await this.strategy.metrics.run(this._population, this.strategy.cache);
     const fitnessColumn = this.strategy.fitness.score(metricsMatrix);
 
     const [sortedPopulation, sortedFitnessColumn] = this.sortPopulation(fitnessColumn);
     this.refreshPopulation(sortedPopulation);
 
     return sortedFitnessColumn;
+  }
+
+  public clearCache() {
+    this.strategy.cache.clear(this.population.map((genome) => genome.id));
   }
 
   protected sortPopulation(scores: GenerationFitnessColumn): [Population<TGenome>, GenerationFitnessColumn] {
@@ -130,6 +135,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 }
 
 export class ComposedGeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
+  private readonly strategy: GeneticSearchStrategyConfig<TGenome>;
   private readonly eliminators: GeneticSearchInterface<TGenome>[];
   private readonly final: GeneticSearchInterface<TGenome>;
   private readonly idGenerator: IdGeneratorInterface<TGenome>;
@@ -139,12 +145,13 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     strategy: GeneticSearchStrategyConfig<TGenome>,
     idGenerator?: IdGenerator<TGenome>,
   ) {
+    this.strategy = strategy;
     this.idGenerator = idGenerator ?? new IdGenerator<TGenome>();
     this.eliminators = [...repeat(
-      () => new GeneticSearch(config.eliminators, this.cloneStrategy(strategy), this.idGenerator),
+      () => new GeneticSearch(config.eliminators, strategy, this.idGenerator),
       config.final.populationSize,
     )].map((factory) => factory());
-    this.final = new GeneticSearch(config.final, this.cloneStrategy(strategy), this.idGenerator);
+    this.final = new GeneticSearch(config.final, strategy, this.idGenerator);
   }
 
   public get bestGenome(): TGenome {
@@ -189,6 +196,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
+      this.clearCache();
       if (config.beforeStep) {
         config.beforeStep(i);
       }
@@ -211,17 +219,11 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     return await this.final.fitStep();
   }
 
-  protected get bestGenomes(): Population<TGenome> {
-    return this.eliminators.map((eliminators) => eliminators.bestGenome);
+  public clearCache() {
+    this.strategy.cache.clear(this.population.map((genome) => genome.id));
   }
 
-  protected cloneStrategy(strategy: GeneticSearchStrategyConfig<TGenome>): GeneticSearchStrategyConfig<TGenome> {
-    return {
-      populate: strategy.populate,
-      metrics: strategy.metrics,
-      fitness: strategy.fitness,
-      mutation: strategy.mutation,
-      crossover: strategy.crossover,
-    };
+  protected get bestGenomes(): Population<TGenome> {
+    return this.eliminators.map((eliminators) => eliminators.bestGenome);
   }
 }
