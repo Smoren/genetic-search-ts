@@ -20,8 +20,15 @@ Usage example
 Let's get a max value of the parabola: `y = -(x-12)^2 - 3`.
 
 ```typescript
-import type { GeneticSearchStrategyConfig, GeneticSearchConfig } from "../src";
-import { GeneticSearch } from "../src";
+import type {
+  GeneticSearchConfig,
+  GeneticSearchStrategyConfig,
+} from "genetic-search";
+import {
+  GeneticSearch,
+  IdGenerator,
+  SimpleMetricsCache,
+} from "genetic-search";
 
 const config: GeneticSearchConfig = {
   populationSize: 100,
@@ -31,23 +38,25 @@ const config: GeneticSearchConfig = {
 
 const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
   populate: new ParabolaPopulateStrategy(),
-  metrics: new ParabolaCachedMultiprocessingMetricsStrategy({
+  metrics: new ParabolaMultiprocessingMetricsStrategy({
     poolSize: 4,
-    task: async (data) => [-((data[1] - 12)**2) - 3],
-    onTaskResult: (result) => console.log('task result', result),
+    task: async (data) => [-((data[0] - 12)**2) - 3],
+    onTaskResult: () => void 0,
   }),
   fitness: new ParabolaMaxValueFitnessStrategy(),
   mutation: new ParabolaMutationStrategy(),
   crossover: new ParabolaCrossoverStrategy(),
+  cache: new SimpleMetricsCache(),
 }
 
-const search = new GeneticSearch(config, strategies);
+const search = new GeneticSearch(config, strategies, new IdGenerator());
+
+expect(search.partitions).toEqual([50, 25, 25]);
+
 await search.fit({
   generationsCount: 100,
-  beforeStep: (generation) => console.log(`Generation ${generation} started`),
-  afterStep: (generation, scores) => console.log(
-    `generation: ${generation+1}, best id: #${search.bestGenome.id}, best score: ${scores[0]}`,
-  ),
+  beforeStep: () => void 0,
+  afterStep: () => void 0,
 });
 
 const bestGenome = search.bestGenome;
@@ -59,17 +68,18 @@ Strategies implementation:
 ```typescript
 import type {
   BaseGenome,
-  MultiprocessingMetricsStrategyConfig,
-  GenerationFitnessColumn,
+  BaseMutationStrategyConfig,
   CrossoverStrategyInterface,
   FitnessStrategyInterface,
+  GenerationFitnessColumn,
   GenerationMetricsMatrix,
-  MutationStrategyInterface,
-  PopulateStrategyInterface,
   IdGeneratorInterface,
+  MultiprocessingMetricsStrategyConfig,
+  PopulateStrategyInterface,
 } from "genetic-search";
 import {
-  BaseCachedMultiprocessingMetricsStrategy,
+  BaseMultiprocessingMetricsStrategy,
+  BaseMutationStrategy,
 } from "genetic-search";
 
 export type ParabolaArgumentGenome = BaseGenome & {
@@ -77,37 +87,37 @@ export type ParabolaArgumentGenome = BaseGenome & {
   x: number;
 }
 
-export type ParabolaTaskConfig = [number, number];
+export type ParabolaTaskConfig = [number];
 
 export class ParabolaPopulateStrategy implements PopulateStrategyInterface<ParabolaArgumentGenome> {
   populate(size: number, idGenerator: IdGeneratorInterface<ParabolaArgumentGenome>): ParabolaArgumentGenome[] {
     const result: ParabolaArgumentGenome[] = [];
-    for (let i = 0; i < size; ++i) {
-      result.push({id: idGenerator.nextId(), x: Math.random() * 200 - 100});
+    for (let i=0; i<size; ++i) {
+      result.push({ id: idGenerator.nextId(), x: Math.random() * 200 - 100 });
     }
     return result;
   }
 }
 
-export class ParabolaMutationStrategy implements MutationStrategyInterface<ParabolaArgumentGenome> {
+export class ParabolaMutationStrategy extends BaseMutationStrategy<ParabolaArgumentGenome, BaseMutationStrategyConfig> {
+  constructor() {
+    super({ probability: 1 });
+  }
+
   mutate(genome: ParabolaArgumentGenome, newGenomeId: number): ParabolaArgumentGenome {
-    return {x: genome.x + Math.random() * 10 - 5, id: newGenomeId};
+    return { x: genome.x + Math.random() * 10 - 5, id: newGenomeId };
   }
 }
 
 export class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<ParabolaArgumentGenome> {
   cross(lhs: ParabolaArgumentGenome, rhs: ParabolaArgumentGenome, newGenomeId: number): ParabolaArgumentGenome {
-    return {x: (lhs.x + rhs.x) / 2, id: newGenomeId};
+    return { x: (lhs.x + rhs.x) / 2, id: newGenomeId };
   }
 }
 
-export class ParabolaCachedMultiprocessingMetricsStrategy extends BaseCachedMultiprocessingMetricsStrategy<ParabolaArgumentGenome, MultiprocessingMetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
+export class ParabolaMultiprocessingMetricsStrategy extends BaseMultiprocessingMetricsStrategy<ParabolaArgumentGenome, MultiprocessingMetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
-    return [genome.id, genome.x];
-  }
-
-  protected getGenomeId(input: ParabolaTaskConfig): number {
-    return input[0];
+    return [genome.x];
   }
 }
 
