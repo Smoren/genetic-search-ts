@@ -260,7 +260,7 @@ describe.each([
       }
 
       const search = new GeneticSearch(config, strategies);
-
+      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
       await search.fit({
@@ -343,7 +343,7 @@ describe.each([
       }
 
       const search = new ComposedGeneticSearch(config, strategies);
-
+      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
       expect(search.partitions).toEqual([50, 30, 20]);
 
       await search.fit({
