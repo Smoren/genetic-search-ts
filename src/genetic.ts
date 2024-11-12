@@ -9,20 +9,8 @@ import {
   ComposedGeneticSearchConfig,
   IdGeneratorInterface,
 } from "./types";
-import { getRandomArrayItem } from "./utils";
+import { getRandomArrayItem, IdGenerator } from "./utils";
 import { zip, distinctBy, sort, repeat } from "./itertools";
-
-export class IdGenerator<TGenome extends BaseGenome> implements IdGeneratorInterface<TGenome> {
-  private id: number = 1;
-
-  nextId(): number {
-    return this.id++;
-  }
-
-  reset(population: TGenome[]): void {
-    this.id = population.reduce((max, genome) => Math.max(max, genome.id), 0) + 1;
-  }
-}
 
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   protected readonly config: GeneticSearchConfig;

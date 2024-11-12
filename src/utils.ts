@@ -1,4 +1,16 @@
-import { GenerationMetricsMatrix, GenomeMetricsRow } from "./types";
+import { BaseGenome, GenerationMetricsMatrix, GenomeMetricsRow, IdGeneratorInterface } from "./types";
+
+export class IdGenerator<TGenome extends BaseGenome> implements IdGeneratorInterface<TGenome> {
+  private id: number = 1;
+
+  nextId(): number {
+    return this.id++;
+  }
+
+  reset(population: TGenome[]): void {
+    this.id = population.reduce((max, genome) => Math.max(max, genome.id), 0) + 1;
+  }
+}
 
 export const fullCopyObject = <T extends Record<string, any>>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
 

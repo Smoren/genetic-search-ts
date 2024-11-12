@@ -27,8 +27,7 @@ import type {
 import {
   GeneticSearch,
   ComposedGeneticSearch,
-  IdGenerator,
-} from "./classes";
+} from "./genetic";
 
 import {
   DummyMetricsCache,
@@ -45,6 +44,7 @@ import {
 } from './strategies';
 
 import {
+  IdGenerator,
   normalizeMetricsRow,
   normalizeMetricsMatrix,
 } from "./utils";
