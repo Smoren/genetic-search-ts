@@ -8,6 +8,7 @@ import {
   GeneticSearchFitConfig,
   ComposedGeneticSearchConfig,
   IdGeneratorInterface,
+  MetricsCacheInterface,
 } from "./types";
 import { getRandomArrayItem, IdGenerator } from "./utils";
 import { zip, distinctBy, sort, repeat } from "./itertools";
@@ -56,6 +57,10 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const countToClone = countToDie - countToCross;
 
     return [countToSurvive, countToCross, countToClone];
+  }
+
+  public get cache(): MetricsCacheInterface {
+    return this.strategy.cache;
   }
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
@@ -192,6 +197,10 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
       result[2] += countToClone;
     }
     return result;
+  }
+
+  public get cache(): MetricsCacheInterface {
+    return this.strategy.cache;
   }
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
