@@ -94,7 +94,7 @@ export interface IdGeneratorInterface<TGenome extends BaseGenome> {
 }
 
 export interface MetricsCacheInterface {
-  ready(genomeId: number): GenomeMetricsRow | undefined;
+  getReady(genomeId: number): GenomeMetricsRow | undefined;
   get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined;
   set(genomeId: number, metrics: GenomeMetricsRow): void;
   clear(excludeGenomeIds: number[]): void;

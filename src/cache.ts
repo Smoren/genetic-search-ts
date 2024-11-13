@@ -1,7 +1,7 @@
 import { GenomeMetricsRow, MetricsCacheInterface } from "./types";
 
 export class DummyMetricsCache implements MetricsCacheInterface {
-  ready(_: number): GenomeMetricsRow | undefined {
+  getReady(_: number): GenomeMetricsRow | undefined {
     return undefined;
   }
 
@@ -35,7 +35,7 @@ export class SimpleMetricsCache implements MetricsCacheInterface {
       : defaultValue;
   }
 
-  ready(genomeId: number): GenomeMetricsRow | undefined {
+  getReady(genomeId: number): GenomeMetricsRow | undefined {
     return this.cache.has(genomeId) ? this.get(genomeId) : undefined;
   }
 
@@ -75,7 +75,7 @@ export class AverageMetricsCache implements MetricsCacheInterface {
     return row.map((x) => x / count);
   }
 
-  ready(): GenomeMetricsRow | undefined {
+  getReady(): GenomeMetricsRow | undefined {
     return undefined;
   }
 
