@@ -14,6 +14,10 @@ export class IdGenerator<TGenome extends BaseGenome> implements IdGeneratorInter
 
 export const fullCopyObject = <T extends Record<string, any>>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
 
+export function createFilledArray<T>(length: number, value: T): T[] {
+  return Array.from({ length }, () => value);
+}
+
 export function arraySum(input: number[]): number {
   return input.reduce((acc, val) => acc + val, 0);
 }

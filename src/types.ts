@@ -70,8 +70,7 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
 }
 
 export interface MetricsStrategyInterface<TGenome extends BaseGenome> {
-  // TODO rename method
-  run(population: Population<TGenome>, cache: MetricsCacheInterface): Promise<GenerationMetricsMatrix>;
+  collect(population: Population<TGenome>, cache: MetricsCacheInterface): Promise<GenerationMetricsMatrix>;
 }
 
 export interface FitnessStrategyInterface {

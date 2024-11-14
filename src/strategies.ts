@@ -41,7 +41,7 @@ export abstract class BaseMetricsStrategy<
     this.config = config;
   }
 
-  public async run(population: Population<TGenome>, cache: MetricsCacheInterface): Promise<GenerationMetricsMatrix> {
+  public async collect(population: Population<TGenome>, cache: MetricsCacheInterface): Promise<GenerationMetricsMatrix> {
     const resultsMap = new Map(population.map((genome) => [genome.id, cache.getReady(genome.id)]));
 
     const genomesToRun = population.filter((genome) => resultsMap.get(genome.id) === undefined);

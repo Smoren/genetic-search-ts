@@ -80,7 +80,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   public async fitStep(): Promise<GenerationFitnessColumn> {
-    const metricsMatrix = await this.strategy.metrics.run(this._population, this.strategy.cache);
+    const metricsMatrix = await this.strategy.metrics.collect(this._population, this.strategy.cache);
     const fitnessColumn = this.strategy.fitness.score(metricsMatrix);
 
     const [sortedPopulation, sortedFitnessColumn] = this.sortPopulation(fitnessColumn);
