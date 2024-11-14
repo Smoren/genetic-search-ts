@@ -42,6 +42,7 @@ export abstract class BaseMetricsStrategy<
   }
 
   public async collect(population: Population<TGenome>, cache: MetricsCacheInterface): Promise<GenerationMetricsMatrix> {
+    // TODO read then write then read (for age weighted is bad)
     const resultsMap = new Map(population.map((genome) => [genome.id, cache.getReady(genome.id)]));
 
     const genomesToRun = population.filter((genome) => resultsMap.get(genome.id) === undefined);
