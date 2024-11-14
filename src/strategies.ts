@@ -49,6 +49,9 @@ export abstract class BaseMetricsStrategy<
 
     for (const [genome, result] of zip(genomesToRun, newResults)) {
       cache.set(genome.id, result);
+    }
+
+    for (const [genome, result] of zip(genomesToRun, newResults)) {
       resultsMap.set(genome.id, cache.get(genome.id, result));
     }
 
