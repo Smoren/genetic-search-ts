@@ -33,6 +33,7 @@ import {
   DummyMetricsCache,
   SimpleMetricsCache,
   AverageMetricsCache,
+  WeightedAgeAverageMetricsCache,
 } from "./cache";
 
 import {
@@ -85,6 +86,7 @@ export {
   DummyMetricsCache,
   SimpleMetricsCache,
   AverageMetricsCache,
+  WeightedAgeAverageMetricsCache,
   normalizeMetricsRow,
   normalizeMetricsMatrix,
 }
