@@ -28,7 +28,6 @@ import type {
 } from "genetic-search";
 import {
   GeneticSearch,
-  IdGenerator,
   SimpleMetricsCache,
 } from "genetic-search";
 
@@ -51,7 +50,7 @@ const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
   cache: new SimpleMetricsCache(),
 }
 
-const search = new GeneticSearch(config, strategies, new IdGenerator());
+const search = new GeneticSearch(config, strategies);
 
 expect(search.partitions).toEqual([50, 25, 25]);
 
