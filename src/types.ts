@@ -1,5 +1,15 @@
+export type GenomeOrigin = "crossover" | "mutation" | "initial";
+
+export type GenomeStats = {
+  age: number;
+  fitness: number;
+  metrics: GenomeMetricsRow;
+  origin: GenomeOrigin;
+}
+
 export type BaseGenome = {
   id: number;
+  stats?: GenomeStats;
 }
 
 export type Population<TGenome extends BaseGenome> = TGenome[];
@@ -100,4 +110,13 @@ export interface MetricsCacheInterface {
   clear(excludeGenomeIds: number[]): void;
   export(): Record<number, unknown>;
   import(data: Record<number, unknown>): void;
+}
+
+export interface GenomeStatsManagerInterface<TGenome extends BaseGenome> {
+  init(population: Population<TGenome>, origin: GenomeOrigin): void;
+  update(
+    population: Population<TGenome>,
+    metricsMatrix: GenerationMetricsMatrix,
+    fitnessColumn: GenerationFitnessColumn,
+  ): void;
 }

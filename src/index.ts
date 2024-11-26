@@ -1,4 +1,6 @@
 import type {
+  GenomeOrigin,
+  GenomeStats,
   BaseGenome,
   Population,
   GenomeMetricsRow,
@@ -22,12 +24,17 @@ import type {
   GeneticSearchInterface,
   IdGeneratorInterface,
   MetricsCacheInterface,
+  GenomeStatsManagerInterface,
 } from "./types";
 
 import {
   GeneticSearch,
   ComposedGeneticSearch,
 } from "./genetic";
+
+import {
+  GenomeStatsManager,
+} from "./stats";
 
 import {
   DummyMetricsCache,
@@ -50,6 +57,8 @@ import {
 } from "./utils";
 
 export type {
+  GenomeOrigin,
+  GenomeStats,
   BaseGenome,
   Population,
   GenomeMetricsRow,
@@ -73,6 +82,7 @@ export type {
   GeneticSearchInterface,
   IdGeneratorInterface,
   MetricsCacheInterface,
+  GenomeStatsManagerInterface,
 };
 
 export {
@@ -87,6 +97,7 @@ export {
   SimpleMetricsCache,
   AverageMetricsCache,
   WeightedAgeAverageMetricsCache,
+  GenomeStatsManager,
   normalizeMetricsRow,
   normalizeMetricsMatrix,
 }

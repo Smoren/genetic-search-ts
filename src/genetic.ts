@@ -9,14 +9,17 @@ import {
   ComposedGeneticSearchConfig,
   IdGeneratorInterface,
   MetricsCacheInterface,
+  GenomeStatsManagerInterface,
 } from "./types";
 import { getRandomArrayItem, IdGenerator } from "./utils";
 import { zip, distinctBy, sort, repeat } from "./itertools";
+import { GenomeStatsManager } from "./stats";
 
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   protected readonly config: GeneticSearchConfig;
   protected readonly strategy: GeneticSearchStrategyConfig<TGenome>;
   protected readonly idGenerator: IdGeneratorInterface<TGenome>;
+  protected readonly statsManager: GenomeStatsManagerInterface<TGenome>;
   protected _population: Population<TGenome>;
 
   constructor(
@@ -25,9 +28,10 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     idGenerator?: IdGeneratorInterface<TGenome>,
   ) {
     this.idGenerator = idGenerator ?? new IdGenerator();
-    this._population = strategy.populate.populate(config.populationSize, this.idGenerator);
+    this.statsManager = new GenomeStatsManager();
     this.strategy = strategy;
     this.config = config;
+    this._population = strategy.populate.populate(config.populationSize, this.idGenerator);
   }
 
   public get bestGenome(): TGenome {
@@ -83,6 +87,8 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const metricsMatrix = await this.strategy.metrics.collect(this._population, this.strategy.cache);
     const fitnessColumn = this.strategy.fitness.score(metricsMatrix);
 
+    this.statsManager.update(this.population, metricsMatrix, fitnessColumn);
+
     const [sortedPopulation, sortedFitnessColumn] = this.sortPopulation(fitnessColumn);
     this.refreshPopulation(sortedPopulation);
 
@@ -134,6 +140,9 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const survivedPopulation = sortedPopulation.slice(0, countToSurvive);
     const crossedPopulation = this.crossover(survivedPopulation, countToCross);
     const mutatedPopulation = this.clone(survivedPopulation, countToClone);
+
+    this.statsManager.init(crossedPopulation, 'crossover');
+    this.statsManager.init(mutatedPopulation, 'mutation');
 
     this._population = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
   }
@@ -223,6 +232,8 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     for (const eliminators of this.eliminators) {
       await eliminators.fitStep();
     }
+
+    // TODO pop best genomes ???
 
     this.final.setPopulation([...distinctBy([...this.final.population, ...this.bestGenomes], (x) => x.id)], false);
     return await this.final.fitStep();
