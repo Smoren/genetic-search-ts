@@ -59,7 +59,7 @@ describe.each([
         cache: new DummyMetricsCache(),
       }
 
-      const search = new GeneticSearch(config, strategies);
+      const search = new GeneticSearch<TravelingGenome>(config, strategies);
       return search.fit({ generationsCount: 30 }).then(() => {
         const bestGenome = search.bestGenome;
 
@@ -109,7 +109,7 @@ describe.each([
         cache: new SimpleMetricsCache(),
       }
 
-      const search = new GeneticSearch(config, strategies);
+      const search = new GeneticSearch<TravelingGenome>(config, strategies);
       return search.fit({ generationsCount: 30 }).then(() => {
         const bestGenome = search.bestGenome;
 
@@ -166,7 +166,7 @@ describe.each([
         cache: new DummyMetricsCache(),
       }
 
-      const search = new ComposedGeneticSearch(config, strategies);
+      const search = new ComposedGeneticSearch<TravelingGenome>(config, strategies);
       return search.fit({ generationsCount: 30 }).then(() => {
         const bestGenome = search.bestGenome;
 
@@ -223,7 +223,7 @@ describe.each([
         cache: new AverageMetricsCache(),
       }
 
-      const search = new ComposedGeneticSearch(config, strategies);
+      const search = new ComposedGeneticSearch<TravelingGenome>(config, strategies);
       return search.fit({ generationsCount: 30 }).then(() => {
         const bestGenome = search.bestGenome;
 

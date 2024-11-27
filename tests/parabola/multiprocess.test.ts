@@ -44,7 +44,7 @@ describe('Parabola Multiprocessing', () => {
       cache: new DummyMetricsCache(),
     }
 
-    const search = new GeneticSearch(config, strategies);
+    const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies);
 
     return search.fit({
       generationsCount: 100,
@@ -86,7 +86,7 @@ describe('Parabola Multiprocessing', () => {
       cache: new SimpleMetricsCache(),
     }
 
-    const search = new GeneticSearch(config, strategies);
+    const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies);
 
     return search.fit({
       generationsCount: 100,
@@ -135,7 +135,7 @@ describe('Parabola Multiprocessing', () => {
       cache: new DummyMetricsCache(),
     }
 
-    const search = new ComposedGeneticSearch(config, strategies);
+    const search = new ComposedGeneticSearch<ParabolaArgumentGenome>(config, strategies);
 
     return search.fit({
       generationsCount: 20,
@@ -184,7 +184,7 @@ describe('Parabola Multiprocessing', () => {
       cache: new SimpleMetricsCache(),
     }
 
-    const search = new ComposedGeneticSearch(config, strategies, new IdGenerator());
+    const search = new ComposedGeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
 
     return search.fit({
       generationsCount: 20,

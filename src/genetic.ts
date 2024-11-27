@@ -20,6 +20,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   protected readonly strategy: GeneticSearchStrategyConfig<TGenome>;
   protected readonly idGenerator: IdGeneratorInterface<TGenome>;
   protected readonly statsManager: GenomeStatsManagerInterface<TGenome>;
+  protected _generation: number = 0;
   protected _population: Population<TGenome>;
 
   constructor(
@@ -32,6 +33,10 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this.strategy = strategy;
     this.config = config;
     this._population = strategy.populate.populate(config.populationSize, this.idGenerator);
+  }
+
+  public get generation(): number {
+    return this._generation;
   }
 
   public get bestGenome(): TGenome {
@@ -69,13 +74,14 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     for (let i=0; i<config.generationsCount; i++) {
+      const generation = this.generation;
       this.clearCache();
       if (config.beforeStep) {
-        config.beforeStep(i);
+        config.beforeStep(generation);
       }
       const result = await this.fitStep();
       if (config.afterStep) {
-        config.afterStep(i, result);
+        config.afterStep(generation, result);
       }
       if (config.stopCondition && config.stopCondition(result)) {
         break;
@@ -91,6 +97,8 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     const [sortedPopulation, sortedFitnessColumn] = this.sortPopulation(fitnessColumn);
     this.refreshPopulation(sortedPopulation);
+
+    this._generation++;
 
     return sortedFitnessColumn;
   }
@@ -166,6 +174,10 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
       config.final.populationSize,
     )].map((factory) => factory());
     this.final = new GeneticSearch(config.final, strategy, this.idGenerator);
+  }
+
+  public get generation(): number {
+    return this.final.generation;
   }
 
   public get bestGenome(): TGenome {

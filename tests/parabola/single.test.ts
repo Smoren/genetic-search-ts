@@ -51,7 +51,7 @@ describe.each([
         cache: new DummyMetricsCache(),
       }
 
-      const search = new GeneticSearch(config, strategies, new IdGenerator());
+      const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
       expect(search.cache).toBeInstanceOf(DummyMetricsCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
@@ -121,7 +121,7 @@ describe.each([
         cache: new SimpleMetricsCache(),
       }
 
-      const search = new GeneticSearch(config, strategies, new IdGenerator());
+      const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
       expect(search.cache).toBeInstanceOf(SimpleMetricsCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
@@ -191,7 +191,7 @@ describe.each([
         cache: new AverageMetricsCache(),
       }
 
-      const search = new GeneticSearch(config, strategies, new IdGenerator());
+      const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
       expect(search.cache).toBeInstanceOf(AverageMetricsCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
@@ -261,7 +261,7 @@ describe.each([
         cache: new WeightedAgeAverageMetricsCache(0.2),
       }
 
-      const search = new GeneticSearch(config, strategies, new IdGenerator());
+      const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
 
       await search.fit({
         generationsCount: 100,
@@ -303,7 +303,7 @@ describe.each([
         cache: new DummyMetricsCache(),
       }
 
-      const search = new GeneticSearch(config, strategies);
+      const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies);
       expect(search.cache).toBeInstanceOf(DummyMetricsCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
@@ -386,7 +386,8 @@ describe.each([
         cache: new DummyMetricsCache(),
       }
 
-      const search = new ComposedGeneticSearch(config, strategies);
+      const search = new ComposedGeneticSearch<ParabolaArgumentGenome>(config, strategies);
+      expect(search.generation).toEqual(0);
       expect(search.cache).toBeInstanceOf(DummyMetricsCache);
       expect(search.partitions).toEqual([50, 30, 20]);
 
