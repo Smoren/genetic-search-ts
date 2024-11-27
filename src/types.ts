@@ -91,7 +91,7 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly bestGenome: TGenome;
   readonly partitions: [number, number, number];
   readonly cache: MetricsCacheInterface;
-  population: Population<TGenome>
+  population: Population<TGenome>;
   setPopulation(population: Population<TGenome>, resetIdGenerator: boolean): void;
   fitStep(): Promise<GenerationFitnessColumn>;
   clearCache(): void;
