@@ -9,7 +9,7 @@ import {
 } from './types';
 
 export class Scheduler<TGenome extends BaseGenome, TConfig> implements SchedulerInterface {
-  public readonly log: string[] = [];
+  public readonly logs: string[] = [];
   protected readonly logger: (message: string) => void;
   protected readonly runner: GeneticSearchInterface<TGenome>;
   protected readonly config: TConfig;
@@ -23,7 +23,7 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
     this.rules = params.rules;
     this.maxHistoryLength = params.maxHistoryLength;
     this.logger = (message: string) => {
-      this.log.push(message);
+      this.logs.push(message);
     }
   }
 
@@ -55,6 +55,6 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
   }
 
   protected clearLog(): void {
-    this.log.length = 0;
+    this.logs.length = 0;
   }
 }

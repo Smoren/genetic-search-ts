@@ -177,6 +177,6 @@ export interface PopulationSummaryManagerInterface<TGenome extends BaseGenome> {
 }
 
 export interface SchedulerInterface {
-  readonly log: string[];
+  readonly logs: string[];
   step(): void;
 }
