@@ -1,9 +1,9 @@
 import { describe, it } from '@jest/globals';
 import { BaseGenome, Population, PopulationSummary, PopulationSummaryManager } from '../../src';
 import {
-  createEmptyGroupedStatSummary,
+  createEmptyGroupedStatSummary, createEmptyRangeStatSummary,
   createEmptyStatSummary,
-  roundGroupedStatSummary,
+  roundGroupedStatSummary, roundRangeStatSummary,
   roundStatSummary,
 } from '../../src/utils';
 
@@ -17,10 +17,12 @@ describe.each([
       const summaryManager = new PopulationSummaryManager();
 
       expect(summaryManager.get()).toEqual({
+        ageSummary: createEmptyRangeStatSummary(),
         fitnessSummary: createEmptyStatSummary(),
         groupedFitnessSummary: createEmptyGroupedStatSummary(),
       });
       expect(summaryManager.getRounded(roundPrecision)).toEqual({
+        ageSummary: createEmptyRangeStatSummary(),
         fitnessSummary: createEmptyStatSummary(),
         groupedFitnessSummary: createEmptyGroupedStatSummary(),
       });
@@ -28,6 +30,7 @@ describe.each([
       summaryManager.update(sortedPopulation);
 
       const summary = summaryManager.getRounded(2);
+      expect(roundRangeStatSummary(summary.ageSummary, roundPrecision)).toEqual(expected.ageSummary);
       expect(roundStatSummary(summary.fitnessSummary, roundPrecision)).toEqual(expected.fitnessSummary);
       expect(roundGroupedStatSummary(summary.groupedFitnessSummary, roundPrecision)).toEqual(expected.groupedFitnessSummary);
       expect(summaryManager.getRounded(roundPrecision)).toEqual(summary);
@@ -40,6 +43,11 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
     [
       [],
       {
+        ageSummary: {
+          min: 0,
+          mean: 0,
+          max: 0,
+        },
         fitnessSummary: {
           count: 0,
           best: 0,
@@ -99,7 +107,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
         {
           id: 3,
           stats: {
-            age: 1,
+            age: 2,
             fitness: 80,
             metrics: [8],
             origin: 'mutation',
@@ -108,7 +116,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
         {
           id: 4,
           stats: {
-            age: 1,
+            age: 2,
             fitness: 70,
             metrics: [7],
             origin: 'initial',
@@ -117,7 +125,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
         {
           id: 5,
           stats: {
-            age: 1,
+            age: 4,
             fitness: 0,
             metrics: [6],
             origin: 'crossover',
@@ -125,6 +133,11 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
         },
       ],
       {
+        ageSummary: {
+          min: 1,
+          mean: 2,
+          max: 4,
+        },
         fitnessSummary: {
           count: 5,
           best: 100,
@@ -166,7 +179,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
         {
           id: 1,
           stats: {
-            age: 1,
+            age: 2,
             fitness: 100,
             metrics: [10],
             origin: 'initial',
@@ -184,7 +197,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
         {
           id: 3,
           stats: {
-            age: 1,
+            age: 2,
             fitness: 80,
             metrics: [8],
             origin: 'crossover',
@@ -193,7 +206,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
         {
           id: 4,
           stats: {
-            age: 1,
+            age: 4,
             fitness: 70,
             metrics: [7],
             origin: 'initial',
@@ -210,6 +223,11 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
         },
       ],
       {
+        ageSummary: {
+          min: 1,
+          mean: 2,
+          max: 4,
+        },
         fitnessSummary: {
           count: 5,
           best: 100,

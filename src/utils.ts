@@ -3,7 +3,7 @@ import {
   GenerationMetricsMatrix,
   GenomeMetricsRow,
   GroupedStatSummary,
-  IdGeneratorInterface,
+  IdGeneratorInterface, RangeStatSummary,
   StatSummary
 } from "./types";
 
@@ -124,6 +124,14 @@ export function createEmptyGroupedStatSummary(): GroupedStatSummary {
   };
 }
 
+export function createEmptyRangeStatSummary(): RangeStatSummary {
+  return {
+    min: 0,
+    mean: 0,
+    max: 0,
+  };
+}
+
 export function calcStatSummary(sortedSource: number[]): StatSummary {
   if (sortedSource.length === 0) {
     return createEmptyStatSummary();
@@ -136,7 +144,19 @@ export function calcStatSummary(sortedSource: number[]): StatSummary {
     mean: arrayMean(sortedSource),
     median: arrayMedian(sortedSource),
     worst: sortedSource[sortedSource.length-1],
+  };
+}
+
+export function calcRangeStatSummary(source: number[]): RangeStatSummary {
+  if (source.length === 0) {
+    return createEmptyRangeStatSummary();
   }
+
+  return {
+    min: Math.min(...source),
+    mean: arrayMean(source),
+    max: Math.max(...source),
+  };
 }
 
 export function roundStatSummary(summary: StatSummary, precision: number): StatSummary {
@@ -155,5 +175,13 @@ export function roundGroupedStatSummary(summary: GroupedStatSummary, precision: 
     initial: roundStatSummary(summary.initial, precision),
     crossover: roundStatSummary(summary.crossover, precision),
     mutation: roundStatSummary(summary.mutation, precision),
-  }
+  };
+}
+
+export function roundRangeStatSummary(summary: RangeStatSummary, precision: number): RangeStatSummary {
+  return {
+    min: round(summary.min, precision),
+    mean: round(summary.mean, precision),
+    max: round(summary.max, precision),
+  };
 }

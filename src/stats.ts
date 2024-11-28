@@ -11,14 +11,19 @@ import {
   GroupedStatSummary,
   PopulationSummaryManagerInterface,
   PopulationSummary,
+  RangeStatSummary,
 } from "./types";
 import { zip } from "./itertools";
 import {
+  calcRangeStatSummary,
   calcStatSummary,
   createEmptyGroupedStatSummary,
-  createEmptyStatSummary, fullCopyObject,
+  createEmptyRangeStatSummary,
+  createEmptyStatSummary,
+  fullCopyObject,
   roundGroupedStatSummary,
-  roundStatSummary
+  roundRangeStatSummary,
+  roundStatSummary,
 } from './utils';
 
 export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenome> {
@@ -63,16 +68,19 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
 export class PopulationSummaryManager implements PopulationSummaryManagerInterface<BaseGenome> {
   protected fitnessSummary: StatSummary;
   protected groupedFitnessSummary: GroupedStatSummary;
+  protected ageSummary: RangeStatSummary;
 
   constructor() {
     this.fitnessSummary = createEmptyStatSummary();
     this.groupedFitnessSummary = createEmptyGroupedStatSummary();
+    this.ageSummary = createEmptyRangeStatSummary();
   }
 
   public get(): PopulationSummary {
     return {
       fitnessSummary: fullCopyObject(this.fitnessSummary),
       groupedFitnessSummary: fullCopyObject(this.groupedFitnessSummary),
+      ageSummary: fullCopyObject(this.ageSummary),
     };
   }
 
@@ -80,6 +88,7 @@ export class PopulationSummaryManager implements PopulationSummaryManagerInterfa
     return {
       fitnessSummary: roundStatSummary(this.fitnessSummary, precision),
       groupedFitnessSummary: roundGroupedStatSummary(this.groupedFitnessSummary, precision),
+      ageSummary: roundRangeStatSummary(this.ageSummary, precision),
     };
   }
 
@@ -90,6 +99,7 @@ export class PopulationSummaryManager implements PopulationSummaryManagerInterfa
 
     this.updateSummary(statsCollection);
     this.updateGroupedSummary(statsCollection);
+    this.updateAgeSummary(statsCollection);
   }
 
   protected updateSummary(sortedStatsCollection: GenomeStats[]): void {
@@ -106,5 +116,10 @@ export class PopulationSummaryManager implements PopulationSummaryManagerInterfa
       crossover: calcStatSummary(crossoverCollection.map((stats) => stats.fitness)),
       mutation: calcStatSummary(mutationCollection.map((stats) => stats.fitness)),
     };
+  }
+
+  protected updateAgeSummary(sortedStatsCollection: GenomeStats[]): void {
+    const ageCollection = sortedStatsCollection.map((stats) => stats.age);
+    this.ageSummary = calcRangeStatSummary(ageCollection);
   }
 }

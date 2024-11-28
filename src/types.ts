@@ -76,6 +76,12 @@ export type StatSummary = {
   readonly worst: number;
 }
 
+export type RangeStatSummary = {
+  readonly min: number;
+  readonly mean: number;
+  readonly max: number;
+}
+
 export type GroupedStatSummary = {
   readonly initial: StatSummary;
   readonly crossover: StatSummary;
@@ -85,6 +91,7 @@ export type GroupedStatSummary = {
 export type PopulationSummary = {
   readonly fitnessSummary: StatSummary;
   readonly groupedFitnessSummary: GroupedStatSummary;
+  readonly ageSummary: RangeStatSummary;
 }
 
 export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
