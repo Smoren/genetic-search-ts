@@ -89,6 +89,7 @@ it('Average Metrics Cache Test', async () => {
 it('Weighted Age Average Metrics Cache Test', async () => {
   {
     const cache = new WeightedAgeAverageMetricsCache(0.5);
+
     expect(cache.get(1)).toEqual(undefined);
     expect(cache.get(1, undefined)).toEqual(undefined);
     expect(cache.get(1, [1, 2, 3])).toEqual([1, 2, 3]);

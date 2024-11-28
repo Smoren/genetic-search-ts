@@ -73,7 +73,8 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
-    for (let i=0; i<config.generationsCount; i++) {
+    const generationsCount = config.generationsCount ?? Infinity;
+    for (let i=0; i<generationsCount; i++) {
       const generation = this.generation;
       this.clearCache();
       if (config.beforeStep) {
@@ -225,7 +226,8 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   }
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
-    for (let i=0; i<config.generationsCount; i++) {
+    const generationsCount = config.generationsCount ?? Infinity;
+    for (let i=0; i<generationsCount; i++) {
       this.clearCache();
       if (config.beforeStep) {
         config.beforeStep(i);

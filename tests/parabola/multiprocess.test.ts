@@ -89,7 +89,6 @@ describe('Parabola Multiprocessing', () => {
     const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies);
 
     return search.fit({
-      generationsCount: 100,
       afterStep: () => void 0,
       stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
     }).then(() => {
@@ -138,7 +137,6 @@ describe('Parabola Multiprocessing', () => {
     const search = new ComposedGeneticSearch<ParabolaArgumentGenome>(config, strategies);
 
     return search.fit({
-      generationsCount: 20,
       afterStep: () => void 0,
       stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
     }).then(() => {
@@ -187,7 +185,6 @@ describe('Parabola Multiprocessing', () => {
     const search = new ComposedGeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
 
     return search.fit({
-      generationsCount: 20,
       afterStep: () => void 0,
       stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
     }).then(() => {

@@ -27,7 +27,7 @@ describe.each([
   ...dataProviderForTravelingSalesman(),
 ] as Array<[number[][]]>)(
   'Traveling Salesman Multiprocessing Test',
-  (distanceMatrix) => {
+  (distanceMatrix: number[][]) => {
     it('', () => {
       const config: GeneticSearchConfig = {
         populationSize: 30,
@@ -77,7 +77,7 @@ describe.each([
   ...dataProviderForTravelingSalesman(),
 ] as Array<[number[][]]>)(
   'Traveling Salesman Cached Multiprocessing Test',
-  (distanceMatrix) => {
+  (distanceMatrix: number[][]) => {
     it('', () => {
       const config: GeneticSearchConfig = {
         populationSize: 30,
@@ -127,7 +127,7 @@ describe.each([
   ...dataProviderForTravelingSalesman(),
 ] as Array<[number[][]]>)(
   'Traveling Salesman Composed Multiprocessing Test',
-  (distanceMatrix) => {
+  (distanceMatrix: number[][]) => {
     it('', () => {
       const config: ComposedGeneticSearchConfig = {
         eliminators: {
@@ -184,7 +184,7 @@ describe.each([
   ...dataProviderForTravelingSalesman(),
 ] as Array<[number[][]]>)(
   'Traveling Salesman Cached Composed Multiprocessing Test',
-  (distanceMatrix) => {
+  (distanceMatrix: number[][]) => {
     it('', () => {
       const config: ComposedGeneticSearchConfig = {
         eliminators: {

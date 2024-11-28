@@ -29,7 +29,7 @@ export type GeneticSearchConfig = {
 };
 
 export type GeneticSearchFitConfig = {
-  generationsCount: number;
+  generationsCount?: number;
   beforeStep?: GenerationBeforeCallback;
   afterStep?: GenerationAfterCallback;
   stopCondition?: (scores: GenerationFitnessColumn) => boolean;

@@ -168,6 +168,6 @@ export class WeightedAgeAverageMetricsCache extends AverageMetricsCache {
   }
 
   private getMetricsCount(): number {
-    return this.cache.values().next()?.value?.[0]?.length!;
+    return this.cache.values().next().value![0].length!;
   }
 }
