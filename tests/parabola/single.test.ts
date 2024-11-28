@@ -389,7 +389,7 @@ describe.each([
       }
 
       const search = new ComposedGeneticSearch<ParabolaArgumentGenome>(config, strategies);
-      expect(search.generation).toEqual(0);
+      expect(search.generation).toEqual(1);
       expect(search.cache).toBeInstanceOf(DummyMetricsCache);
       expect(search.partitions).toEqual([50, 30, 20]);
 

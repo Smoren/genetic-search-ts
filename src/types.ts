@@ -99,6 +99,7 @@ export type SchedulerRuleInput<TGenome extends BaseGenome, TConfig> = {
   runner: GeneticSearchInterface<TGenome>;
   history: PopulationSummary[];
   config: TConfig;
+  logger: (message: string) => void;
 }
 
 export type SchedulerRule<TGenome extends BaseGenome, TConfig> = {
@@ -111,6 +112,7 @@ export type SchedulerConfig<TGenome extends BaseGenome, TConfig> = {
   config: TConfig;
   rules: SchedulerRule<TGenome, TConfig>[];
   maxHistoryLength: number;
+  logger?: (message: string) => void;
 }
 
 export interface PopulateStrategyInterface<TGenome extends BaseGenome> {

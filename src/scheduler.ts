@@ -13,12 +13,14 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
   protected readonly config: TConfig;
   protected readonly maxHistoryLength: number;
   protected readonly rules: SchedulerRule<TGenome, TConfig>[];
+  protected readonly logger: (message: string) => void;
   protected history: PopulationSummary[] = [];
 
   constructor(params: SchedulerConfig<TGenome, TConfig>) {
     this.runner = params.runner;
     this.config = params.config;
     this.rules = params.rules;
+    this.logger = params.logger ?? (() => {});
     this.maxHistoryLength = params.maxHistoryLength;
   }
 
