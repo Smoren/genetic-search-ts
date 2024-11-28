@@ -112,7 +112,6 @@ export type SchedulerConfig<TGenome extends BaseGenome, TConfig> = {
   config: TConfig;
   rules: SchedulerRule<TGenome, TConfig>[];
   maxHistoryLength: number;
-  logger?: (message: string) => void;
 }
 
 export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
@@ -178,5 +177,6 @@ export interface PopulationSummaryManagerInterface<TGenome extends BaseGenome> {
 }
 
 export interface SchedulerInterface {
+  readonly log: string[];
   step(): void;
 }

@@ -9,22 +9,26 @@ import {
 } from './types';
 
 export class Scheduler<TGenome extends BaseGenome, TConfig> implements SchedulerInterface {
+  public readonly log: string[] = [];
+  protected readonly logger: (message: string) => void;
   protected readonly runner: GeneticSearchInterface<TGenome>;
   protected readonly config: TConfig;
   protected readonly maxHistoryLength: number;
   protected readonly rules: SchedulerRule<TGenome, TConfig>[];
-  protected readonly logger: (message: string) => void;
   protected history: PopulationSummary[] = [];
 
   constructor(params: SchedulerConfig<TGenome, TConfig>) {
     this.runner = params.runner;
     this.config = params.config;
     this.rules = params.rules;
-    this.logger = params.logger ?? (() => {});
     this.maxHistoryLength = params.maxHistoryLength;
+    this.logger = (message: string) => {
+      this.log.push(message);
+    }
   }
 
   public step(): void {
+    this.clearLog();
     this.handleHistory();
     for (const rule of this.rules) {
       const ruleInput = this.getRuleInput();
@@ -48,5 +52,9 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
       config: this.config,
       logger: this.logger,
     };
+  }
+
+  protected clearLog(): void {
+    this.log.length = 0;
   }
 }

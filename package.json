@@ -1,6 +1,6 @@
 {
   "name": "genetic-search",
-  "version": "5.5.2",
+  "version": "5.5.3",
   "description": "Multiprocessing genetic algorithm implementation library",
   "license": "MIT",
   "repository": {
