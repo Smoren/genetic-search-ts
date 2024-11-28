@@ -16,7 +16,7 @@ import { zip } from "./itertools";
 import {
   calcStatSummary,
   createEmptyGroupedStatSummary,
-  createEmptyStatSummary,
+  createEmptyStatSummary, fullCopyObject,
   roundGroupedStatSummary,
   roundStatSummary
 } from './utils';
@@ -61,20 +61,19 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
 }
 
 export class PopulationSummaryManager implements PopulationSummaryManagerInterface<BaseGenome> {
-  private _fitnessSummary: StatSummary;
-  private _groupedFitnessSummary: GroupedStatSummary;
+  protected fitnessSummary: StatSummary;
+  protected groupedFitnessSummary: GroupedStatSummary;
 
   constructor() {
-    this._fitnessSummary = createEmptyStatSummary();
-    this._groupedFitnessSummary = createEmptyGroupedStatSummary();
+    this.fitnessSummary = createEmptyStatSummary();
+    this.groupedFitnessSummary = createEmptyGroupedStatSummary();
   }
 
-  public get fitnessSummary(): StatSummary {
-    return this._fitnessSummary;
-  }
-
-  public get groupedFitnessSummary(): GroupedStatSummary {
-    return this._groupedFitnessSummary;
+  public get(): PopulationSummary {
+    return {
+      fitnessSummary: fullCopyObject(this.fitnessSummary),
+      groupedFitnessSummary: fullCopyObject(this.groupedFitnessSummary),
+    };
   }
 
   public getRounded(precision: number): PopulationSummary {
@@ -94,7 +93,7 @@ export class PopulationSummaryManager implements PopulationSummaryManagerInterfa
   }
 
   protected updateSummary(sortedStatsCollection: GenomeStats[]): void {
-    this._fitnessSummary = calcStatSummary(sortedStatsCollection.map((stats) => stats.fitness));
+    this.fitnessSummary = calcStatSummary(sortedStatsCollection.map((stats) => stats.fitness));
   }
 
   protected updateGroupedSummary(sortedStatsCollection: GenomeStats[]): void {
@@ -102,7 +101,7 @@ export class PopulationSummaryManager implements PopulationSummaryManagerInterfa
     const crossoverCollection = sortedStatsCollection.filter((stats) => stats.origin === 'crossover');
     const mutationCollection = sortedStatsCollection.filter((stats) => stats.origin === 'mutation');
 
-    this._groupedFitnessSummary = {
+    this.groupedFitnessSummary = {
       initial: calcStatSummary(initialCollection.map((stats) => stats.fitness)),
       crossover: calcStatSummary(crossoverCollection.map((stats) => stats.fitness)),
       mutation: calcStatSummary(mutationCollection.map((stats) => stats.fitness)),

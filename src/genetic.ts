@@ -78,7 +78,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
   public getPopulationSummary(roundPrecision?: number): PopulationSummary {
     return roundPrecision === undefined
-      ? this.populationSummaryManager
+      ? this.populationSummaryManager.get()
       : this.populationSummaryManager.getRounded(roundPrecision);
   }
 

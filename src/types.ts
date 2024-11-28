@@ -143,7 +143,8 @@ export interface GenomeStatsManagerInterface<TGenome extends BaseGenome> {
   ): void;
 }
 
-export interface PopulationSummaryManagerInterface<TGenome extends BaseGenome> extends PopulationSummary {
+export interface PopulationSummaryManagerInterface<TGenome extends BaseGenome> {
+  get(): PopulationSummary;
   getRounded(precision: number): PopulationSummary;
   update(sortedPopulation: Population<TGenome>): void;
 }

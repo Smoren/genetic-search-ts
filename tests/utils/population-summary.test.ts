@@ -16,12 +16,14 @@ describe.each([
       const roundPrecision = 2;
       const summaryManager = new PopulationSummaryManager();
 
-      expect(summaryManager.fitnessSummary).toEqual(createEmptyStatSummary());
-      expect(summaryManager.groupedFitnessSummary).toEqual(createEmptyGroupedStatSummary());
+      expect(summaryManager.get()).toEqual({
+        fitnessSummary: createEmptyStatSummary(),
+        groupedFitnessSummary: createEmptyGroupedStatSummary(),
+      });
       expect(summaryManager.getRounded(roundPrecision)).toEqual({
         fitnessSummary: createEmptyStatSummary(),
         groupedFitnessSummary: createEmptyGroupedStatSummary(),
-      })
+      });
 
       summaryManager.update(sortedPopulation);
 
