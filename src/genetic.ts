@@ -23,7 +23,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   protected readonly idGenerator: IdGeneratorInterface<TGenome>;
   protected readonly genomeStatsManager: GenomeStatsManagerInterface<TGenome>;
   protected readonly populationSummaryManager: PopulationSummaryManagerInterface<TGenome>;
-  protected _generation: number = 0;
+  protected _generation: number = 1;
   protected _population: Population<TGenome>;
 
   constructor(
