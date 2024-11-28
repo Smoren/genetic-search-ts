@@ -11,7 +11,8 @@ import {
   MetricsCacheInterface,
   GenomeStatsManagerInterface,
   PopulationSummaryManagerInterface,
-  PopulationSummary, SchedulerInterface,
+  PopulationSummary,
+  SchedulerInterface,
 } from "./types";
 import { getRandomArrayItem, IdGenerator } from "./utils";
 import { zip, distinctBy, sort, repeat } from "./itertools";
