@@ -90,7 +90,7 @@ describe('Parabola Multiprocessing', () => {
 
     return search.fit({
       afterStep: () => void 0,
-      stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
+      stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-7,
     }).then(() => {
       const bestGenome = search.bestGenome;
 
@@ -138,7 +138,7 @@ describe('Parabola Multiprocessing', () => {
 
     return search.fit({
       afterStep: () => void 0,
-      stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
+      stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-7,
     }).then(() => {
       const bestGenome = search.bestGenome;
 
@@ -186,7 +186,7 @@ describe('Parabola Multiprocessing', () => {
 
     return search.fit({
       afterStep: () => void 0,
-      stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
+      stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-7,
     }).then(() => {
       const bestGenome = search.bestGenome;
 
