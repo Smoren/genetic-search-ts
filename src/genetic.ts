@@ -11,7 +11,7 @@ import {
   MetricsCacheInterface,
   GenomeStatsManagerInterface,
   PopulationSummaryManagerInterface,
-  PopulationSummary,
+  PopulationSummary, SchedulerInterface,
 } from "./types";
 import { getRandomArrayItem, IdGenerator } from "./utils";
 import { zip, distinctBy, sort, repeat } from "./itertools";
@@ -90,7 +90,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
       if (config.beforeStep) {
         config.beforeStep(generation);
       }
-      const result = await this.fitStep();
+      const result = await this.fitStep(config.scheduler);
       if (config.afterStep) {
         config.afterStep(generation, result);
       }
@@ -100,7 +100,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     }
   }
 
-  public async fitStep(): Promise<GenerationFitnessColumn> {
+  public async fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn> {
     const metricsMatrix = await this.strategy.metrics.collect(this._population, this.strategy.cache);
     const fitnessColumn = this.strategy.fitness.score(metricsMatrix);
 
@@ -108,6 +108,10 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     const [sortedPopulation, sortedFitnessColumn] = this.sortPopulation(fitnessColumn);
     this.populationSummaryManager.update(sortedPopulation);
+
+    if (scheduler !== undefined) {
+      scheduler.step();
+    }
 
     this.refreshPopulation(sortedPopulation);
 
@@ -248,7 +252,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
       if (config.beforeStep) {
         config.beforeStep(i);
       }
-      const result = await this.fitStep();
+      const result = await this.fitStep(config.scheduler);
       if (config.afterStep) {
         config.afterStep(i, result);
       }
@@ -258,7 +262,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     }
   }
 
-  public async fitStep(): Promise<GenerationFitnessColumn> {
+  public async fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn> {
     for (const eliminators of this.eliminators) {
       await eliminators.fitStep();
     }
@@ -266,7 +270,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     // TODO pop best genomes ???
 
     this.final.setPopulation([...distinctBy([...this.final.population, ...this.bestGenomes], (x) => x.id)], false);
-    return await this.final.fitStep();
+    return await this.final.fitStep(scheduler);
   }
 
   public clearCache() {

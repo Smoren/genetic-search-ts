@@ -33,6 +33,7 @@ export type GeneticSearchFitConfig = {
   beforeStep?: GenerationBeforeCallback;
   afterStep?: GenerationAfterCallback;
   stopCondition?: (scores: GenerationFitnessColumn) => boolean;
+  scheduler?: SchedulerInterface;
 }
 
 export type ComposedGeneticSearchConfig = {
@@ -94,6 +95,24 @@ export type PopulationSummary = {
   readonly ageSummary: RangeStatSummary;
 }
 
+export type SchedulerRuleInput<TGenome extends BaseGenome, TConfig> = {
+  runner: GeneticSearchInterface<TGenome>;
+  history: PopulationSummary[];
+  config: TConfig;
+}
+
+export type SchedulerRule<TGenome extends BaseGenome, TConfig> = {
+  condition: (input: SchedulerRuleInput<TGenome, TConfig>) => boolean;
+  action: (input: SchedulerRuleInput<TGenome, TConfig>) => void;
+}
+
+export type SchedulerConfig<TGenome extends BaseGenome, TConfig> = {
+  runner: GeneticSearchInterface<TGenome>;
+  config: TConfig;
+  rules: SchedulerRule<TGenome, TConfig>[];
+  maxHistoryLength: number;
+}
+
 export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
   populate(size: number, idGenerator: IdGeneratorInterface<TGenome>): Population<TGenome>;
 }
@@ -122,7 +141,7 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   population: Population<TGenome>;
   setPopulation(population: Population<TGenome>, resetIdGenerator: boolean): void;
   getPopulationSummary(roundPrecision?: number): PopulationSummary;
-  fitStep(): Promise<GenerationFitnessColumn>;
+  fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn>;
   clearCache(): void;
   fit(config: GeneticSearchFitConfig): Promise<void>;
 }
@@ -154,4 +173,8 @@ export interface PopulationSummaryManagerInterface<TGenome extends BaseGenome> {
   get(): PopulationSummary;
   getRounded(precision: number): PopulationSummary;
   update(sortedPopulation: Population<TGenome>): void;
+}
+
+export interface SchedulerInterface {
+  step(): void;
 }

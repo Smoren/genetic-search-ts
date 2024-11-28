@@ -7,6 +7,9 @@ import type {
   RangeStatSummary,
   GroupedStatSummary,
   PopulationSummary,
+  SchedulerRuleInput,
+  SchedulerRule,
+  SchedulerConfig,
   GenomeMetricsRow,
   GenerationMetricsMatrix,
   CalcMetricsTask,
@@ -30,6 +33,7 @@ import type {
   MetricsCacheInterface,
   GenomeStatsManagerInterface,
   PopulationSummaryManagerInterface,
+  SchedulerInterface,
 } from "./types";
 
 import {
@@ -48,6 +52,10 @@ import {
   AverageMetricsCache,
   WeightedAgeAverageMetricsCache,
 } from "./cache";
+
+import {
+  Scheduler,
+} from "./scheduler";
 
 import {
   BaseMutationStrategy,
@@ -71,6 +79,9 @@ export type {
   RangeStatSummary,
   GroupedStatSummary,
   PopulationSummary,
+  SchedulerRuleInput,
+  SchedulerRule,
+  SchedulerConfig,
   GenomeMetricsRow,
   GenerationMetricsMatrix,
   CalcMetricsTask,
@@ -94,6 +105,7 @@ export type {
   MetricsCacheInterface,
   GenomeStatsManagerInterface,
   PopulationSummaryManagerInterface,
+  SchedulerInterface,
 };
 
 export {
@@ -110,6 +122,7 @@ export {
   WeightedAgeAverageMetricsCache,
   GenomeStatsManager,
   PopulationSummaryManager,
+  Scheduler,
   normalizeMetricsRow,
   normalizeMetricsMatrix,
 }
