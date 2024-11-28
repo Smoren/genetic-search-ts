@@ -1,8 +1,5 @@
 import { expect } from '@jest/globals';
-
-export function round(value: number, precision: number): number {
-  return Number(value.toFixed(precision));
-}
+import { round } from '../src/utils';
 
 export function expectNumberArrayToBeClose(actual: number[], expected: number[], precision: number = 10) {
   actual = actual.map((x) => round(x, precision));

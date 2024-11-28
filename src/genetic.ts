@@ -9,17 +9,18 @@ import {
   ComposedGeneticSearchConfig,
   IdGeneratorInterface,
   MetricsCacheInterface,
-  GenomeStatsManagerInterface,
+  GenomeStatsManagerInterface, PopulationSummaryManagerInterface, PopulationSummary,
 } from "./types";
 import { getRandomArrayItem, IdGenerator } from "./utils";
 import { zip, distinctBy, sort, repeat } from "./itertools";
-import { GenomeStatsManager } from "./stats";
+import { GenomeStatsManager, PopulationSummaryManager } from "./stats";
 
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   protected readonly config: GeneticSearchConfig;
   protected readonly strategy: GeneticSearchStrategyConfig<TGenome>;
   protected readonly idGenerator: IdGeneratorInterface<TGenome>;
-  protected readonly statsManager: GenomeStatsManagerInterface<TGenome>;
+  protected readonly genomeStatsManager: GenomeStatsManagerInterface<TGenome>;
+  protected readonly populationSummaryManager: PopulationSummaryManagerInterface<TGenome>;
   protected _generation: number = 0;
   protected _population: Population<TGenome>;
 
@@ -29,7 +30,8 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     idGenerator?: IdGeneratorInterface<TGenome>,
   ) {
     this.idGenerator = idGenerator ?? new IdGenerator();
-    this.statsManager = new GenomeStatsManager();
+    this.genomeStatsManager = new GenomeStatsManager();
+    this.populationSummaryManager = new PopulationSummaryManager();
     this.strategy = strategy;
     this.config = config;
     this._population = strategy.populate.populate(config.populationSize, this.idGenerator);
@@ -72,6 +74,12 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return this.strategy.cache;
   }
 
+  public getPopulationSummary(roundPrecision?: number): PopulationSummary {
+    return roundPrecision === undefined
+      ? this.populationSummaryManager
+      : this.populationSummaryManager.getRounded(roundPrecision);
+  }
+
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     const generationsCount = config.generationsCount ?? Infinity;
     for (let i=0; i<generationsCount; i++) {
@@ -94,9 +102,11 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const metricsMatrix = await this.strategy.metrics.collect(this._population, this.strategy.cache);
     const fitnessColumn = this.strategy.fitness.score(metricsMatrix);
 
-    this.statsManager.update(this.population, metricsMatrix, fitnessColumn);
+    this.genomeStatsManager.update(this.population, metricsMatrix, fitnessColumn);
 
     const [sortedPopulation, sortedFitnessColumn] = this.sortPopulation(fitnessColumn);
+    this.populationSummaryManager.update(sortedPopulation);
+
     this.refreshPopulation(sortedPopulation);
 
     this._generation++;
@@ -150,8 +160,8 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const crossedPopulation = this.crossover(survivedPopulation, countToCross);
     const mutatedPopulation = this.clone(survivedPopulation, countToClone);
 
-    this.statsManager.init(crossedPopulation, 'crossover');
-    this.statsManager.init(mutatedPopulation, 'mutation');
+    this.genomeStatsManager.init(crossedPopulation, 'crossover');
+    this.genomeStatsManager.init(mutatedPopulation, 'mutation');
 
     this._population = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
   }
@@ -223,6 +233,10 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
 
   public get cache(): MetricsCacheInterface {
     return this.strategy.cache;
+  }
+
+  public getPopulationSummary(roundPrecision?: number): PopulationSummary {
+    return this.final.getPopulationSummary(roundPrecision);
   }
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {

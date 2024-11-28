@@ -1,4 +1,11 @@
-import { BaseGenome, GenerationMetricsMatrix, GenomeMetricsRow, IdGeneratorInterface } from "./types";
+import {
+  BaseGenome,
+  GenerationMetricsMatrix,
+  GenomeMetricsRow,
+  GroupedStatSummary,
+  IdGeneratorInterface,
+  StatSummary
+} from "./types";
 
 export class IdGenerator<TGenome extends BaseGenome> implements IdGeneratorInterface<TGenome> {
   private id: number = 1;
@@ -14,12 +21,28 @@ export class IdGenerator<TGenome extends BaseGenome> implements IdGeneratorInter
 
 export const fullCopyObject = <T extends Record<string, any>>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
 
+export function round(value: number, precision: number): number {
+  return Number(value.toFixed(precision));
+}
+
 export function createFilledArray<T>(length: number, value: T): T[] {
   return Array.from({ length }, () => value);
 }
 
 export function arraySum(input: number[]): number {
   return input.reduce((acc, val) => acc + val, 0);
+}
+
+export function arrayMean(input: number[]): number {
+  return arraySum(input) / input.length;
+}
+
+export function arrayMedian(sortedInput: number[]): number {
+  const middleIndex = Math.floor(sortedInput.length / 2);
+  if (sortedInput.length % 2 !== 0) {
+    return sortedInput[middleIndex];
+  }
+  return (sortedInput[middleIndex - 1] + sortedInput[middleIndex]) / 2;
 }
 
 export function arrayBinaryOperation<T>(lhs: Array<T>, rhs: Array<T>, operator: (lhs: T, rhs: T) => T): Array<T> {
@@ -80,4 +103,57 @@ export function normalizeMetricsMatrix(matrix: GenerationMetricsMatrix, referenc
   }
 
   return result;
+}
+
+export function createEmptyStatSummary(): StatSummary {
+  return {
+    count: 0,
+    best: 0,
+    second: 0,
+    mean: 0,
+    median: 0,
+    worst: 0,
+  };
+}
+
+export function createEmptyGroupedStatSummary(): GroupedStatSummary {
+  return {
+    initial: createEmptyStatSummary(),
+    crossover: createEmptyStatSummary(),
+    mutation: createEmptyStatSummary(),
+  };
+}
+
+export function calcStatSummary(sortedSource: number[]): StatSummary {
+  if (sortedSource.length === 0) {
+    return createEmptyStatSummary();
+  }
+
+  return {
+    count: sortedSource.length,
+    best: sortedSource[0],
+    second: sortedSource[1] ?? 0,
+    mean: arrayMean(sortedSource),
+    median: arrayMedian(sortedSource),
+    worst: sortedSource[sortedSource.length-1],
+  }
+}
+
+export function roundStatSummary(summary: StatSummary, precision: number): StatSummary {
+  return {
+    count: summary.count,
+    best: round(summary.best, precision),
+    second: round(summary.second, precision),
+    mean: round(summary.mean, precision),
+    median: round(summary.median, precision),
+    worst: round(summary.worst, precision),
+  };
+}
+
+export function roundGroupedStatSummary(summary: GroupedStatSummary, precision: number): GroupedStatSummary {
+  return {
+    initial: roundStatSummary(summary.initial, precision),
+    crossover: roundStatSummary(summary.crossover, precision),
+    mutation: roundStatSummary(summary.mutation, precision),
+  }
 }

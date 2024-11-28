@@ -65,7 +65,27 @@ export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
 export type GeneticSearchReferenceConfig = {
   reference: GenomeMetricsRow;
   weights: GenomeMetricsRow;
-};
+}
+
+export type StatSummary = {
+  readonly count: number;
+  readonly best: number;
+  readonly second: number;
+  readonly mean: number;
+  readonly median: number;
+  readonly worst: number;
+}
+
+export type GroupedStatSummary = {
+  readonly initial: StatSummary;
+  readonly crossover: StatSummary;
+  readonly mutation: StatSummary;
+}
+
+export type PopulationSummary = {
+  readonly fitnessSummary: StatSummary;
+  readonly groupedFitnessSummary: GroupedStatSummary;
+}
 
 export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
   populate(size: number, idGenerator: IdGeneratorInterface<TGenome>): Population<TGenome>;
@@ -94,6 +114,7 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly generation: number;
   population: Population<TGenome>;
   setPopulation(population: Population<TGenome>, resetIdGenerator: boolean): void;
+  getPopulationSummary(roundPrecision?: number): PopulationSummary;
   fitStep(): Promise<GenerationFitnessColumn>;
   clearCache(): void;
   fit(config: GeneticSearchFitConfig): Promise<void>;
@@ -120,4 +141,9 @@ export interface GenomeStatsManagerInterface<TGenome extends BaseGenome> {
     metricsMatrix: GenerationMetricsMatrix,
     fitnessColumn: GenerationFitnessColumn,
   ): void;
+}
+
+export interface PopulationSummaryManagerInterface<TGenome extends BaseGenome> extends PopulationSummary {
+  getRounded(precision: number): PopulationSummary;
+  update(sortedPopulation: Population<TGenome>): void;
 }
