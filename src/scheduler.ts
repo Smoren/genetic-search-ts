@@ -28,7 +28,7 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
   }
 
   public step(): void {
-    this.clearLog();
+    this.clearLogs();
     this.handleHistory();
     for (const rule of this.rules) {
       const ruleInput = this.getRuleInput();
@@ -54,7 +54,7 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
     };
   }
 
-  protected clearLog(): void {
+  protected clearLogs(): void {
     this.logs.length = 0;
   }
 }
