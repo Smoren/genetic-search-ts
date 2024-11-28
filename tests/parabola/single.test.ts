@@ -58,7 +58,13 @@ describe.each([
       await search.fit({
         generationsCount: 100,
         beforeStep: () => void 0,
-        afterStep: () => void 0,
+        afterStep: () => {
+          const summary = search.getPopulationSummary();
+          expect(summary.fitnessSummary.count).toBe(100);
+
+          const roundedSummary = search.getPopulationSummary(4);
+          expect(roundedSummary.fitnessSummary.count).toBe(100);
+        },
       });
 
       const bestGenome = search.bestGenome;
@@ -390,7 +396,13 @@ describe.each([
       await search.fit({
         generationsCount: 100,
         beforeStep: () => void 0,
-        afterStep: () => void 0,
+        afterStep: () => {
+          const summary = search.getPopulationSummary();
+          expect(summary.fitnessSummary.count >= 10).toBe(true);
+
+          const roundedSummary = search.getPopulationSummary(4);
+          expect(roundedSummary.fitnessSummary.count >= 10).toBe(true);
+        },
       });
 
       const bestGenome = search.bestGenome;
