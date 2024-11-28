@@ -46,6 +46,7 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
       runner: this.runner,
       history: this.history,
       config: this.config,
+      logger: this.logger,
     };
   }
 }
