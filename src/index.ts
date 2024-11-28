@@ -3,6 +3,9 @@ import type {
   GenomeStats,
   BaseGenome,
   Population,
+  StatSummary,
+  GroupedStatSummary,
+  PopulationSummary,
   GenomeMetricsRow,
   GenerationMetricsMatrix,
   CalcMetricsTask,
@@ -25,6 +28,7 @@ import type {
   IdGeneratorInterface,
   MetricsCacheInterface,
   GenomeStatsManagerInterface,
+  PopulationSummaryManagerInterface,
 } from "./types";
 
 import {
@@ -34,6 +38,7 @@ import {
 
 import {
   GenomeStatsManager,
+  PopulationSummaryManager,
 } from "./stats";
 
 import {
@@ -61,6 +66,9 @@ export type {
   GenomeStats,
   BaseGenome,
   Population,
+  StatSummary,
+  GroupedStatSummary,
+  PopulationSummary,
   GenomeMetricsRow,
   GenerationMetricsMatrix,
   CalcMetricsTask,
@@ -83,6 +91,7 @@ export type {
   IdGeneratorInterface,
   MetricsCacheInterface,
   GenomeStatsManagerInterface,
+  PopulationSummaryManagerInterface,
 };
 
 export {
@@ -98,6 +107,7 @@ export {
   AverageMetricsCache,
   WeightedAgeAverageMetricsCache,
   GenomeStatsManager,
+  PopulationSummaryManager,
   normalizeMetricsRow,
   normalizeMetricsMatrix,
 }

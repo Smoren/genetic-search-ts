@@ -6,7 +6,11 @@ import {
   Population,
   GenerationMetricsMatrix,
   GenerationFitnessColumn,
-  GenomeOrigin, StatSummary, GroupedStatSummary, PopulationSummaryManagerInterface, PopulationSummary,
+  GenomeOrigin,
+  StatSummary,
+  GroupedStatSummary,
+  PopulationSummaryManagerInterface,
+  PopulationSummary,
 } from "./types";
 import { zip } from "./itertools";
 import {

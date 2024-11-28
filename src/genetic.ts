@@ -9,7 +9,9 @@ import {
   ComposedGeneticSearchConfig,
   IdGeneratorInterface,
   MetricsCacheInterface,
-  GenomeStatsManagerInterface, PopulationSummaryManagerInterface, PopulationSummary,
+  GenomeStatsManagerInterface,
+  PopulationSummaryManagerInterface,
+  PopulationSummary,
 } from "./types";
 import { getRandomArrayItem, IdGenerator } from "./utils";
 import { zip, distinctBy, sort, repeat } from "./itertools";
