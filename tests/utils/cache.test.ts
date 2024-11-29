@@ -1,6 +1,5 @@
 import { it, expect } from "@jest/globals";
-import { AverageMetricsCache, DummyMetricsCache, SimpleMetricsCache } from "../../src";
-import { WeightedAgeAverageMetricsCache } from "../../src/cache";
+import { AverageMetricsCache, DummyMetricsCache, SimpleMetricsCache, WeightedAgeAverageMetricsCache } from "../../src";
 // @ts-ignore
 import { expectNumberArrayToBeClose } from "../helpers";
 
