@@ -5,7 +5,7 @@ import {
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
   DummyMetricsCache,
-  SimpleMetricsCache,
+  SimpleMetricsCache, Scheduler,
 } from "../../src";
 import {
   ComposedGeneticSearch,
@@ -98,6 +98,79 @@ describe.each([
         expect(search.population).toEqual(population);
         expect(oldFirstIdx).toEqual(newFirstIdx);
       }
+    });
+  },
+);
+
+
+describe.each([
+  ...dataProviderForGetParabolaMax(),
+] as Array<[[number, number], [number, number]]>)(
+  'Get Parabola Max With Scheduler Test',
+  ([a, b], [x, y]) => {
+    it('', async () => {
+      const config: GeneticSearchConfig = {
+        populationSize: 100,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      };
+
+      const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
+        populate: new ParabolaPopulateStrategy(),
+        metrics: new ParabolaSingleMetricsStrategy({
+          task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
+          onTaskResult: () => void 0,
+        }),
+        fitness: new ParabolaMaxValueFitnessStrategy(),
+        mutation: new ParabolaMutationStrategy(),
+        crossover: new ParabolaCrossoverStrategy(),
+        cache: new DummyMetricsCache(),
+      }
+
+      const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
+      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
+      expect(search.partitions).toEqual([50, 25, 25]);
+
+      const scheduler = new Scheduler({
+        runner: search,
+        config: config,
+        rules: [
+          {
+            condition: (input) => input.runner.generation === 10,
+            action: (input) => {
+              input.config.populationSize = 50;
+              input.logger('set population size to 50');
+            },
+          }
+        ],
+        maxHistoryLength: 0,
+      })
+
+      await search.fit({
+        generationsCount: 100,
+        beforeStep: () => void 0,
+        afterStep: (generation) => {
+          const population = search.population;
+          const expectedPopulationSize = generation < 10 ? 100 : 50;
+
+          expect(population.length).toBe(expectedPopulationSize);
+
+          if (generation === 10) {
+            expect(scheduler.logs).toEqual(['set population size to 50']);
+          } else {
+            expect(scheduler.logs).toEqual([]);
+          }
+        },
+        scheduler,
+      });
+
+      const bestGenome = search.bestGenome;
+
+      expect(bestGenome.x).toBeCloseTo(x);
+      expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
+
+      const population = search.population;
+      expect(population.length).toBe(50);
     });
   },
 );
