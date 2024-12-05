@@ -1,4 +1,4 @@
-import {
+import type {
   BaseGenome,
   GenomeStats,
   GenomeStatsManagerInterface,

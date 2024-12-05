@@ -1,4 +1,4 @@
-import { GenomeMetricsRow, MetricsCacheInterface } from "./types";
+import type { GenomeMetricsRow, MetricsCacheInterface } from "./types";
 import { arrayBinaryOperation, createFilledArray } from "./utils";
 
 export class DummyMetricsCache implements MetricsCacheInterface {
