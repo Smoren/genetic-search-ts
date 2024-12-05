@@ -1,6 +1,5 @@
 import {
   BaseGenome,
-  BaseMultiprocessingMetricsStrategy,
   BaseMetricsStrategy,
   GenerationMetricsMatrix,
   CrossoverStrategyInterface,
@@ -9,7 +8,6 @@ import {
   ReferenceLossFitnessStrategy,
   MetricsStrategyConfig,
   FitnessStrategyInterface,
-  MultiprocessingMetricsStrategyConfig,
   BaseMutationStrategy,
   BaseMutationStrategyConfig,
   IdGeneratorInterface,
@@ -53,12 +51,6 @@ export class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<Par
 }
 
 export class ParabolaSingleMetricsStrategy extends BaseMetricsStrategy<ParabolaArgumentGenome, MetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
-  protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
-    return [genome.x];
-  }
-}
-
-export class ParabolaMultiprocessingMetricsStrategy extends BaseMultiprocessingMetricsStrategy<ParabolaArgumentGenome, MultiprocessingMetricsStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
     return [genome.x];
   }

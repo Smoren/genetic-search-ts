@@ -25,7 +25,7 @@ import {
 } from "./fixtures";
 // @ts-ignore
 import { dataProviderForGetParabolaMax } from "./data";
-import { WeightedAgeAverageMetricsCache } from "../../src/cache";
+import { WeightedAgeAverageMetricsCache } from "../../src";
 
 describe.each([
   ...dataProviderForGetParabolaMax(),
@@ -351,6 +351,7 @@ describe.each([
       expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
 
       const population = search.population;
+      expect(population.length).toBe(100);
     });
   },
 );
@@ -468,6 +469,96 @@ describe.each([
 
       await search.fit({
         generationsCount: 100,
+        beforeStep: () => void 0,
+        afterStep: () => {
+          const summary = search.getPopulationSummary();
+          expect(summary.fitnessSummary.count >= 10).toBe(true);
+
+          const roundedSummary = search.getPopulationSummary(4);
+          expect(roundedSummary.fitnessSummary.count >= 10).toBe(true);
+        },
+      });
+
+      const bestGenome = search.bestGenome;
+
+      expect(bestGenome.x).toBeCloseTo(x);
+      expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
+
+      const population = search.population;
+      expect(population.length).toBe(110);
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, false);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, true);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.population = population;
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+    });
+  },
+);
+
+describe.each([
+  ...dataProviderForGetParabolaMax(),
+] as Array<[[number, number], [number, number]]>)(
+  'Get Parabola Max Single Process Composed Another Test',
+  ([a, b], [x, y]) => {
+    it('', async () => {
+      const config: ComposedGeneticSearchConfig = {
+        eliminators: {
+          populationSize: 10,
+          survivalRate: 0.5,
+          crossoverRate: 0.5,
+        },
+        final: {
+          populationSize: 10,
+          survivalRate: 0.5,
+          crossoverRate: 0.5,
+        },
+      };
+
+      const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
+        populate: new ParabolaPopulateStrategy(),
+        metrics: new ParabolaSingleMetricsStrategy({
+          task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
+        }),
+        fitness: new ParabolaMaxValueFitnessStrategy(),
+        mutation: new ParabolaMutationStrategy(),
+        crossover: new ParabolaCrossoverStrategy(),
+        cache: new DummyMetricsCache(),
+      }
+
+      const search = new ComposedGeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
+      expect(search.generation).toEqual(1);
+      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
+      expect(search.partitions).toEqual([50, 30, 20]);
+
+      await search.fit({
+        stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,
         beforeStep: () => void 0,
         afterStep: () => {
           const summary = search.getPopulationSummary();

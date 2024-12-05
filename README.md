@@ -12,8 +12,14 @@
 Setup
 -----
 
+For single process (including browser apps) use:
 ```bash
 npm i genetic-search
+```
+
+For multiprocessing in node environment use:
+```bash
+npm i genetic-search-multiprocess
 ```
 
 Usage example
@@ -75,13 +81,11 @@ import type {
   GenerationFitnessColumn,
   GenerationMetricsMatrix,
   IdGeneratorInterface,
-  MultiprocessingMetricsStrategyConfig,
   PopulateStrategyInterface,
 } from "genetic-search";
-import {
-  BaseMultiprocessingMetricsStrategy,
-  BaseMutationStrategy,
-} from "genetic-search";
+import type { MultiprocessingMetricsStrategyConfig } from "genetic-search-multiprocess";
+import { BaseMutationStrategy } from "genetic-search";
+import { MultiprocessingMetricsStrategyConfig } from "genetic-search-multiprocess";
 
 export type ParabolaArgumentGenome = BaseGenome & {
   id: number;

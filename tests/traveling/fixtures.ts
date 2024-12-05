@@ -1,14 +1,12 @@
 import {
   BaseGenome,
   BaseMetricsStrategy,
-  BaseMultiprocessingMetricsStrategy,
   CrossoverStrategyInterface,
   FitnessStrategyInterface,
   GenerationFitnessColumn,
   GenerationMetricsMatrix,
   GenomeMetricsRow,
   MetricsStrategyConfig,
-  MultiprocessingMetricsStrategyConfig,
   MutationStrategyInterface,
   PopulateStrategyInterface,
   Population,
@@ -23,10 +21,6 @@ export type TravelingGenome = BaseGenome & {
 export type TravelingTaskConfig = [number[], number[][]];
 
 export type TravelingSingleMetricsStrategyConfig = MetricsStrategyConfig<TravelingTaskConfig> & {
-  distanceMatrix: number[][];
-}
-
-export type TravelingMultiprocessingMetricsStrategyConfig = MultiprocessingMetricsStrategyConfig<TravelingTaskConfig> & {
   distanceMatrix: number[][];
 }
 
@@ -120,16 +114,6 @@ export class TravelingCrossoverStrategy implements CrossoverStrategyInterface<Tr
 export class TravelingSingleMetricsStrategy extends BaseMetricsStrategy<
   TravelingGenome,
   TravelingSingleMetricsStrategyConfig,
-  TravelingTaskConfig
-> {
-  protected createTaskInput(genome: TravelingGenome): TravelingTaskConfig {
-    return [genome.path, this.config.distanceMatrix];
-  }
-}
-
-export class TravelingMultiprocessingMetricsStrategy extends BaseMultiprocessingMetricsStrategy<
-  TravelingGenome,
-  TravelingMultiprocessingMetricsStrategyConfig,
   TravelingTaskConfig
 > {
   protected createTaskInput(genome: TravelingGenome): TravelingTaskConfig {

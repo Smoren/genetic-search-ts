@@ -1,11 +1,9 @@
-import { Pool } from 'multiprocess-pool';
 import {
   BaseGenome,
   Population,
   BaseMutationStrategyConfig,
   MutationStrategyInterface,
   MetricsStrategyInterface,
-  MultiprocessingMetricsStrategyConfig,
   FitnessStrategyInterface,
   GeneticSearchReferenceConfig,
   MetricsStrategyConfig,
@@ -69,22 +67,6 @@ export abstract class BaseMetricsStrategy<
   }
 
   protected abstract createTaskInput(genome: TGenome): TTaskConfig;
-}
-
-export abstract class BaseMultiprocessingMetricsStrategy<
-  TGenome extends BaseGenome,
-  TConfig extends MultiprocessingMetricsStrategyConfig<TTaskConfig>,
-  TTaskConfig,
-> extends BaseMetricsStrategy<TGenome, TConfig, TTaskConfig> {
-  protected async execTasks(inputs: TTaskConfig[]): Promise<GenerationMetricsMatrix> {
-    const pool = new Pool(this.config.poolSize);
-    const result: GenerationMetricsMatrix = await pool.map(inputs, this.config.task, {
-      onResult: (result: any) => this.config.onTaskResult?.(result as GenomeMetricsRow),
-    });
-    pool.close();
-
-    return result;
-  }
 }
 
 export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {

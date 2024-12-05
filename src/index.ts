@@ -19,7 +19,6 @@ import type {
   ComposedGeneticSearchConfig,
   BaseMutationStrategyConfig,
   MetricsStrategyConfig,
-  MultiprocessingMetricsStrategyConfig,
   GeneticSearchStrategyConfig,
   GeneticSearchFitConfig,
   GeneticSearchReferenceConfig,
@@ -60,7 +59,6 @@ import {
 import {
   BaseMutationStrategy,
   BaseMetricsStrategy,
-  BaseMultiprocessingMetricsStrategy,
   ReferenceLossFitnessStrategy,
 } from './strategies';
 
@@ -91,7 +89,6 @@ export type {
   ComposedGeneticSearchConfig,
   BaseMutationStrategyConfig,
   MetricsStrategyConfig,
-  MultiprocessingMetricsStrategyConfig,
   GeneticSearchStrategyConfig,
   GeneticSearchFitConfig,
   GeneticSearchReferenceConfig,
@@ -113,7 +110,6 @@ export {
   ComposedGeneticSearch,
   BaseMutationStrategy,
   BaseMetricsStrategy,
-  BaseMultiprocessingMetricsStrategy,
   ReferenceLossFitnessStrategy,
   IdGenerator,
   DummyMetricsCache,

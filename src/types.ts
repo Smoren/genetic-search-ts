@@ -50,10 +50,6 @@ export type MetricsStrategyConfig<TTaskConfig> = {
   onTaskResult?: (result: GenomeMetricsRow) => void;
 }
 
-export type MultiprocessingMetricsStrategyConfig<TTaskConfig> = MetricsStrategyConfig<TTaskConfig> & {
-  poolSize: number;
-}
-
 export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
   populate: PopulateStrategyInterface<TGenome>;
   metrics: MetricsStrategyInterface<TGenome>;
