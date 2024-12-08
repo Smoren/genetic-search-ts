@@ -12,7 +12,7 @@ import type {
   GenomeStatsManagerInterface,
   PopulationSummaryManagerInterface,
   PopulationSummary,
-  SchedulerInterface,
+  SchedulerInterface, GenomeStats,
 } from "./types";
 import { getRandomArrayItem, IdGenerator } from "./utils";
 import { zip, distinctBy, sort, repeat } from "./itertools";
@@ -26,6 +26,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   protected readonly populationSummaryManager: PopulationSummaryManagerInterface<TGenome>;
   protected _generation: number = 1;
   protected _population: Population<TGenome>;
+  protected _generationStats: GenomeStats[];
 
   constructor(
     config: GeneticSearchConfig,
@@ -38,10 +39,15 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this.strategy = strategy;
     this.config = config;
     this._population = strategy.populate.populate(config.populationSize, this.idGenerator);
+    this._generationStats = this.getGenerationStats();
   }
 
   public get generation(): number {
     return this._generation;
+  }
+
+  public get generationStats(): GenomeStats[] {
+    return this._generationStats;
   }
 
   public get bestGenome(): TGenome {
@@ -114,6 +120,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
       scheduler.step();
     }
 
+    this._generationStats = this.getGenerationStats();
     this.refreshPopulation(sortedPopulation);
 
     this._generation++;
@@ -172,6 +179,10 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     this._population = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
   }
+
+  protected getGenerationStats(): GenomeStats[] {
+    return this.population.filter((genome) => genome.stats).map((genome) => genome.stats!);
+  }
 }
 
 export class ComposedGeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
@@ -196,6 +207,15 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
 
   public get generation(): number {
     return this.final.generation;
+  }
+
+  public get generationStats(): GenomeStats[] {
+    const stats = [...this.final.generationStats];
+    for (const eliminator of this.eliminators) {
+      stats.push(...eliminator.generationStats);
+    }
+    stats.sort((lhs, rhs) => rhs.fitness - lhs.fitness);
+    return stats;
   }
 
   public get bestGenome(): TGenome {

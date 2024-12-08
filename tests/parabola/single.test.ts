@@ -54,6 +54,7 @@ describe.each([
       const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
       expect(search.cache).toBeInstanceOf(DummyMetricsCache);
       expect(search.partitions).toEqual([50, 25, 25]);
+      expect(search.generationStats.length).toEqual(0);
 
       await search.fit({
         generationsCount: 100,
@@ -74,6 +75,8 @@ describe.each([
 
       const population = search.population;
       expect(population.length).toBe(100);
+
+      expect(search.generationStats.length).toEqual(search.population.length);
 
       {
         const oldFirstIdx = population[0].id;
@@ -466,6 +469,7 @@ describe.each([
       expect(search.generation).toEqual(1);
       expect(search.cache).toBeInstanceOf(DummyMetricsCache);
       expect(search.partitions).toEqual([50, 30, 20]);
+      expect(search.generationStats.length).toEqual(0);
 
       await search.fit({
         generationsCount: 100,

@@ -136,6 +136,7 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly partitions: [number, number, number];
   readonly cache: MetricsCacheInterface;
   readonly generation: number;
+  readonly generationStats: GenomeStats[];
   population: Population<TGenome>;
   setPopulation(population: Population<TGenome>, resetIdGenerator: boolean): void;
   getPopulationSummary(roundPrecision?: number): PopulationSummary;
