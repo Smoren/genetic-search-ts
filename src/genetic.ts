@@ -26,7 +26,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   protected readonly populationSummaryManager: PopulationSummaryManagerInterface<TGenome>;
   protected _generation: number = 1;
   protected _population: Population<TGenome>;
-  protected _generationStats: GenomeStats[];
+  protected _generationStats: GenomeStats[] = [];
 
   constructor(
     config: GeneticSearchConfig,
@@ -39,7 +39,6 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this.strategy = strategy;
     this.config = config;
     this._population = strategy.populate.populate(config.populationSize, this.idGenerator);
-    this._generationStats = this.getGenerationStats();
   }
 
   public get generation(): number {
@@ -120,7 +119,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
       scheduler.step();
     }
 
-    this._generationStats = this.getGenerationStats();
+    this._generationStats = this.getGenerationStats(sortedPopulation);
     this.refreshPopulation(sortedPopulation);
 
     this._generation++;
@@ -180,8 +179,8 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this._population = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
   }
 
-  protected getGenerationStats(): GenomeStats[] {
-    return this.population.filter((genome) => genome.stats).map((genome) => genome.stats!);
+  protected getGenerationStats(sortedPopulation: Population<TGenome>): GenomeStats[] {
+    return sortedPopulation.filter((genome) => genome.stats).map((genome) => genome.stats!);
   }
 }
 
