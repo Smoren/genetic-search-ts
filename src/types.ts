@@ -89,6 +89,7 @@ export type PopulationSummary = {
   readonly fitnessSummary: StatSummary;
   readonly groupedFitnessSummary: GroupedStatSummary;
   readonly ageSummary: RangeStatSummary;
+  readonly stagnationCounter: number;
 }
 
 export type SchedulerRuleInput<TGenome extends BaseGenome, TConfig> = {

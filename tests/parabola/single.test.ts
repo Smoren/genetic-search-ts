@@ -556,6 +556,7 @@ describe.each([
       expect(search.generation).toEqual(1);
       expect(search.cache).toBeInstanceOf(DummyMetricsCache);
       expect(search.partitions).toEqual([50, 30, 20]);
+      expect(search.getPopulationSummary().stagnationCounter).toEqual(0);
 
       await search.fit({
         stopCondition: (scores) => Math.abs(scores[0] - y) < 10e-9,

@@ -69,6 +69,8 @@ export class PopulationSummaryManager implements PopulationSummaryManagerInterfa
   protected fitnessSummary: StatSummary;
   protected groupedFitnessSummary: GroupedStatSummary;
   protected ageSummary: RangeStatSummary;
+  protected bestGenomeId: number | undefined;
+  protected stagnationCounter: number = 0;
 
   constructor() {
     this.fitnessSummary = createEmptyStatSummary();
@@ -81,6 +83,7 @@ export class PopulationSummaryManager implements PopulationSummaryManagerInterfa
       fitnessSummary: fullCopyObject(this.fitnessSummary),
       groupedFitnessSummary: fullCopyObject(this.groupedFitnessSummary),
       ageSummary: fullCopyObject(this.ageSummary),
+      stagnationCounter: this.stagnationCounter,
     };
   }
 
@@ -89,10 +92,20 @@ export class PopulationSummaryManager implements PopulationSummaryManagerInterfa
       fitnessSummary: roundStatSummary(this.fitnessSummary, precision),
       groupedFitnessSummary: roundGroupedStatSummary(this.groupedFitnessSummary, precision),
       ageSummary: roundRangeStatSummary(this.ageSummary, precision),
+      stagnationCounter: this.stagnationCounter,
     };
   }
 
   public update(sortedPopulation: Population<BaseGenome>): void {
+    const bestGenomeId = sortedPopulation[0]?.id;
+
+    if (this.bestGenomeId !== bestGenomeId) {
+      this.bestGenomeId = bestGenomeId;
+      this.stagnationCounter = 0;
+    } else {
+      this.stagnationCounter++;
+    }
+
     const statsCollection = sortedPopulation
       .filter((genome) => genome.stats !== undefined)
       .map((genome) => genome.stats!);

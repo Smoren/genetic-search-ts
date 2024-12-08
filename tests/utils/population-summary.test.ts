@@ -20,11 +20,13 @@ describe.each([
         ageSummary: createEmptyRangeStatSummary(),
         fitnessSummary: createEmptyStatSummary(),
         groupedFitnessSummary: createEmptyGroupedStatSummary(),
+        stagnationCounter: 0,
       });
       expect(summaryManager.getRounded(roundPrecision)).toEqual({
         ageSummary: createEmptyRangeStatSummary(),
         fitnessSummary: createEmptyStatSummary(),
         groupedFitnessSummary: createEmptyGroupedStatSummary(),
+        stagnationCounter: 0,
       });
 
       summaryManager.update(sortedPopulation);
@@ -34,6 +36,11 @@ describe.each([
       expect(roundStatSummary(summary.fitnessSummary, roundPrecision)).toEqual(expected.fitnessSummary);
       expect(roundGroupedStatSummary(summary.groupedFitnessSummary, roundPrecision)).toEqual(expected.groupedFitnessSummary);
       expect(summaryManager.getRounded(roundPrecision)).toEqual(summary);
+
+      const oldStagnationCounter = summaryManager.get().stagnationCounter;
+      summaryManager.update(sortedPopulation);
+      expect(summaryManager.get().stagnationCounter).toEqual(oldStagnationCounter+1);
+      expect(summaryManager.getRounded(4).stagnationCounter).toEqual(oldStagnationCounter+1);
     });
   },
 );
@@ -82,6 +89,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             worst: 0,
           },
         },
+        stagnationCounter: 0,
       },
     ],
     [
@@ -172,6 +180,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             worst: 80,
           },
         },
+        stagnationCounter: 0,
       },
     ],
     [
@@ -262,6 +271,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             worst: 0,
           },
         },
+        stagnationCounter: 0,
       },
     ],
   ];
