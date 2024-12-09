@@ -139,6 +139,7 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly generationStats: GenomeStats[];
   population: Population<TGenome>;
   setPopulation(population: Population<TGenome>, resetIdGenerator: boolean): void;
+  refreshPopulation(): void;
   getPopulationSummary(roundPrecision?: number): PopulationSummary;
   fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn>;
   clearCache(): void;

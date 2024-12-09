@@ -67,7 +67,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     if (resetIdGenerator) {
       this.idGenerator.reset(population);
     }
-    this._population = population;
+    this._populationBuffer = population;
   }
 
   public get partitions(): [number, number, number] {
@@ -109,7 +109,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   public async fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn> {
-    this.applyRefreshPopulation();
+    this.refreshPopulation();
 
     const metricsMatrix = await this.strategy.metrics.collect(this._population, this.strategy.cache);
     const fitnessColumn = this.strategy.fitness.score(metricsMatrix);
@@ -124,7 +124,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     }
 
     this._generationStats = this.getGenerationStats(sortedPopulation);
-    this.refreshPopulation(sortedPopulation);
+    this.refreshPopulationBuffer(sortedPopulation);
 
     this._generation++;
 
@@ -133,6 +133,10 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
   public clearCache() {
     this.strategy.cache.clear(this.population.map((genome) => genome.id));
+  }
+
+  public refreshPopulation(): void {
+    this._population = this._populationBuffer;
   }
 
   protected sortPopulation(scores: GenerationFitnessColumn): [Population<TGenome>, GenerationFitnessColumn] {
@@ -170,7 +174,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return newPopulation;
   }
 
-  protected refreshPopulation(sortedPopulation: Population<TGenome>): void {
+  protected refreshPopulationBuffer(sortedPopulation: Population<TGenome>): void {
     const [countToSurvive, countToCross, countToClone] = this.partitions;
 
     const survivedPopulation = sortedPopulation.slice(0, countToSurvive);
@@ -182,10 +186,6 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     this._population = sortedPopulation;
     this._populationBuffer = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
-  }
-
-  protected applyRefreshPopulation(): void {
-    this._population = this._populationBuffer;
   }
 
   protected getGenerationStats(sortedPopulation: Population<TGenome>): GenomeStats[] {
@@ -298,12 +298,20 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
 
     // TODO pop best genomes ???
 
+    this.final.refreshPopulation();
     this.final.setPopulation([...distinctBy([...this.final.population, ...this.bestGenomes], (x) => x.id)], false);
     return await this.final.fitStep(scheduler);
   }
 
   public clearCache() {
     this.strategy.cache.clear(this.population.map((genome) => genome.id));
+  }
+
+  public refreshPopulation() {
+    this.final.refreshPopulation();
+    for (const eliminator of this.eliminators) {
+      eliminator.refreshPopulation();
+    }
   }
 
   protected get bestGenomes(): Population<TGenome> {
