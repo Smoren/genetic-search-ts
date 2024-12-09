@@ -26,6 +26,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   protected readonly populationSummaryManager: PopulationSummaryManagerInterface<TGenome>;
   protected _generation: number = 1;
   protected _population: Population<TGenome>;
+  protected _populationBuffer: Population<TGenome> = [];
   protected _generationStats: GenomeStats[] = [];
 
   constructor(
@@ -39,6 +40,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this.strategy = strategy;
     this.config = config;
     this._population = strategy.populate.populate(config.populationSize, this.idGenerator);
+    this._populationBuffer = this.population;
   }
 
   public get generation(): number {
@@ -107,6 +109,8 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   public async fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn> {
+    this.applyRefreshPopulation();
+
     const metricsMatrix = await this.strategy.metrics.collect(this._population, this.strategy.cache);
     const fitnessColumn = this.strategy.fitness.score(metricsMatrix);
 
@@ -176,7 +180,12 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this.genomeStatsManager.init(crossedPopulation, 'crossover');
     this.genomeStatsManager.init(mutatedPopulation, 'mutation');
 
-    this._population = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
+    this._population = sortedPopulation;
+    this._populationBuffer = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
+  }
+
+  protected applyRefreshPopulation(): void {
+    this._population = this._populationBuffer;
   }
 
   protected getGenerationStats(sortedPopulation: Population<TGenome>): GenomeStats[] {

@@ -154,7 +154,7 @@ describe.each([
         beforeStep: () => void 0,
         afterStep: (generation) => {
           const population = search.population;
-          const expectedPopulationSize = generation < 10 ? 100 : 50;
+          const expectedPopulationSize = generation <= 10 ? 100 : 50;
 
           expect(population.length).toBe(expectedPopulationSize);
 
