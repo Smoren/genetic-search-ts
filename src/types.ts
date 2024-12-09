@@ -47,7 +47,7 @@ export type BaseMutationStrategyConfig = {
 
 export type MetricsStrategyConfig<TTaskConfig> = {
   task: CalcMetricsTask<TTaskConfig>;
-  onTaskResult?: (result: GenomeMetricsRow) => void;
+  onTaskResult?: (result: GenomeMetricsRow, input: TTaskConfig) => void;
 }
 
 export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {

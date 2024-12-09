@@ -60,7 +60,7 @@ export abstract class BaseMetricsStrategy<
     const result: GenerationMetricsMatrix = [];
     for (const input of inputs) {
       const taskResult = await this.config.task(input);
-      this.config.onTaskResult?.(taskResult);
+      this.config.onTaskResult?.(taskResult, input);
       result.push(taskResult);
     }
     return result;
