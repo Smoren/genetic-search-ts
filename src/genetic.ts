@@ -27,7 +27,6 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   protected _generation: number = 1;
   protected _population: Population<TGenome>;
   protected _populationBuffer: Population<TGenome> = [];
-  protected _generationStats: GenomeStats[] = [];
 
   constructor(
     config: GeneticSearchConfig,
@@ -45,10 +44,6 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
   public get generation(): number {
     return this._generation;
-  }
-
-  public get generationStats(): GenomeStats[] {
-    return this._generationStats;
   }
 
   public get bestGenome(): TGenome {
@@ -123,7 +118,6 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
       scheduler.step();
     }
 
-    this._generationStats = this.getGenerationStats(sortedPopulation);
     this.refreshPopulationBuffer(sortedPopulation);
 
     this._generation++;
@@ -187,10 +181,6 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this._population = sortedPopulation;
     this._populationBuffer = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
   }
-
-  protected getGenerationStats(sortedPopulation: Population<TGenome>): GenomeStats[] {
-    return sortedPopulation.filter((genome) => genome.stats).map((genome) => genome.stats!);
-  }
 }
 
 export class ComposedGeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
@@ -215,15 +205,6 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
 
   public get generation(): number {
     return this.final.generation;
-  }
-
-  public get generationStats(): GenomeStats[] {
-    const stats = [...this.final.generationStats];
-    for (const eliminator of this.eliminators) {
-      stats.push(...eliminator.generationStats);
-    }
-    stats.sort((lhs, rhs) => rhs.fitness - lhs.fitness);
-    return stats;
   }
 
   public get bestGenome(): TGenome {
