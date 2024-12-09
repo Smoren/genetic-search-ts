@@ -472,7 +472,7 @@ describe.each([
       expect(search.generationStats.length).toEqual(0);
 
       await search.fit({
-        generationsCount: 100,
+        generationsCount: 150,
         beforeStep: () => void 0,
         afterStep: () => {
           const summary = search.getPopulationSummary();
