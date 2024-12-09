@@ -483,6 +483,7 @@ describe.each([
 
       expect(bestGenome.x).toBeCloseTo(x);
       expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
+      expect(search.population.length).toBe(110);
 
       const population = search.population;
 
@@ -573,6 +574,7 @@ describe.each([
 
       expect(bestGenome.x).toBeCloseTo(x, 2);
       expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
+      expect(search.population.length).toBe(110);
 
       const population = search.population;
 

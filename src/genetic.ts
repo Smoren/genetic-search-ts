@@ -188,12 +188,14 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   private readonly eliminators: GeneticSearchInterface<TGenome>[];
   private readonly final: GeneticSearchInterface<TGenome>;
   private readonly idGenerator: IdGeneratorInterface<TGenome>;
+  private readonly config: ComposedGeneticSearchConfig;
 
   constructor(
     config: ComposedGeneticSearchConfig,
     strategy: GeneticSearchStrategyConfig<TGenome>,
     idGenerator?: IdGenerator<TGenome>,
   ) {
+    this.config = config;
     this.strategy = strategy;
     this.idGenerator = idGenerator ?? new IdGenerator<TGenome>();
     this.eliminators = [...repeat(
@@ -213,7 +215,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
 
   public get population(): Population<TGenome> {
     const result: Population<TGenome> = [];
-    result.push(...this.final.population);
+    result.push(...this.final.population.slice(0, this.config.final.populationSize));
     for (const eliminators of this.eliminators) {
       result.push(...eliminators.population);
     }
