@@ -145,6 +145,111 @@ export class ParabolaMaxValueFitnessStrategy implements FitnessStrategyInterface
 }
 ```
 
+Api Reference
+-------------
+
+### GeneticSearchInterface
+
+### Generic types
+
+| Type        | Extends                   | Description                                        |
+|-------------|---------------------------|----------------------------------------------------|
+| **TGenome** | [BaseGenome](#BaseGenome) | The specific type of genome within the population. |
+
+### Attributes
+
+| Attribute      | Type                     | Description                            |
+|----------------|--------------------------|----------------------------------------|
+| **bestGenome** | TGenome                  | Current best genome in the population. |
+| **partitions** | [number, number, number] | Partition sizes of the population.     |
+| **cache**      | MetricsCacheInterface    | Metrics cache.                         |
+| **generation** | number                   | Current generation number.             |
+| **population** | Population<TGenome>      | Current population.                    |
+
+### Methods
+
+| Method                   | Description                                         | Signature                                                                             |
+|--------------------------|-----------------------------------------------------|---------------------------------------------------------------------------------------|
+| **setPopulation**        | Sets the current population.                        | (population: [Population\<TGenome\>](#Population), resetIdGenerator: boolean) => void |
+| **refreshPopulation**    | Refreshes the population.                           | () => void                                                                            |
+| **getPopulationSummary** | Gets the population summary.                        | (roundPrecision?: number) => PopulationSummary                                        |
+| **fitStep**              | Runs a single step of the genetic search algorithm. | (scheduler?: SchedulerInterface) => Promise<GenerationFitnessColumn>                  |
+| **clearCache**           | Clears the cache.                                   | () => void                                                                            |
+| **fit**                  | Runs the genetic search algorithm.                  | (config: GeneticSearchFitConfig) => Promise<void>                                     |
+
+### GeneticSearchConfig
+
+```typescript
+interface GeneticSearchConfig {
+  populationSize: number;
+  survivalRate: number;
+  crossoverRate: number;
+}
+```
+
+#### Attributes
+| Property           | Type   | Required | Description                                                                              |
+|--------------------|--------|----------|------------------------------------------------------------------------------------------|
+| **populationSize** | number | ☑        | The size of the population of genomes.                                                   |
+| **survivalRate**   | number | ☑        | The rate of survival for the genomes in the population.                                  |
+| **crossoverRate**  | number | ☑        | The rate of crossover for the difference between the total population and the survivors. |
+
+### BaseGenome
+
+The base interface for a genome. A genome is a candidate solution in a genetic search.
+
+```typescript
+type BaseGenome = {
+  id: number;
+  stats?: GenomeStats;
+}
+```
+
+| Property  | Type                        | Required | Description                                                                                                  |
+|-----------|-----------------------------|----------|--------------------------------------------------------------------------------------------------------------|
+| **id**    | number                      | ☑        | The unique identifier of the genome.                                                                         |
+| **stats** | [GenomeStats](#GenomeStats) | ☐        | The statistics of the genome, automatically generated when the genome participates in the genetic algorithm. |
+
+### Population
+
+Represents a population of genomes in a genetic algorithm.
+
+```typescript
+type Population<TGenome extends BaseGenome> = TGenome[];
+```
+
+| Name        | Extends                   | Description                                        |
+|-------------|---------------------------|----------------------------------------------------|
+| **TGenome** | [BaseGenome](#BaseGenome) | The specific type of genome within the population. |
+
+### GenomeStats
+
+The statistics of a genome, automatically generated when the genome participates in the genetic algorithm.
+
+```typescript
+type GenomeStats = {
+  age: number;
+  fitness: number;
+  metrics: GenomeMetricsRow;
+  origin: GenomeOrigin;
+}
+```
+
+| Property    | Type                          | Required | Description                      |
+|-------------|-------------------------------|----------|----------------------------------|
+| **age**     | number                        | ☑        | The age of the genome.           |
+| **fitness** | number                        | ☑        | The fitness score of the genome. |
+| **metrics** | GenomeMetricsRow              | ☑        | The metrics of the genome.       |
+| **origin**  | [GenomeOrigin](#GenomeOrigin) | ☑        | The origin of the genome.        |
+
+### GenomeOrigin
+
+The origin of a genome, either from crossover, mutation or initial.
+
+```typescript
+type GenomeOrigin = "crossover" | "mutation" | "initial";
+```
+
 Unit testing
 ------------
 

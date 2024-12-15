@@ -107,10 +107,6 @@ export type CalcMetricsTask<TTaskConfig> = (data: TTaskConfig) => Promise<Genome
 
 /**
  * The configuration for a genetic search algorithm.
- *
- * @property populationSize The size of the population of genomes.
- * @property survivalRate The rate of survival for the genomes in the population.
- * @property crossoverRate The rate of crossover for the genomes in the population.
  */
 export interface GeneticSearchConfig {
   /**
