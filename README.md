@@ -9,6 +9,18 @@
 
 ![Logo](docs/images/logo.png)
 
+Overview
+--------
+
+This project provides a TypeScript implementation of a genetic algorithm that can be used for optimization problems. The algorithm is designed to be highly customizable and can be used for a wide range of applications.
+
+Features
+--------
+
+* **Multiprocessing support**: The algorithm can be run in parallel using multiple processes, making it suitable for large-scale optimization problems.
+* **Customizable**: The algorithm can be customized by providing custom implementations for various components, such as the population generator, mutation strategy, crossover strategy, and fitness function.
+* **Type-safe**: The project uses TypeScript, which provides type safety and helps catch errors at compile-time.
+
 Setup
 -----
 
