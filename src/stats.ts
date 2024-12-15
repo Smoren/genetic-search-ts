@@ -26,6 +26,11 @@ import {
   roundStatSummary,
 } from './utils';
 
+/**
+ * A manager for the statistics of a population of genomes.
+ *
+ * This class implements the [[GenomeStatsManagerInterface]] interface.
+ */
 export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenome> {
   public init(population: Population<BaseGenome>, origin: GenomeOrigin): void {
     for (const genome of population) {
@@ -43,6 +48,12 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
     }
   }
 
+  /**
+   * Initializes the statistics of a genome.
+   *
+   * @param genome The genome to initialize.
+   * @param origin The origin of the genome.
+   */
   protected initItem(genome: BaseGenome, origin: GenomeOrigin): GenomeStats {
     if (genome.stats !== undefined) {
       return genome.stats;
@@ -56,6 +67,15 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
     return genome.stats;
   }
 
+  /**
+   * Updates the statistics of a genome.
+   *
+   * @param genome The genome to update.
+   * @param metrics The metrics of the genome.
+   * @param fitness The fitness of the genome.
+   *
+   * @returns The updated genome statistics.
+   */
   protected updateItem(genome: BaseGenome, metrics: GenomeMetricsRow, fitness: number): GenomeStats {
     const stats = this.initItem(genome, 'initial');
     stats.age++;
@@ -65,13 +85,42 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
   }
 }
 
+/**
+ * A manager for the population summary.
+ *
+ * This class implements the [[PopulationSummaryManagerInterface]] interface.
+ * It is used to manage the population summary, which is a summary of the
+ * statistics of a population of genomes.
+ */
 export class PopulationSummaryManager implements PopulationSummaryManagerInterface<BaseGenome> {
+  /**
+   * The summary of the fitness of the population.
+   */
   protected fitnessSummary: StatSummary;
+
+  /**
+   * The summary of the fitness of the population, grouped by origin.
+   */
   protected groupedFitnessSummary: GroupedStatSummary;
+
+  /**
+   * The summary of the age of the population.
+   */
   protected ageSummary: RangeStatSummary;
+
+  /**
+   * The ID of the best genome in the population.
+   */
   protected bestGenomeId: number | undefined;
+
+  /**
+   * The number of generations since the best genome has changed.
+   */
   protected stagnationCounter: number = 0;
 
+  /**
+   * Constructs a new population summary manager.
+   */
   constructor() {
     this.fitnessSummary = createEmptyStatSummary();
     this.groupedFitnessSummary = createEmptyGroupedStatSummary();
@@ -115,10 +164,20 @@ export class PopulationSummaryManager implements PopulationSummaryManagerInterfa
     this.updateAgeSummary(statsCollection);
   }
 
+  /**
+   * Updates the summary of the population.
+   *
+   * @param sortedStatsCollection The sorted collection of genome statistics.
+   */
   protected updateSummary(sortedStatsCollection: GenomeStats[]): void {
     this.fitnessSummary = calcStatSummary(sortedStatsCollection.map((stats) => stats.fitness));
   }
 
+  /**
+   * Updates the grouped summary of the population.
+   *
+   * @param sortedStatsCollection The sorted collection of genome statistics.
+   */
   protected updateGroupedSummary(sortedStatsCollection: GenomeStats[]): void {
     const initialCollection = sortedStatsCollection.filter((stats) => stats.origin === 'initial');
     const crossoverCollection = sortedStatsCollection.filter((stats) => stats.origin === 'crossover');
@@ -131,6 +190,11 @@ export class PopulationSummaryManager implements PopulationSummaryManagerInterfa
     };
   }
 
+  /**
+   * Updates the summary of the age of the population.
+   *
+   * @param sortedStatsCollection The sorted collection of genome statistics.
+   */
   protected updateAgeSummary(sortedStatsCollection: GenomeStats[]): void {
     const ageCollection = sortedStatsCollection.map((stats) => stats.age);
     this.ageSummary = calcRangeStatSummary(ageCollection);

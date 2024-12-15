@@ -7,36 +7,81 @@ import type {
   StatSummary
 } from "./types";
 
+/**
+ * Generates unique identifiers for genomes.
+ *
+ * @template TGenome The type of genome objects in the population.
+ */
 export class IdGenerator<TGenome extends BaseGenome> implements IdGeneratorInterface<TGenome> {
   private id: number = 1;
 
-  nextId(): number {
+  public nextId(): number {
     return this.id++;
   }
 
-  reset(population: TGenome[]): void {
+  public reset(population: TGenome[]): void {
     this.id = population.reduce((max, genome) => Math.max(max, genome.id), 0) + 1;
   }
 }
 
-export const fullCopyObject = <T extends Record<string, any>>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
+/**
+ * Creates a deep copy of an object.
+ *
+ * @template T The type of the object to copy.
+ * @param obj The object to copy.
+ * @returns A deep copy of the object.
+ */
+export const fullCopyObject = <T extends Record<string, any>>(obj: T): T => JSON.parse(JSON.stringify(obj)) as T;
 
+/**
+ * Rounds a number to a given precision.
+ *
+ * @param value The number to round.
+ * @param precision The precision to round to.
+ * @returns The rounded number.
+ */
 export function round(value: number, precision: number): number {
   return Number(value.toFixed(precision));
 }
 
+/**
+ * Generates an array of a given length, filled with a specified value.
+ *
+ * @template T The type of the values in the array.
+ * @param length The length of the array to generate.
+ * @param value The value to fill the array with.
+ * @returns An array of the specified length, filled with the specified value.
+ */
 export function createFilledArray<T>(length: number, value: T): T[] {
   return Array.from({ length }, () => value);
 }
 
+/**
+ * Calculates the sum of an array of numbers.
+ *
+ * @param input The array of numbers to sum.
+ * @returns The sum of the input array.
+ */
 export function arraySum(input: number[]): number {
   return input.reduce((acc, val) => acc + val, 0);
 }
 
+/**
+ * Calculates the mean of an array of numbers.
+ *
+ * @param input The array of numbers to calculate the mean of.
+ * @returns The mean of the input array.
+ */
 export function arrayMean(input: number[]): number {
   return arraySum(input) / input.length;
 }
 
+/**
+ * Calculates the median of a sorted array of numbers.
+ *
+ * @param sortedInput The sorted array of numbers to find the median of.
+ * @returns The median value of the input array.
+ */
 export function arrayMedian(sortedInput: number[]): number {
   const middleIndex = Math.floor(sortedInput.length / 2);
   if (sortedInput.length % 2 !== 0) {
@@ -45,6 +90,15 @@ export function arrayMedian(sortedInput: number[]): number {
   return (sortedInput[middleIndex - 1] + sortedInput[middleIndex]) / 2;
 }
 
+/**
+ * Applies a binary operator to two arrays of the same length.
+ *
+ * @template T The type of the values in the arrays.
+ * @param lhs The left-hand side array.
+ * @param rhs The right-hand side array.
+ * @param operator The binary operator to apply.
+ * @returns A new array with the result of applying the operator to each pair of values.
+ */
 export function arrayBinaryOperation<T>(lhs: Array<T>, rhs: Array<T>, operator: (lhs: T, rhs: T) => T): Array<T> {
   const result: Array<T> = [];
   const len = Math.min(lhs.length, rhs.length);
@@ -56,10 +110,24 @@ export function arrayBinaryOperation<T>(lhs: Array<T>, rhs: Array<T>, operator: 
   return result;
 }
 
+/**
+ * Returns a random element from the input array.
+ *
+ * @template T The type of the values in the array.
+ * @param input The array to select a random element from.
+ * @returns A random element from the input array.
+ */
 export function getRandomArrayItem<T>(input: T[]): T {
   return input[Math.floor(Math.random() * input.length)];
 }
 
+/**
+ * Normalizes an array of numbers to the range from -1 to 1, where the `reference` value is mapped to 0.
+ *
+ * @param input The array of numbers to normalize.
+ * @param reference The reference value to map to 0.
+ * @returns The normalized array of numbers.
+ */
 export function normalizeMetricsRow(input: GenomeMetricsRow, reference: number): GenomeMetricsRow {
   // Find the minimum and maximum values in the array
   const minVal = Math.min(...input);
@@ -75,6 +143,13 @@ export function normalizeMetricsRow(input: GenomeMetricsRow, reference: number):
   });
 }
 
+/**
+ * Normalizes the columns of a matrix of metrics to the range from -1 to 1, where the `reference` value is mapped to 0.
+ *
+ * @param input The matrix of metrics to normalize.
+ * @param reference The reference value to map to 0.
+ * @returns The normalized matrix of metrics.
+ */
 export function normalizeMetricsMatrixColumns(
   input: GenerationMetricsMatrix,
   reference: GenomeMetricsRow,
@@ -95,6 +170,14 @@ export function normalizeMetricsMatrixColumns(
   return result;
 }
 
+/**
+ * Normalizes the columns of a matrix of metrics to the range from -1 to 1, where the `reference` value is mapped to 0.
+ *
+ * @param matrix The matrix of metrics to normalize.
+ * @param reference The reference value to map to 0.
+ * @param abs Whether to take the absolute value of the normalized values.
+ * @returns The normalized matrix of metrics.
+ */
 export function normalizeMetricsMatrix(matrix: GenerationMetricsMatrix, reference: GenomeMetricsRow, abs: boolean = true): GenerationMetricsMatrix {
   const result = normalizeMetricsMatrixColumns(matrix, reference);
 
@@ -105,6 +188,15 @@ export function normalizeMetricsMatrix(matrix: GenerationMetricsMatrix, referenc
   return result;
 }
 
+/**
+ * Creates an empty `StatSummary` object.
+ *
+ * A `StatSummary` object contains the count of genomes in the population,
+ * as well as the best, second best, mean, median, and worst values.
+ * This function initializes a `StatSummary` with all values set to zero.
+ *
+ * @returns An initialized `StatSummary` object with all fields set to zero.
+ */
 export function createEmptyStatSummary(): StatSummary {
   return {
     count: 0,
@@ -116,6 +208,15 @@ export function createEmptyStatSummary(): StatSummary {
   };
 }
 
+/**
+ * Creates an empty `GroupedStatSummary` object.
+ *
+ * A `GroupedStatSummary` object contains a summary of the statistics of a population of genomes,
+ * grouped by origin into three categories: initial, crossover, and mutation.
+ * This function initializes a `GroupedStatSummary` with all values set to zero.
+ *
+ * @returns An initialized `GroupedStatSummary` object with all fields set to zero.
+ */
 export function createEmptyGroupedStatSummary(): GroupedStatSummary {
   return {
     initial: createEmptyStatSummary(),
@@ -124,6 +225,15 @@ export function createEmptyGroupedStatSummary(): GroupedStatSummary {
   };
 }
 
+/**
+ * Creates an empty `RangeStatSummary` object.
+ *
+ * A `RangeStatSummary` object contains the minimum, mean, and maximum values
+ * for a set of numerical data.
+ * This function initializes a `RangeStatSummary` with all values set to zero.
+ *
+ * @returns An initialized `RangeStatSummary` object with all fields set to zero.
+ */
 export function createEmptyRangeStatSummary(): RangeStatSummary {
   return {
     min: 0,
@@ -132,6 +242,15 @@ export function createEmptyRangeStatSummary(): RangeStatSummary {
   };
 }
 
+/**
+ * Calculates a summary of the statistics for a sorted array of numbers.
+ *
+ * The summary includes the count of numbers in the array,
+ * as well as the best, second best, mean, median, and worst values.
+ *
+ * @param sortedSource The sorted array of numbers.
+ * @returns A summary of the statistics for the array of numbers.
+ */
 export function calcStatSummary(sortedSource: number[]): StatSummary {
   if (sortedSource.length === 0) {
     return createEmptyStatSummary();
@@ -147,6 +266,15 @@ export function calcStatSummary(sortedSource: number[]): StatSummary {
   };
 }
 
+/**
+ * Calculates a summary of the statistics for a sorted array of numbers.
+ *
+ * The summary includes the minimum, mean, and maximum values
+ * for a set of numerical data.
+ *
+ * @param source The array of numbers.
+ * @returns A summary of the statistics for the array of numbers.
+ */
 export function calcRangeStatSummary(source: number[]): RangeStatSummary {
   if (source.length === 0) {
     return createEmptyRangeStatSummary();
@@ -159,6 +287,13 @@ export function calcRangeStatSummary(source: number[]): RangeStatSummary {
   };
 }
 
+/**
+ * Rounds the fields of a StatSummary object to a given precision.
+ *
+ * @param summary The StatSummary object to round.
+ * @param precision The number of decimal places to round to.
+ * @returns A new StatSummary object with rounded fields.
+ */
 export function roundStatSummary(summary: StatSummary, precision: number): StatSummary {
   return {
     count: summary.count,
@@ -170,6 +305,16 @@ export function roundStatSummary(summary: StatSummary, precision: number): StatS
   };
 }
 
+/**
+ * Rounds the fields of a GroupedStatSummary object to a given precision.
+ *
+ * This function rounds the statistics in each category of the GroupedStatSummary
+ * (initial, crossover, mutation) to the specified number of decimal places.
+ *
+ * @param summary The GroupedStatSummary object to round.
+ * @param precision The number of decimal places to round to.
+ * @returns A new GroupedStatSummary object with rounded fields.
+ */
 export function roundGroupedStatSummary(summary: GroupedStatSummary, precision: number): GroupedStatSummary {
   return {
     initial: roundStatSummary(summary.initial, precision),
@@ -178,6 +323,16 @@ export function roundGroupedStatSummary(summary: GroupedStatSummary, precision: 
   };
 }
 
+/**
+ * Rounds the fields of a RangeStatSummary object to a given precision.
+ *
+ * This function rounds the minimum, mean, and maximum values of the RangeStatSummary
+ * to the specified number of decimal places.
+ *
+ * @param summary The RangeStatSummary object to round.
+ * @param precision The number of decimal places to round to.
+ * @returns A new RangeStatSummary object with rounded fields.
+ */
 export function roundRangeStatSummary(summary: RangeStatSummary, precision: number): RangeStatSummary {
   return {
     min: round(summary.min, precision),

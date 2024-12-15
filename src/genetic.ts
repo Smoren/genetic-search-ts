@@ -12,12 +12,31 @@ import type {
   GenomeStatsManagerInterface,
   PopulationSummaryManagerInterface,
   PopulationSummary,
-  SchedulerInterface, GenomeStats,
+  SchedulerInterface,
 } from "./types";
 import { getRandomArrayItem, IdGenerator } from "./utils";
 import { zip, distinctBy, sort, repeat } from "./itertools";
 import { GenomeStatsManager, PopulationSummaryManager } from "./stats";
 
+/**
+ * A genetic search algorithm.
+ *
+ * @template TGenome The type of genome objects in the population.
+ *
+ * @remarks
+ * This class implements the genetic search algorithm. The algorithm is
+ * configured using the [[GeneticSearchConfig]] object.
+ *
+ * The algorithm uses the following components, which can be customized by
+ * providing a custom implementation:
+ *
+ * - A [[PopulateStrategyInterface]] to generate the initial population.
+ * - A [[MutationStrategyInterface]] to mutate the population.
+ * - A [[CrossoverStrategyInterface]] to cross over the population.
+ * - A [[MetricsStrategyInterface]] to calculate the metrics of the population.
+ * - A [[FitnessStrategyInterface]] to calculate the fitness of the population.
+ * - A [[MetricsCacheInterface]] to cache the metrics of the population.
+ */
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   protected readonly config: GeneticSearchConfig;
   protected readonly strategy: GeneticSearchStrategyConfig<TGenome>;
@@ -28,6 +47,13 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   protected _population: Population<TGenome>;
   protected _populationBuffer: Population<TGenome> = [];
 
+  /**
+   * Constructs a new instance of the GeneticSearch class.
+   *
+   * @param config - The configuration for the genetic search.
+   * @param strategy - The strategy configuration for genetic operations.
+   * @param idGenerator - An optional ID generator for the genomes.
+   */
   constructor(
     config: GeneticSearchConfig,
     strategy: GeneticSearchStrategyConfig<TGenome>,
@@ -183,6 +209,22 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 }
 
+/**
+ * A composed genetic search algorithm that combines multiple genetic search strategies.
+ *
+ * @template TGenome The type of genome objects in the population.
+ *
+ * @remarks
+ * This class implements a composite genetic search algorithm that utilizes multiple
+ * genetic search strategies, including eliminators and a final strategy. The algorithm
+ * is configured using the [[ComposedGeneticSearchConfig]] object.
+ *
+ * The algorithm integrates the following components, which can be customized by
+ * providing custom implementations:
+ *
+ * - A [[GeneticSearchStrategyConfig]] to define the strategy for the genetic operations.
+ * - An [[IdGeneratorInterface]] to generate unique IDs for the genomes.
+ */
 export class ComposedGeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   private readonly strategy: GeneticSearchStrategyConfig<TGenome>;
   private readonly eliminators: GeneticSearchInterface<TGenome>[];

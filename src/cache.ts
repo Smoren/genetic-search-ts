@@ -1,6 +1,12 @@
 import type { GenomeMetricsRow, MetricsCacheInterface } from "./types";
 import { arrayBinaryOperation, createFilledArray } from "./utils";
 
+/**
+ * A dummy metrics cache implementation that does nothing.
+ *
+ * This class is used when the {@link GeneticSearch} is created without a
+ * metrics cache.
+ */
 export class DummyMetricsCache implements MetricsCacheInterface {
   getReady(_: number): GenomeMetricsRow | undefined {
     return undefined;
@@ -27,6 +33,13 @@ export class DummyMetricsCache implements MetricsCacheInterface {
   }
 }
 
+/**
+ * A simple metrics cache implementation.
+ *
+ * This cache stores the constant metrics value for each genome.
+ *
+ * @implements {MetricsCacheInterface}
+ */
 export class SimpleMetricsCache implements MetricsCacheInterface {
   protected readonly cache: Map<number, GenomeMetricsRow> = new Map();
 
@@ -65,7 +78,20 @@ export class SimpleMetricsCache implements MetricsCacheInterface {
   }
 }
 
+/**
+ * A metrics cache implementation that stores the metrics for each genome as a
+ * weighted average of all metrics that have been set for that genome.
+ *
+ * @implements {MetricsCacheInterface}
+ */
 export class AverageMetricsCache implements MetricsCacheInterface {
+  /**
+   * A map of genome IDs to their respective metrics and the number of times they have been set.
+   *
+   * The key is the genome ID, and the value is an array with two elements. The first element is the
+   * current metrics for the genome, and the second element is the number of times the metrics have
+   * been set.
+   */
   protected readonly cache: Map<number, [GenomeMetricsRow, number]> = new Map();
 
   get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined {
@@ -111,10 +137,30 @@ export class AverageMetricsCache implements MetricsCacheInterface {
   }
 }
 
+/**
+ * A metrics cache implementation that stores the metrics for each genome as a
+ * weighted average of all metrics that have been set for that genome.
+ *
+ * The closer the genome age is to 0, the closer the metrics are to the average metrics of the population,
+ * which helps to combat outliers for new genomes.
+ *
+ * @implements {MetricsCacheInterface}
+ */
 export class WeightedAgeAverageMetricsCache extends AverageMetricsCache {
+  /**
+   * The weight factor used for calculating the weighted average.
+   */
   private weight: number;
+
+  /**
+   * The current average metrics row, or undefined if not yet calculated.
+   */
   private averageRow: GenomeMetricsRow | undefined = undefined;
 
+  /**
+   * Constructs a new WeightedAgeAverageMetricsCache.
+   * @param weight The weight factor used for calculating the weighted average.
+   */
   constructor(weight: number) {
     super();
     this.weight = weight;
