@@ -47,6 +47,7 @@ import type {
 import {
   GeneticSearch,
   SimpleMetricsCache,
+  DescendingSortingStrategy,
 } from "genetic-search";
 
 const config: GeneticSearchConfig = {
@@ -63,6 +64,7 @@ const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
     onTaskResult: () => void 0,
   }),
   fitness: new ParabolaMaxValueFitnessStrategy(),
+  sorting: new DescendingSortingStrategy(),
   mutation: new ParabolaMutationStrategy(),
   crossover: new ParabolaCrossoverStrategy(),
   cache: new SimpleMetricsCache(),

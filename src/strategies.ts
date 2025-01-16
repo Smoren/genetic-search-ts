@@ -11,9 +11,10 @@ import type {
   GenomeMetricsRow,
   GenerationFitnessColumn,
   MetricsCacheInterface,
+  SortStrategyInterface,
 } from "./types";
 import { normalizeMetricsMatrix, arrayBinaryOperation, arraySum } from "./utils";
-import { zip } from "./itertools";
+import {sort, zip} from "./itertools";
 
 /**
  * Base class for mutation strategies.
@@ -155,5 +156,17 @@ export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {
    */
   protected weighRow(result: GenomeMetricsRow): GenomeMetricsRow {
     return arrayBinaryOperation(result, this.referenceConfig.weights, (x, y) => x * y);
+  }
+}
+
+export class AscendingSortingStrategy<TGenome extends BaseGenome> implements SortStrategyInterface<TGenome> {
+  sort(input: Array<[TGenome, number, GenomeMetricsRow]>): Array<[TGenome, number, GenomeMetricsRow]> {
+    return [...sort(input, (lhs, rhs) => lhs[1] - rhs[1])];
+  }
+}
+
+export class DescendingSortingStrategy<TGenome extends BaseGenome> implements SortStrategyInterface<TGenome> {
+  sort(input: Array<[TGenome, number, GenomeMetricsRow]>): Array<[TGenome, number, GenomeMetricsRow]> {
+    return [...sort(input, (lhs, rhs) => rhs[1] - lhs[1])];
   }
 }

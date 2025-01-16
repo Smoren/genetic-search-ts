@@ -5,7 +5,10 @@ import {
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
   DummyMetricsCache,
-  SimpleMetricsCache, Scheduler,
+  SimpleMetricsCache,
+  Scheduler,
+  DescendingSortingStrategy,
+  AscendingSortingStrategy,
 } from "../../src";
 import {
   ComposedGeneticSearch,
@@ -30,7 +33,7 @@ import { WeightedAgeAverageMetricsCache } from "../../src";
 describe.each([
   ...dataProviderForGetParabolaMax(),
 ] as Array<[[number, number], [number, number]]>)(
-  'Get Parabola Max Test',
+  'Get Parabola With Descending Sort Max Test',
   ([a, b], [x, y]) => {
     it('', async () => {
       const config: GeneticSearchConfig = {
@@ -46,6 +49,7 @@ describe.each([
           onTaskResult: () => void 0,
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
         cache: new DummyMetricsCache(),
@@ -102,6 +106,81 @@ describe.each([
   },
 );
 
+describe.each([
+  ...dataProviderForGetParabolaMax(),
+] as Array<[[number, number], [number, number]]>)(
+  'Get Parabola With Ascending Sort Max Test',
+  ([a, b], [x, y]) => {
+    it('', async () => {
+      const config: GeneticSearchConfig = {
+        populationSize: 100,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      };
+
+      const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
+        populate: new ParabolaPopulateStrategy(),
+        metrics: new ParabolaSingleMetricsStrategy({
+          task: async (data: ParabolaTaskConfig) => [-(-((data[0]+a)**2) + b)],
+          onTaskResult: () => void 0,
+        }),
+        fitness: new ParabolaMaxValueFitnessStrategy(),
+        sorting: new AscendingSortingStrategy(),
+        mutation: new ParabolaMutationStrategy(),
+        crossover: new ParabolaCrossoverStrategy(),
+        cache: new DummyMetricsCache(),
+      }
+
+      const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
+      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
+      expect(search.partitions).toEqual([50, 25, 25]);
+
+      await search.fit({
+        generationsCount: 100,
+        beforeStep: () => void 0,
+        afterStep: () => {
+          const summary = search.getPopulationSummary();
+          expect(summary.fitnessSummary.count).toBe(100);
+
+          const roundedSummary = search.getPopulationSummary(4);
+          expect(roundedSummary.fitnessSummary.count).toBe(100);
+        },
+      });
+
+      const bestGenome = search.bestGenome;
+
+      expect(bestGenome.x).toBeCloseTo(x);
+      expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
+
+      const population = search.population;
+      expect(population.length).toBe(100);
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, false);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, true);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+    });
+  },
+);
 
 describe.each([
   ...dataProviderForGetParabolaMax(),
@@ -122,6 +201,7 @@ describe.each([
           onTaskResult: () => void 0,
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
         cache: new DummyMetricsCache(),
@@ -194,6 +274,7 @@ describe.each([
           onTaskResult: () => void 0,
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
         cache: new SimpleMetricsCache(),
@@ -263,6 +344,7 @@ describe.each([
           onTaskResult: () => void 0,
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
         cache: new AverageMetricsCache(),
@@ -332,6 +414,7 @@ describe.each([
           onTaskResult: () => void 0,
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
         cache: new WeightedAgeAverageMetricsCache(0.2),
@@ -374,6 +457,7 @@ describe.each([
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
         }),
         fitness: new ParabolaReferenceFitnessStrategy(y),
+        sorting: new DescendingSortingStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
         cache: new DummyMetricsCache(),
@@ -457,6 +541,7 @@ describe.each([
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
         }),
         fitness: new ParabolaReferenceFitnessStrategy(y),
+        sorting: new DescendingSortingStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
         cache: new DummyMetricsCache(),
@@ -547,6 +632,7 @@ describe.each([
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
         cache: new DummyMetricsCache(),

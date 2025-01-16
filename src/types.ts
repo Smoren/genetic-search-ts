@@ -261,6 +261,11 @@ export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
   crossover: CrossoverStrategyInterface<TGenome>;
 
   /**
+   * The strategy to sort the population.
+   */
+  sorting: SortStrategyInterface<TGenome>;
+
+  /**
    * The cache to store the metrics of the population.
    */
   cache: MetricsCacheInterface;
@@ -553,6 +558,21 @@ export interface FitnessStrategyInterface {
    * @param results The results of the metrics collection.
    */
   score(results: GenerationMetricsMatrix): GenerationFitnessColumn;
+}
+
+/**
+ * An interface for a sort strategy.
+ *
+ * @template TGenome The type of genome objects in the population.
+ */
+export interface SortStrategyInterface<TGenome extends BaseGenome> {
+  /**
+   * Sorts a given iterable of genomes, fitness scores, and metrics rows.
+   *
+   * @param input An iterable containing tuples of genomes, their fitness scores, and their associated metrics rows.
+   * @returns An array of sorted tuples of genomes, fitness scores, and metrics rows.
+   */
+  sort(input: Array<[TGenome, number, GenomeMetricsRow]>): Array<[TGenome, number, GenomeMetricsRow]>;
 }
 
 /**

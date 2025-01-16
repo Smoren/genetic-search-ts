@@ -27,6 +27,7 @@ import type {
   CrossoverStrategyInterface,
   MetricsStrategyInterface,
   FitnessStrategyInterface,
+  SortStrategyInterface,
   GeneticSearchInterface,
   IdGeneratorInterface,
   MetricsCacheInterface,
@@ -60,6 +61,8 @@ import {
   BaseMutationStrategy,
   BaseMetricsStrategy,
   ReferenceLossFitnessStrategy,
+  AscendingSortingStrategy,
+  DescendingSortingStrategy,
 } from './strategies';
 
 import {
@@ -97,6 +100,7 @@ export type {
   CrossoverStrategyInterface,
   MetricsStrategyInterface,
   FitnessStrategyInterface,
+  SortStrategyInterface,
   GeneticSearchInterface,
   IdGeneratorInterface,
   MetricsCacheInterface,
@@ -111,6 +115,8 @@ export {
   BaseMutationStrategy,
   BaseMetricsStrategy,
   ReferenceLossFitnessStrategy,
+  AscendingSortingStrategy,
+  DescendingSortingStrategy,
   IdGenerator,
   DummyMetricsCache,
   SimpleMetricsCache,

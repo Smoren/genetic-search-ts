@@ -13,9 +13,10 @@ import type {
   PopulationSummaryManagerInterface,
   PopulationSummary,
   SchedulerInterface,
+  GenerationMetricsMatrix,
 } from "./types";
 import { getRandomArrayItem, IdGenerator } from "./utils";
-import { zip, distinctBy, sort, repeat } from "./itertools";
+import { zip, distinctBy, repeat } from "./itertools";
 import { GenomeStatsManager, PopulationSummaryManager } from "./stats";
 
 /**
@@ -137,7 +138,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     this.genomeStatsManager.update(this.population, metricsMatrix, fitnessColumn);
 
-    const [sortedPopulation, sortedFitnessColumn] = this.sortPopulation(fitnessColumn);
+    const [sortedPopulation, sortedFitnessColumn] = this.sortPopulation(fitnessColumn, metricsMatrix);
     this.populationSummaryManager.update(sortedPopulation);
 
     if (scheduler !== undefined) {
@@ -159,13 +160,15 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this._population = this._populationBuffer;
   }
 
-  protected sortPopulation(scores: GenerationFitnessColumn): [Population<TGenome>, GenerationFitnessColumn] {
-    const zipped = zip(this._population, scores);
-    const sorted = sort(zipped, (lhs, rhs) => rhs[1] - lhs[1]);
-    const sortedArray = [...sorted];
+  protected sortPopulation(
+    scores: GenerationFitnessColumn,
+    metricsMatrix: GenerationMetricsMatrix,
+  ): [Population<TGenome>, GenerationFitnessColumn] {
+    const zipped = zip(this._population, scores, metricsMatrix);
+    const sorted = this.strategy.sorting.sort([...zipped]);
     return [
-      sortedArray.map((x) => x[0]),
-      sortedArray.map((x) => x[1]),
+      sorted.map((x) => x[0]),
+      sorted.map((x) => x[1]),
     ];
   }
 
