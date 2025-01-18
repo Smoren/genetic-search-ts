@@ -116,6 +116,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const generationsCount = config.generationsCount ?? Infinity;
     for (let i=0; i<generationsCount; i++) {
       const generation = this.generation;
+      this.refreshPopulation();
       this.clearCache();
       if (config.beforeStep) {
         config.beforeStep(generation);
@@ -304,6 +305,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     const generationsCount = config.generationsCount ?? Infinity;
     for (let i=0; i<generationsCount; i++) {
+      this.refreshPopulation();
       this.clearCache();
       if (config.beforeStep) {
         config.beforeStep(i);
