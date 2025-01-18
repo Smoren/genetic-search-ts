@@ -150,7 +150,9 @@ export class ParabolaMaxValueFitnessStrategy implements FitnessStrategyInterface
 Api Reference
 -------------
 
-For detailed documentation and usage examples, please refer to the [API documentation](https://smoren.github.io/genetic-search-ts/).
+For detailed documentation and usage examples, please refer to:
+* [Main API documentation](https://smoren.github.io/genetic-search-ts/)
+* [Multiprocess API documentation](https://smoren.github.io/genetic-search-multiprocess-ts/)
 
 Unit testing
 ------------
