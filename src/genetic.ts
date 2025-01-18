@@ -179,18 +179,20 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
       const lhs = getRandomArrayItem(genomes);
       const rhs = getRandomArrayItem(genomes);
       const crossedGenome = this.strategy.crossover.cross(lhs, rhs, this.idGenerator.nextId());
+      this.genomeStatsManager.initItem(crossedGenome, 'crossover', [lhs, rhs]);
       newPopulation.push(crossedGenome);
     }
 
     return newPopulation;
   }
 
-  protected clone(genomes: Population<TGenome>, count: number): Population<TGenome> {
+  protected mutate(genomes: Population<TGenome>, count: number): Population<TGenome> {
     const newPopulation: Population<TGenome> = [];
 
     for (let i = 0; i < count; i++) {
       const genome = getRandomArrayItem(genomes);
       const mutatedGenome = this.strategy.mutation.mutate(genome, this.idGenerator.nextId());
+      this.genomeStatsManager.initItem(mutatedGenome, 'mutation', [genome]);
       newPopulation.push(mutatedGenome);
     }
 
@@ -202,10 +204,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     const survivedPopulation = sortedPopulation.slice(0, countToSurvive);
     const crossedPopulation = this.crossover(survivedPopulation, countToCross);
-    const mutatedPopulation = this.clone(survivedPopulation, countToClone);
-
-    this.genomeStatsManager.init(crossedPopulation, 'crossover');
-    this.genomeStatsManager.init(mutatedPopulation, 'mutation');
+    const mutatedPopulation = this.mutate(survivedPopulation, countToClone);
 
     this._population = sortedPopulation;
     this._populationBuffer = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];

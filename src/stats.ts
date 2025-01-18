@@ -15,6 +15,7 @@ import type {
 } from "./types";
 import { zip } from "./itertools";
 import {
+  arraySum,
   calcRangeStatSummary,
   calcStatSummary,
   createEmptyGroupedStatSummary,
@@ -24,7 +25,7 @@ import {
   roundGroupedStatSummary,
   roundRangeStatSummary,
   roundStatSummary,
-} from './utils';
+} from "./utils";
 
 /**
  * A manager for the statistics of a population of genomes.
@@ -48,13 +49,7 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
     }
   }
 
-  /**
-   * Initializes the statistics of a genome.
-   *
-   * @param genome The genome to initialize.
-   * @param origin The origin of the genome.
-   */
-  protected initItem(genome: BaseGenome, origin: GenomeOrigin): GenomeStats {
+  public initItem(genome: BaseGenome, origin: GenomeOrigin, parents: BaseGenome[] = []): GenomeStats {
     if (genome.stats !== undefined) {
       return genome.stats;
     }
@@ -63,6 +58,10 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
       age: 0,
       metrics: [],
       origin,
+      originCounters: {
+        crossover: arraySum(parents.map((p) => p.stats?.originCounters?.crossover ?? 0)) + Number(origin === 'crossover'),
+        mutation: arraySum(parents.map((p) => p.stats?.originCounters?.mutation ?? 0)) + Number(origin === 'mutation'),
+      }
     };
     return genome.stats;
   }

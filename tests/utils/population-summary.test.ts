@@ -101,6 +101,10 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             fitness: 100,
             metrics: [10],
             origin: 'initial',
+            originCounters: {
+              crossover: 0,
+              mutation: 0,
+            },
           },
         },
         {
@@ -110,6 +114,10 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             fitness: 90,
             metrics: [9],
             origin: 'crossover',
+            originCounters: {
+              crossover: 0,
+              mutation: 0,
+            },
           },
         },
         {
@@ -119,6 +127,10 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             fitness: 80,
             metrics: [8],
             origin: 'mutation',
+            originCounters: {
+              crossover: 0,
+              mutation: 0,
+            },
           },
         },
         {
@@ -128,6 +140,10 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             fitness: 70,
             metrics: [7],
             origin: 'initial',
+            originCounters: {
+              crossover: 0,
+              mutation: 0,
+            },
           },
         },
         {
@@ -137,6 +153,10 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             fitness: 0,
             metrics: [6],
             origin: 'crossover',
+            originCounters: {
+              crossover: 0,
+              mutation: 0,
+            },
           },
         },
       ],
@@ -192,6 +212,10 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             fitness: 100,
             metrics: [10],
             origin: 'initial',
+            originCounters: {
+              crossover: 0,
+              mutation: 0,
+            },
           },
         },
         {
@@ -201,6 +225,10 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             fitness: 90,
             metrics: [9],
             origin: 'crossover',
+            originCounters: {
+              crossover: 0,
+              mutation: 0,
+            },
           },
         },
         {
@@ -210,6 +238,10 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             fitness: 80,
             metrics: [8],
             origin: 'crossover',
+            originCounters: {
+              crossover: 0,
+              mutation: 0,
+            },
           },
         },
         {
@@ -219,6 +251,10 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             fitness: 70,
             metrics: [7],
             origin: 'initial',
+            originCounters: {
+              crossover: 0,
+              mutation: 0,
+            },
           },
         },
         {
@@ -228,6 +264,10 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
             fitness: 0,
             metrics: [6],
             origin: 'crossover',
+            originCounters: {
+              crossover: 0,
+              mutation: 0,
+            },
           },
         },
       ],

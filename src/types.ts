@@ -26,6 +26,14 @@ export type GenomeStats = {
    * The origin of the genome, indicating how it was created.
    */
   origin: GenomeOrigin;
+
+  /**
+   * The number of times the genome was created through crossover and mutation.
+   */
+  originCounters: {
+    crossover: number;
+    mutation: number;
+  }
 }
 
 /**
@@ -745,6 +753,16 @@ export interface GenomeStatsManagerInterface<TGenome extends BaseGenome> {
    * @param origin The origin of the population.
    */
   init(population: Population<TGenome>, origin: GenomeOrigin): void;
+
+  /**
+   * Initializes the statistics of a genome.
+   *
+   * @param genome The genome to initialize.
+   * @param origin The origin of the genome.
+   * @param parents The parents of the genome.
+   * @returns The initialized genome statistics.
+   */
+  initItem(genome: BaseGenome, origin: GenomeOrigin, parents: BaseGenome[] = []): GenomeStats
 
   /**
    * Updates the genome stats manager with the given population, metrics matrix, and fitness column.
