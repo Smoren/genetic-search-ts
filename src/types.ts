@@ -762,7 +762,7 @@ export interface GenomeStatsManagerInterface<TGenome extends BaseGenome> {
    * @param parents The parents of the genome.
    * @returns The initialized genome statistics.
    */
-  initItem(genome: BaseGenome, origin: GenomeOrigin, parents: BaseGenome[] = []): GenomeStats
+  initItem(genome: BaseGenome, origin: GenomeOrigin, parents?: BaseGenome[]): GenomeStats
 
   /**
    * Updates the genome stats manager with the given population, metrics matrix, and fitness column.
