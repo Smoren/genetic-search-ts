@@ -105,6 +105,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
               crossover: 0,
               mutation: 0,
             },
+            parentIds: [],
           },
         },
         {
@@ -118,6 +119,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
               crossover: 0,
               mutation: 0,
             },
+            parentIds: [],
           },
         },
         {
@@ -131,6 +133,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
               crossover: 0,
               mutation: 0,
             },
+            parentIds: [],
           },
         },
         {
@@ -144,6 +147,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
               crossover: 0,
               mutation: 0,
             },
+            parentIds: [],
           },
         },
         {
@@ -157,6 +161,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
               crossover: 0,
               mutation: 0,
             },
+            parentIds: [],
           },
         },
       ],
@@ -216,6 +221,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
               crossover: 0,
               mutation: 0,
             },
+            parentIds: [],
           },
         },
         {
@@ -229,6 +235,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
               crossover: 0,
               mutation: 0,
             },
+            parentIds: [],
           },
         },
         {
@@ -242,6 +249,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
               crossover: 0,
               mutation: 0,
             },
+            parentIds: [],
           },
         },
         {
@@ -255,6 +263,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
               crossover: 0,
               mutation: 0,
             },
+            parentIds: [],
           },
         },
         {
@@ -268,6 +277,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
               crossover: 0,
               mutation: 0,
             },
+            parentIds: [],
           },
         },
       ],

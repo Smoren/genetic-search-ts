@@ -71,7 +71,8 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
           originCounters: {
             crossover: 0,
             mutation: 0,
-          }
+          },
+          parentIds: [],
         },
         {
           fitness: 0,
@@ -82,6 +83,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
             crossover: 0,
             mutation: 0,
           },
+          parentIds: [],
         },
         {
           fitness: 0,
@@ -92,6 +94,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
             crossover: 0,
             mutation: 0,
           },
+          parentIds: [],
         },
       ],
       [
@@ -104,6 +107,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
             crossover: 0,
             mutation: 0,
           },
+          parentIds: [],
         },
         {
           fitness: 20,
@@ -114,6 +118,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
             crossover: 0,
             mutation: 0,
           },
+          parentIds: [],
         },
         {
           fitness: 30,
@@ -124,6 +129,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
             crossover: 0,
             mutation: 0,
           },
+          parentIds: [],
         },
       ],
     ],
@@ -168,6 +174,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
             crossover: 1,
             mutation: 0,
           },
+          parentIds: [],
         }
       },
       {
@@ -181,6 +188,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
             crossover: 0,
             mutation: 1,
           },
+          parentIds: [],
         }
       },
       {
@@ -192,6 +200,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
           crossover: 2,
           mutation: 1,
         },
+        parentIds: [1, 2],
       },
       {
         fitness: 0,
@@ -202,6 +211,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
           crossover: 1,
           mutation: 1,
         },
+        parentIds: [1],
       },
       {
         fitness: 0,
@@ -212,6 +222,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
           crossover: 0,
           mutation: 2,
         },
+        parentIds: [2],
       }
     ],
     [
@@ -226,6 +237,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
             crossover: 0,
             mutation: 0,
           },
+          parentIds: [],
         }
       },
       {
@@ -239,6 +251,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
             crossover: 0,
             mutation: 0,
           },
+          parentIds: [],
         }
       },
       {
@@ -250,6 +263,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
           crossover: 1,
           mutation: 0,
         },
+        parentIds: [1, 2],
       },
       {
         fitness: 0,
@@ -260,6 +274,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [1],
       },
       {
         fitness: 0,
@@ -270,6 +285,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [2],
       }
     ],
     [
@@ -284,6 +300,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
             crossover: 0,
             mutation: 0,
           },
+          parentIds: [],
         }
       },
       {
@@ -297,6 +314,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
             crossover: 0,
             mutation: 1,
           },
+          parentIds: [],
         }
       },
       {
@@ -308,6 +326,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
           crossover: 1,
           mutation: 1,
         },
+        parentIds: [1, 2],
       },
       {
         fitness: 0,
@@ -318,6 +337,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [1],
       },
       {
         fitness: 0,
@@ -328,6 +348,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
           crossover: 0,
           mutation: 2,
         },
+        parentIds: [2],
       }
     ],
   ];
@@ -347,6 +368,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 1,
           mutation: 0,
         },
+        parentIds: [1, 2],
       },
       {
         fitness: 0,
@@ -357,6 +379,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [1],
       },
       {
         fitness: 0,
@@ -367,6 +390,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [2],
       }
     ],
     [
@@ -382,6 +406,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
             crossover: 0,
             mutation: 0,
           },
+          parentIds: [],
         }
       },
       {
@@ -393,6 +418,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 1,
           mutation: 0,
         },
+        parentIds: [1, 2],
       },
       {
         fitness: 0,
@@ -403,6 +429,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [1],
       },
       {
         fitness: 0,
@@ -413,6 +440,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [2],
       }
     ],
     [
@@ -435,6 +463,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 1,
           mutation: 0,
         },
+        parentIds: [1, 2],
       },
       {
         fitness: 0,
@@ -445,6 +474,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [1],
       },
       {
         fitness: 0,
@@ -455,6 +485,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [2],
       }
     ],
     [
@@ -478,6 +509,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
             crossover: 0,
             mutation: 0,
           },
+          parentIds: [],
         }
       },
       {
@@ -489,6 +521,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 1,
           mutation: 0,
         },
+        parentIds: [1, 2],
       },
       {
         fitness: 0,
@@ -499,6 +532,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [1],
       },
       {
         fitness: 0,
@@ -509,6 +543,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [2],
       }
     ],
     [
@@ -539,6 +574,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 1,
           mutation: 0,
         },
+        parentIds: [1, 2],
       },
       {
         fitness: 0,
@@ -549,6 +585,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [1],
       },
       {
         fitness: 0,
@@ -559,6 +596,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
           crossover: 0,
           mutation: 1,
         },
+        parentIds: [2],
       }
     ],
   ];

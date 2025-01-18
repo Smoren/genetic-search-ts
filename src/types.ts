@@ -33,7 +33,12 @@ export type GenomeStats = {
   originCounters: {
     crossover: number;
     mutation: number;
-  }
+  };
+
+  /**
+   * The IDs of the parents of the genome.
+   */
+  parentIds: number[];
 }
 
 /**

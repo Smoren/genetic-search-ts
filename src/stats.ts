@@ -61,7 +61,8 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
       originCounters: {
         crossover: arraySum(parents.map((p) => p.stats?.originCounters?.crossover ?? 0)) + Number(origin === 'crossover'),
         mutation: arraySum(parents.map((p) => p.stats?.originCounters?.mutation ?? 0)) + Number(origin === 'mutation'),
-      }
+      },
+      parentIds: parents.map((p) => p.id),
     };
     return genome.stats;
   }
