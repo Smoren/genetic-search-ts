@@ -5,3 +5,4 @@ package-lock.json
 coverage
 es
 lib
+docs/api
