@@ -7,14 +7,15 @@ import type {
   RangeStatSummary,
   GroupedStatSummary,
   PopulationSummary,
-  SchedulerRuleInput,
-  SchedulerRule,
+  SchedulerActionInput,
+  SchedulerAction,
   SchedulerConfig,
   GenomePhenotypeRow,
   GenerationPhenotypeMatrix,
   EvaluatedGenome,
   CalcPhenotypeTask,
   GenerationFitnessColumn,
+  GenerationBeforeCallback,
   GenerationAfterCallback,
   GeneticSearchConfig,
   ComposedGeneticSearchConfig,
@@ -57,6 +58,8 @@ import {
 
 import {
   Scheduler,
+  SchedulerConditionException,
+  checkSchedulerCondition,
 } from "./scheduler";
 
 import {
@@ -83,14 +86,15 @@ export type {
   RangeStatSummary,
   GroupedStatSummary,
   PopulationSummary,
-  SchedulerRuleInput,
-  SchedulerRule,
+  SchedulerActionInput,
+  SchedulerAction,
   SchedulerConfig,
   GenomePhenotypeRow,
   GenerationPhenotypeMatrix,
   EvaluatedGenome,
   CalcPhenotypeTask,
   GenerationFitnessColumn,
+  GenerationBeforeCallback,
   GenerationAfterCallback,
   GeneticSearchConfig,
   ComposedGeneticSearchConfig,
@@ -131,6 +135,8 @@ export {
   GenomeStatsManager,
   PopulationSummaryManager,
   Scheduler,
+  SchedulerConditionException,
+  checkSchedulerCondition,
   normalizePhenotypeRow,
   normalizePhenotypeMatrix,
 }

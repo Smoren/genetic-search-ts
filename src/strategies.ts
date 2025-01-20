@@ -23,6 +23,8 @@ import {sort, zip} from "./itertools";
  *
  * @template TGenome The type of genome objects in the population.
  * @template TConfig The type of configuration for the mutation strategy.
+ *
+ * @category Strategies
  */
 export abstract class BaseMutationStrategy<
   TGenome extends BaseGenome,
@@ -51,6 +53,8 @@ export abstract class BaseMutationStrategy<
  * @template TGenome The type of genome objects in the population.
  * @template TConfig The type of configuration for the phenotype strategy.
  * @template TTaskConfig The type of configuration required to execute the task of the calculating phenotype.
+ *
+ * @category Strategies
  */
 export abstract class BasePhenotypeStrategy<
   TGenome extends BaseGenome,
@@ -127,6 +131,8 @@ export abstract class BasePhenotypeStrategy<
  *
  * The fitness of a genome is calculated as the negative sum of the absolute differences between the reference loss
  * and the loss calculated for the genome.
+ *
+ * @category Strategies
  */
 export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {
   /**
@@ -174,6 +180,8 @@ export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {
  *
  * @param input An iterable containing tuples of genomes, their fitness scores, and their associated phenotype rows.
  * @returns An array of sorted tuples of genomes, fitness scores, and phenotype rows.
+ *
+ * @category Strategies
  */
 export class AscendingSortingStrategy<TGenome extends BaseGenome> implements SortStrategyInterface<TGenome> {
   /**
@@ -192,6 +200,8 @@ export class AscendingSortingStrategy<TGenome extends BaseGenome> implements Sor
  *
  * @param input An iterable containing tuples of genomes, their fitness scores, and their associated phenotype rows.
  * @returns An array of sorted tuples of genomes, fitness scores, and phenotype rows.
+ *
+ * @category Strategies
  */
 export class DescendingSortingStrategy<TGenome extends BaseGenome> implements SortStrategyInterface<TGenome> {
   /**
@@ -211,6 +221,8 @@ export class DescendingSortingStrategy<TGenome extends BaseGenome> implements So
  * This selection strategy randomly selects parents for mutation and crossover.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Strategies
  */
 export class RandomSelectionStrategy<TGenome extends BaseGenome> implements SelectionStrategyInterface<TGenome> {
   protected crossoverParentsCount: number;

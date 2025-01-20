@@ -9,6 +9,8 @@
  *
  * @template TValue - The tuple of iterables to be transformed.
  * @template TFiller - The type to be used when an element is not an iterable.
+ *
+ * @category IterTools
  */
 type ZipTuple<TValue, TFiller> = {
   [K in keyof TValue]:
@@ -22,6 +24,8 @@ type ZipTuple<TValue, TFiller> = {
  * This type is the union of types that can be compared using the
  * default comparison functions, such as strings, numbers, booleans,
  * and arrays.
+ *
+ * @category IterTools
  */
 type Comparable = string | number | boolean | Array<unknown>;
 
@@ -38,6 +42,8 @@ type Comparable = string | number | boolean | Array<unknown>;
  * number indicates that `lhs` is less than `rhs`, a positive number
  * indicates that `lhs` is greater than `rhs`, and 0 indicates that
  * `lhs` is equal to `rhs`.
+ *
+ * @category IterTools
  */
 type Comparator<T> = (lhs: T, rhs: T) => number;
 
@@ -56,6 +62,8 @@ type Comparator<T> = (lhs: T, rhs: T) => number;
  *   console.log(number);
  * }
  * // Prints 1, 2, 3
+ *
+ * @category IterTools
  */
 export function* sort<T>(data: Iterable<T>, comparator: Comparator<T>): Iterable<T> {
   const result = [...data];
@@ -72,6 +80,8 @@ export function* sort<T>(data: Iterable<T>, comparator: Comparator<T>): Iterable
  * @param item - The item to be repeated.
  * @param repetitions - The number of times to repeat the item.
  * @returns An iterable of the repeated items.
+ *
+ * @category IterTools
  */
 export function* repeat<T>(item: T, repetitions: number): Iterable<T> {
   for (let i = repetitions; i > 0; --i) {
@@ -94,6 +104,8 @@ export function* repeat<T>(item: T, repetitions: number): Iterable<T> {
  * for (const pair of zip(numbers, letters)) {
  *   console.log(pair); // Logs: [1, 'a'], [2, 'b'], [3, 'c']
  * }
+ *
+ * @category IterTools
  */
 export function* zip<T extends Array<Iterable<unknown>>>(...iterables: T): Iterable<ZipTuple<T, never>> {
   const iterators = iterables.map(iterable => iterable[Symbol.iterator]());
@@ -122,6 +134,8 @@ export function* zip<T extends Array<Iterable<unknown>>>(...iterables: T): Itera
  * @param compareBy - A function that takes an element from the input data and
  * returns a comparable value to determine uniqueness.
  * @returns An iterable of unique elements from the input data.
+ *
+ * @category IterTools
  */
 export function* distinctBy<T>(
   data: Iterable<T>,

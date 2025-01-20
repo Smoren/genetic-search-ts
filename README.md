@@ -18,7 +18,13 @@ Features
 --------
 
 * **Multiprocessing support**: The algorithm can be run in parallel using multiple processes, making it suitable for large-scale optimization problems.
-* **Customizable**: The algorithm can be customized by providing custom implementations for various components, such as the population generator, mutation strategy, crossover strategy, and fitness function.
+* **Deep customization**: The algorithm can be customized by providing custom implementations for various components:
+  * **base parameters** (population size, survival rate, crossover rate);
+  * **strategies** (population, phenotype, fitness, sorting, selection, mutation, crossover, caching);
+  * **scheduler** for dynamic tuning of all the macro parameters.
+* **Separation of phenotype metrics and fitness calculation**: The algorithm separates the computation of phenotypes
+  and fitness values, allowing normalization and other operations to be applied to the phenotypes of all genomes prior
+  to evaluating the fitness function.
 * **Type-safe**: The project uses TypeScript, which provides type safety and helps catch errors at compile-time.
 
 Setup

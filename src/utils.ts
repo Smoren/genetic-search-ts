@@ -16,6 +16,8 @@ import {zip} from "./itertools";
  * Generates unique identifiers for genomes.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Utils
  */
 export class IdGenerator<TGenome extends BaseGenome> implements IdGeneratorInterface<TGenome> {
   private id: number = 1;
@@ -35,6 +37,8 @@ export class IdGenerator<TGenome extends BaseGenome> implements IdGeneratorInter
  * @template T The type of the object to copy.
  * @param obj The object to copy.
  * @returns A deep copy of the object.
+ *
+ * @category Utils
  */
 export const fullCopyObject = <T extends Record<string, any>>(obj: T): T => JSON.parse(JSON.stringify(obj)) as T;
 
@@ -44,6 +48,8 @@ export const fullCopyObject = <T extends Record<string, any>>(obj: T): T => JSON
  * @param value The number to round.
  * @param precision The precision to round to.
  * @returns The rounded number.
+ *
+ * @category Utils
  */
 export function round(value: number, precision: number): number {
   return Number(value.toFixed(precision));
@@ -56,6 +62,8 @@ export function round(value: number, precision: number): number {
  * @param length The length of the array to generate.
  * @param value The value to fill the array with.
  * @returns An array of the specified length, filled with the specified value.
+ *
+ * @category Utils
  */
 export function createFilledArray<T>(length: number, value: T): T[] {
   return Array.from({ length }, () => value);
@@ -66,6 +74,8 @@ export function createFilledArray<T>(length: number, value: T): T[] {
  *
  * @param input The array of numbers to sum.
  * @returns The sum of the input array.
+ *
+ * @category Utils
  */
 export function arraySum(input: number[]): number {
   return input.reduce((acc, val) => acc + val, 0);
@@ -76,6 +86,8 @@ export function arraySum(input: number[]): number {
  *
  * @param input The array of numbers to calculate the mean of.
  * @returns The mean of the input array.
+ *
+ * @category Utils
  */
 export function arrayMean(input: number[]): number {
   return arraySum(input) / input.length;
@@ -86,6 +98,8 @@ export function arrayMean(input: number[]): number {
  *
  * @param sortedInput The sorted array of numbers to find the median of.
  * @returns The median value of the input array.
+ *
+ * @category Utils
  */
 export function arrayMedian(sortedInput: number[]): number {
   const middleIndex = Math.floor(sortedInput.length / 2);
@@ -103,6 +117,8 @@ export function arrayMedian(sortedInput: number[]): number {
  * @param rhs The right-hand side array.
  * @param operator The binary operator to apply.
  * @returns A new array with the result of applying the operator to each pair of values.
+ *
+ * @category Utils
  */
 export function arrayBinaryOperation<T>(lhs: Array<T>, rhs: Array<T>, operator: (lhs: T, rhs: T) => T): Array<T> {
   const result: Array<T> = [];
@@ -121,6 +137,8 @@ export function arrayBinaryOperation<T>(lhs: Array<T>, rhs: Array<T>, operator: 
  * @template T The type of the values in the array.
  * @param input The array to select a random element from.
  * @returns A random element from the input array.
+ *
+ * @category Utils
  */
 export function getRandomArrayItem<T>(input: T[]): T {
   return input[Math.floor(Math.random() * input.length)];
@@ -132,6 +150,8 @@ export function getRandomArrayItem<T>(input: T[]): T {
  * @param input The array of numbers to normalize.
  * @param reference The reference value to map to 0.
  * @returns The normalized array of numbers.
+ *
+ * @category Utils
  */
 export function normalizePhenotypeRow(input: GenomePhenotypeRow, reference: number): GenomePhenotypeRow {
   // Find the minimum and maximum values in the array
@@ -154,6 +174,8 @@ export function normalizePhenotypeRow(input: GenomePhenotypeRow, reference: numb
  * @param input The matrix of phenotype to normalize.
  * @param reference The reference value to map to 0.
  * @returns The normalized matrix of phenotype.
+ *
+ * @category Utils
  */
 export function normalizePhenotypeMatrixColumns(
   input: GenerationPhenotypeMatrix,
@@ -182,6 +204,8 @@ export function normalizePhenotypeMatrixColumns(
  * @param reference The reference value to map to 0.
  * @param abs Whether to take the absolute value of the normalized values.
  * @returns The normalized matrix of phenotype.
+ *
+ * @category Utils
  */
 export function normalizePhenotypeMatrix(matrix: GenerationPhenotypeMatrix, reference: GenomePhenotypeRow, abs: boolean = true): GenerationPhenotypeMatrix {
   const result = normalizePhenotypeMatrixColumns(matrix, reference);
@@ -201,6 +225,8 @@ export function normalizePhenotypeMatrix(matrix: GenerationPhenotypeMatrix, refe
  * This function initializes a `StatSummary` with all values set to zero.
  *
  * @returns An initialized `StatSummary` object with all fields set to zero.
+ *
+ * @category Utils
  */
 export function createEmptyStatSummary(): StatSummary {
   return {
@@ -221,6 +247,8 @@ export function createEmptyStatSummary(): StatSummary {
  * This function initializes a `GroupedStatSummary` with all values set to zero.
  *
  * @returns An initialized `GroupedStatSummary` object with all fields set to zero.
+ *
+ * @category Utils
  */
 export function createEmptyGroupedStatSummary(): GroupedStatSummary {
   return {
@@ -238,6 +266,8 @@ export function createEmptyGroupedStatSummary(): GroupedStatSummary {
  * This function initializes a `RangeStatSummary` with all values set to zero.
  *
  * @returns An initialized `RangeStatSummary` object with all fields set to zero.
+ *
+ * @category Utils
  */
 export function createEmptyRangeStatSummary(): RangeStatSummary {
   return {
@@ -255,6 +285,8 @@ export function createEmptyRangeStatSummary(): RangeStatSummary {
  *
  * @param sortedSource The sorted array of numbers.
  * @returns A summary of the statistics for the array of numbers.
+ *
+ * @category Utils
  */
 export function calcStatSummary(sortedSource: number[]): StatSummary {
   if (sortedSource.length === 0) {
@@ -279,6 +311,8 @@ export function calcStatSummary(sortedSource: number[]): StatSummary {
  *
  * @param source The array of numbers.
  * @returns A summary of the statistics for the array of numbers.
+ *
+ * @category Utils
  */
 export function calcRangeStatSummary(source: number[]): RangeStatSummary {
   if (source.length === 0) {
@@ -298,6 +332,8 @@ export function calcRangeStatSummary(source: number[]): RangeStatSummary {
  * @param summary The StatSummary object to round.
  * @param precision The number of decimal places to round to.
  * @returns A new StatSummary object with rounded fields.
+ *
+ * @category Utils
  */
 export function roundStatSummary(summary: StatSummary, precision: number): StatSummary {
   return {
@@ -319,6 +355,8 @@ export function roundStatSummary(summary: StatSummary, precision: number): StatS
  * @param summary The GroupedStatSummary object to round.
  * @param precision The number of decimal places to round to.
  * @returns A new GroupedStatSummary object with rounded fields.
+ *
+ * @category Utils
  */
 export function roundGroupedStatSummary(summary: GroupedStatSummary, precision: number): GroupedStatSummary {
   return {
@@ -337,6 +375,8 @@ export function roundGroupedStatSummary(summary: GroupedStatSummary, precision: 
  * @param summary The RangeStatSummary object to round.
  * @param precision The number of decimal places to round to.
  * @returns A new RangeStatSummary object with rounded fields.
+ *
+ * @category Utils
  */
 export function roundRangeStatSummary(summary: RangeStatSummary, precision: number): RangeStatSummary {
   return {
@@ -346,6 +386,16 @@ export function roundRangeStatSummary(summary: RangeStatSummary, precision: numb
   };
 }
 
+/**
+ * Creates an array of `EvaluatedGenome` objects from a population and its fitness and phenotype.
+ *
+ * @param population The population of genomes.
+ * @param fitnessColumn The fitness column of the population.
+ * @param phenotypeMatrix The phenotype matrix of the population.
+ * @returns An array of EvaluatedGenome objects.
+ *
+ * @category Utils
+ */
 export function createEvaluatedPopulation<TGenome extends BaseGenome>(
   population: Population<TGenome>,
   fitnessColumn: GenerationFitnessColumn,
@@ -355,6 +405,15 @@ export function createEvaluatedPopulation<TGenome extends BaseGenome>(
   return zipped.map(([genome, fitness, phenotype]) => ({ genome, fitness, phenotype }));
 }
 
+/**
+ * Extracts the population, fitness column, and phenotype matrix from an array of
+ * [[EvaluatedGenome]] objects.
+ *
+ * @param input The array of [[EvaluatedGenome]] objects.
+ * @returns An array of three elements: the population, fitness column, and phenotype matrix.
+ *
+ * @category Utils
+ */
 export function extractEvaluatedPopulation<TGenome extends BaseGenome>(
   input: Array<EvaluatedGenome<TGenome>>,
 ): [Population<TGenome>, GenerationFitnessColumn, GenerationPhenotypeMatrix] {

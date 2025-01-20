@@ -31,6 +31,8 @@ import {
  * A manager for the statistics of a population of genomes.
  *
  * This class implements the [[GenomeStatsManagerInterface]] interface.
+ *
+ * @category Statistics
  */
 export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenome> {
   public init(population: Population<BaseGenome>, origin: GenomeOrigin): void {
@@ -91,6 +93,8 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
  * This class implements the [[PopulationSummaryManagerInterface]] interface.
  * It is used to manage the population summary, which is a summary of the
  * statistics of a population of genomes.
+ *
+ * @category Statistics
  */
 export class PopulationSummaryManager implements PopulationSummaryManagerInterface<BaseGenome> {
   /**

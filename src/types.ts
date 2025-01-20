@@ -1,10 +1,16 @@
 /**
  * The origin of a genome, either from crossover, mutation or initial.
+ *
+ * @category Genome
+ * @category Statistics
  */
 export type GenomeOrigin = "crossover" | "mutation" | "initial";
 
 /**
  * Represents the statistics of a genome.
+ *
+ * @category Genome
+ * @category Statistics
  */
 export type GenomeStats = {
   /**
@@ -45,6 +51,9 @@ export type GenomeStats = {
  * The base interface for a genome.
  *
  * A genome is a candidate solution in a genetic search.
+ *
+ * @category Genome
+ * @category Genetic Algorithm
  */
 export type BaseGenome = {
   /**
@@ -63,6 +72,9 @@ export type BaseGenome = {
  * Represents a population of genomes in a genetic algorithm.
  *
  * @template TGenome The specific type of genome within the population.
+ *
+ * @category Genome
+ * @category Genetic Algorithm
  */
 export type Population<TGenome extends BaseGenome> = TGenome[];
 
@@ -71,6 +83,9 @@ export type Population<TGenome extends BaseGenome> = TGenome[];
  *
  * Each number in the array corresponds to a specific metric value
  * calculated for the genome.
+ *
+ * @category Genome
+ * @category Genetic Algorithm
  */
 export type GenomePhenotypeRow = number[];
 
@@ -79,6 +94,9 @@ export type GenomePhenotypeRow = number[];
  *
  * Each number in the array represents the fitness score of a genome
  * within the generation.
+ *
+ * @category Genome
+ * @category Genetic Algorithm
  */
 export type GenerationFitnessColumn = number[];
 
@@ -87,6 +105,9 @@ export type GenerationFitnessColumn = number[];
  *
  * Each row in the matrix corresponds to a GenomePhenotypeRow, storing
  * the phenotype for a single genome.
+ *
+ * @category Genome
+ * @category Genetic Algorithm
  */
 export type GenerationPhenotypeMatrix = GenomePhenotypeRow[];
 
@@ -94,6 +115,9 @@ export type GenerationPhenotypeMatrix = GenomePhenotypeRow[];
  * Represents a genome that has been evaluated.
  *
  * @template TGenome The specific type of genome being evaluated.
+ *
+ * @category Genome
+ * @category Genetic Algorithm
  */
 export type EvaluatedGenome<TGenome extends BaseGenome> = {
   /**
@@ -111,10 +135,14 @@ export type EvaluatedGenome<TGenome extends BaseGenome> = {
    */
   phenotype: GenomePhenotypeRow;
 }
+
 /**
  * A callback function that is called before each generation.
  *
  * @param generation The current generation number.
+ *
+ * @category Genetic Algorithm
+ * @category Genetic Algorithm Config
  */
 export type GenerationBeforeCallback = (generation: number) => void;
 
@@ -123,6 +151,9 @@ export type GenerationBeforeCallback = (generation: number) => void;
  *
  * @param generation The current generation number.
  * @param scores The fitness scores of the current generation.
+ *
+ * @category Genetic Algorithm
+ * @category Genetic Algorithm Config
  */
 export type GenerationAfterCallback = (generation: number, scores: GenerationFitnessColumn) => void;
 
@@ -136,11 +167,17 @@ export type GenerationAfterCallback = (generation: number, scores: GenerationFit
  * @param data The configuration required to execute the task.
  *
  * @returns A promise that resolves to the phenotype of the genome.
+ *
+ * @category Genetic Algorithm
+ * @category Strategies Config
  */
 export type CalcPhenotypeTask<TTaskConfig> = (data: TTaskConfig) => Promise<GenomePhenotypeRow>;
 
 /**
  * The configuration for a genetic search algorithm.
+ *
+ * @category Genetic Algorithm
+ * @category Genetic Algorithm Config
  */
 export interface GeneticSearchConfig {
   /**
@@ -161,6 +198,9 @@ export interface GeneticSearchConfig {
 
 /**
  * The configuration for running a genetic search algorithm.
+ *
+ * @category Genetic Algorithm
+ * @category Genetic Algorithm Config
  */
 export type GeneticSearchFitConfig = {
   /**
@@ -204,6 +244,9 @@ export type GeneticSearchFitConfig = {
  *
  * The algorithm is configured by providing a separate configuration for
  * the eliminators and the final population.
+ *
+ * @category Genetic Algorithm
+ * @category Genetic Algorithm Config
  */
 export type ComposedGeneticSearchConfig = {
   /**
@@ -226,6 +269,8 @@ export type ComposedGeneticSearchConfig = {
 
 /**
  * The configuration for a mutation strategy that mutates a genome with a certain probability.
+ *
+ * @category Strategies Config
  */
 export type BaseMutationStrategyConfig = {
   /**
@@ -243,6 +288,8 @@ export type BaseMutationStrategyConfig = {
  * calculates the phenotype of a population of genomes.
  *
  * @template TTaskConfig The type of configuration required to execute the task.
+ *
+ * @category Strategies Config
  */
 export type PhenotypeStrategyConfig<TTaskConfig> = {
   /**
@@ -267,6 +314,8 @@ export type PhenotypeStrategyConfig<TTaskConfig> = {
  * This configuration is used to define the behavior of a genetic search algorithm.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Genetic Algorithm Config
  */
 export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
   /**
@@ -314,6 +363,8 @@ export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
  * The configuration for a reference loss fitness strategy.
  *
  * This configuration is used to define the reference row and the weights for a reference loss fitness strategy.
+ *
+ * @category Strategies Config
  */
 export type GeneticSearchReferenceConfig = {
   /**
@@ -332,6 +383,8 @@ export type GeneticSearchReferenceConfig = {
  *
  * This object contains the count of genomes in the population,
  * the best and second best values, the mean, median, and worst values.
+ *
+ * @category Statistics
  */
 export type StatSummary = {
   /**
@@ -370,6 +423,8 @@ export type StatSummary = {
  *
  * This type captures the minimum, mean, and maximum values
  * for a set of numerical data.
+ *
+ * @category Statistics
  */
 export type RangeStatSummary = {
   /**
@@ -394,6 +449,8 @@ export type RangeStatSummary = {
  * This object contains the count of genomes in the population,
  * the best and second best values, the mean, median, and worst values.
  * It is grouped by origin into three categories: initial, crossover, and mutation.
+ *
+ * @category Statistics
  */
 export type GroupedStatSummary = {
   /**
@@ -414,6 +471,8 @@ export type GroupedStatSummary = {
 
 /**
  * A summary of the statistics for a population of genomes.
+ *
+ * @category Statistics
  */
 export type PopulationSummary = {
   /**
@@ -445,8 +504,10 @@ export type PopulationSummary = {
  *
  * @template TGenome The type of genome objects in the population.
  * @template TConfig The type of configuration for the genetic search algorithm.
+ *
+ * @category Scheduler
  */
-export type SchedulerRuleInput<TGenome extends BaseGenome, TConfig> = {
+export type SchedulerActionInput<TGenome extends BaseGenome, TConfig> = {
   /**
    * The genetic search algorithm.
    */
@@ -471,31 +532,13 @@ export type SchedulerRuleInput<TGenome extends BaseGenome, TConfig> = {
 }
 
 /**
- * A scheduler rule.
+ * A function that is called when a scheduler rule is activated.
  *
- * @template TGenome The type of genome objects in the population.
- * @template TConfig The type of configuration for the genetic search algorithm.
+ * @param input The input data for the scheduler rule.
+ *
+ * @category Scheduler
  */
-export type SchedulerRule<TGenome extends BaseGenome, TConfig> = {
-  /**
-   * The condition function for the rule.
-   *
-   * This function is called with the input data, and should return a boolean value.
-   * If the value is true, the action function is called.
-   *
-   * @param input The input data for the rule.
-   */
-  condition: (input: SchedulerRuleInput<TGenome, TConfig>) => boolean;
-
-  /**
-   * The action function for the rule.
-   *
-   * This function is called with the input data, if the condition function returns true.
-   *
-   * @param input The input data for the rule.
-   */
-  action: (input: SchedulerRuleInput<TGenome, TConfig>) => void;
-}
+export type SchedulerAction<TGenome extends BaseGenome, TConfig> = (input: SchedulerActionInput<TGenome, TConfig>) => void;
 
 /**
  * The configuration for the scheduler.
@@ -503,6 +546,8 @@ export type SchedulerRule<TGenome extends BaseGenome, TConfig> = {
  * @template TGenome The type of genome objects in the population.
  * @template TConfig The type of configuration object of macro parameters,
  * which the scheduler will be able to manipulate.
+ *
+ * @category Scheduler
  */
 export type SchedulerConfig<TGenome extends BaseGenome, TConfig> = {
   /**
@@ -516,9 +561,9 @@ export type SchedulerConfig<TGenome extends BaseGenome, TConfig> = {
   config: TConfig;
 
   /**
-   * The rules for the scheduler.
+   * The actions for the scheduler.
    */
-  rules: SchedulerRule<TGenome, TConfig>[];
+  actions: SchedulerAction<TGenome, TConfig>[];
 
   /**
    * The maximum length of the generations history summaries array.
@@ -530,6 +575,8 @@ export type SchedulerConfig<TGenome extends BaseGenome, TConfig> = {
  * An interface for a population generator.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Strategies
  */
 export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -545,6 +592,8 @@ export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
  * An interface for a mutation strategy.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Strategies
  */
 export interface MutationStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -560,6 +609,8 @@ export interface MutationStrategyInterface<TGenome extends BaseGenome> {
  * An interface for a crossover strategy.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Strategies
  */
 export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -575,6 +626,8 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
  * An interface for a phenotype strategy.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Strategies
  */
 export interface PhenotypeStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -588,6 +641,8 @@ export interface PhenotypeStrategyInterface<TGenome extends BaseGenome> {
 
 /**
  * An interface for a fitness strategy.
+ *
+ * @category Strategies
  */
 export interface FitnessStrategyInterface {
   /**
@@ -602,6 +657,8 @@ export interface FitnessStrategyInterface {
  * An interface for a sort strategy.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Strategies
  */
 export interface SortStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -617,6 +674,8 @@ export interface SortStrategyInterface<TGenome extends BaseGenome> {
  * An interface for selection strategy.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Strategies
  */
 export interface SelectionStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -642,6 +701,9 @@ export interface SelectionStrategyInterface<TGenome extends BaseGenome> {
  * A genetic search algorithm interface.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Genetic Algorithm
+ * @category Genetic Algorithm Implementation
  */
 export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   /**
@@ -720,6 +782,8 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
  * Interface for generating unique identifiers for genomes.
  *
  * @template TGenome The type of genome objects.
+ *
+ * @category Utils
  */
 export interface IdGeneratorInterface<TGenome extends BaseGenome> {
   /**
@@ -746,6 +810,9 @@ export interface IdGeneratorInterface<TGenome extends BaseGenome> {
  * @remarks
  * The cache is used to store the phenotype of genomes, which are used to calculate
  * the fitness of the population.
+ *
+ * @category Cache
+ * @category Strategies
  */
 export interface PhenotypeCacheInterface {
   /**
@@ -799,6 +866,8 @@ export interface PhenotypeCacheInterface {
  * An interface for a genome stats manager.
  *
  * A genome stats manager is used to manage the statistics of a population of genomes.
+ *
+ * @category Statistics
  */
 export interface GenomeStatsManagerInterface<TGenome extends BaseGenome> {
   /**
@@ -837,6 +906,8 @@ export interface GenomeStatsManagerInterface<TGenome extends BaseGenome> {
  * Interface for managing population summaries in a genetic algorithm.
  *
  * @template TGenome The type of genome objects in the population.
+ *
+ * @category Statistics
  */
 export interface PopulationSummaryManagerInterface<TGenome extends BaseGenome> {
   /**
@@ -867,6 +938,8 @@ export interface PopulationSummaryManagerInterface<TGenome extends BaseGenome> {
  *
  * This interface defines the structure and behavior of a scheduler,
  * which is responsible for executing scheduled tasks or operations.
+ *
+ * @category Scheduler
  */
 export interface SchedulerInterface {
   /**

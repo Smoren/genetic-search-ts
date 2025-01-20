@@ -6,6 +6,9 @@ import { arrayBinaryOperation, createFilledArray } from "./utils";
  *
  * This class is used when the {@link GeneticSearch} is created without a
  * phenotype cache.
+ *
+ * @category Cache
+ * @category Strategies
  */
 export class DummyPhenotypeCache implements PhenotypeCacheInterface {
   getReady(_: number): GenomePhenotypeRow | undefined {
@@ -38,7 +41,8 @@ export class DummyPhenotypeCache implements PhenotypeCacheInterface {
  *
  * This cache stores the constant phenotype value for each genome.
  *
- * @implements {PhenotypeCacheInterface}
+ * @category Cache
+ * @category Strategies
  */
 export class SimplePhenotypeCache implements PhenotypeCacheInterface {
   protected readonly cache: Map<number, GenomePhenotypeRow> = new Map();
@@ -82,7 +86,8 @@ export class SimplePhenotypeCache implements PhenotypeCacheInterface {
  * A phenotype cache implementation that stores the phenotype for each genome as a
  * weighted average of all phenotype that have been set for that genome.
  *
- * @implements {PhenotypeCacheInterface}
+ * @category Cache
+ * @category Strategies
  */
 export class AveragePhenotypeCache implements PhenotypeCacheInterface {
   /**
@@ -144,7 +149,8 @@ export class AveragePhenotypeCache implements PhenotypeCacheInterface {
  * The closer the genome age is to 0, the closer the phenotype are to the average phenotype of the population,
  * which helps to combat outliers for new genomes.
  *
- * @implements {PhenotypeCacheInterface}
+ * @category Cache
+ * @category Strategies
  */
 export class WeightedAgeAveragePhenotypeCache extends AveragePhenotypeCache {
   /**

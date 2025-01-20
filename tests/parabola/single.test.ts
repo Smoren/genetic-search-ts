@@ -9,7 +9,7 @@ import {
   Scheduler,
   DescendingSortingStrategy,
   AscendingSortingStrategy,
-  RandomSelectionStrategy,
+  RandomSelectionStrategy, checkSchedulerCondition,
 } from "../../src";
 import {
   ComposedGeneticSearch,
@@ -218,14 +218,12 @@ describe.each([
       const scheduler = new Scheduler({
         runner: search,
         config: config,
-        rules: [
-          {
-            condition: (input) => input.runner.generation === 10,
-            action: (input) => {
-              input.config.populationSize = 50;
-              input.logger('set population size to 50');
-            },
-          }
+        actions: [
+          (input) => {
+            checkSchedulerCondition(input.runner.generation === 10);
+            input.config.populationSize = 50;
+            input.logger('set population size to 50');
+          },
         ],
         maxHistoryLength: 0,
       })
@@ -255,6 +253,73 @@ describe.each([
 
       const population = search.population;
       expect(population.length).toBe(50);
+    });
+  },
+);
+
+describe.each([
+  ...dataProviderForGetParabolaMax(),
+] as Array<[[number, number], [number, number]]>)(
+  'Get Parabola Max With Scheduler With Uncaught Exception Test',
+  ([a, b], [x, y]) => {
+    it('', async () => {
+      const config: GeneticSearchConfig = {
+        populationSize: 100,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      };
+
+      const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
+        populate: new ParabolaPopulateStrategy(),
+        phenotype: new ParabolaSinglePhenotypeStrategy({
+          task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
+          onTaskResult: () => void 0,
+        }),
+        fitness: new ParabolaMaxValueFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
+        selection: new RandomSelectionStrategy(2),
+        mutation: new ParabolaMutationStrategy(),
+        crossover: new ParabolaCrossoverStrategy(),
+        cache: new DummyPhenotypeCache(),
+      }
+
+      const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
+      expect(search.cache).toBeInstanceOf(DummyPhenotypeCache);
+      expect(search.partitions).toEqual([50, 25, 25]);
+
+      const scheduler = new Scheduler({
+        runner: search,
+        config: config,
+        actions: [
+          (input) => {
+            throw new Error('uncaught exception');
+          },
+        ],
+        maxHistoryLength: 0,
+      })
+
+      try {
+        await search.fit({
+          generationsCount: 100,
+          beforeStep: () => void 0,
+          afterStep: (generation) => {
+            const population = search.population;
+            const expectedPopulationSize = generation <= 10 ? 100 : 50;
+
+            expect(population.length).toBe(expectedPopulationSize);
+
+            if (generation === 10) {
+              expect(scheduler.logs).toEqual(['set population size to 50']);
+            } else {
+              expect(scheduler.logs).toEqual([]);
+            }
+          },
+          scheduler,
+        });
+      } catch (e) {
+        expect((e as Error).message).toBe('uncaught exception');
+        expect(search.generation).toBe(1);
+      }
     });
   },
 );
