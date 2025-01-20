@@ -8,7 +8,8 @@ import {
   SimplePhenotypeCache,
   Scheduler,
   DescendingSortingStrategy,
-  AscendingSortingStrategy, RandomSelectionStrategy,
+  AscendingSortingStrategy,
+  RandomSelectionStrategy,
 } from "../../src";
 import {
   ComposedGeneticSearch,

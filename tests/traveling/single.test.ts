@@ -8,7 +8,8 @@ import {
   GeneticSearchStrategyConfig,
   DummyPhenotypeCache,
   SimplePhenotypeCache,
-  DescendingSortingStrategy, RandomSelectionStrategy,
+  DescendingSortingStrategy,
+  RandomSelectionStrategy,
 } from "../../src";
 import {
   TravelingCrossoverStrategy,
