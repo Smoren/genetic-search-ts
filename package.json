@@ -27,7 +27,7 @@
     "format": "ts-scripts format",
     "lint": "ts-scripts lint",
     "prepublishOnly": "npm run build",
-    "docs": "typedoc src/index.ts --out docs/api"
+    "docs": "typedoc src/index.ts --navigation.includeCategories --out docs/api"
   },
   "files": [
     "es",

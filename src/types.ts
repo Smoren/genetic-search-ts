@@ -53,7 +53,7 @@ export type GenomeStats = {
  * A genome is a candidate solution in a genetic search.
  *
  * @category Genome
- * @category Genetic Algorithm
+ * @category Genetic Algorithm Components
  */
 export type BaseGenome = {
   /**
@@ -74,7 +74,7 @@ export type BaseGenome = {
  * @template TGenome The specific type of genome within the population.
  *
  * @category Genome
- * @category Genetic Algorithm
+ * @category Genetic Algorithm Components
  */
 export type Population<TGenome extends BaseGenome> = TGenome[];
 
@@ -85,7 +85,7 @@ export type Population<TGenome extends BaseGenome> = TGenome[];
  * calculated for the genome.
  *
  * @category Genome
- * @category Genetic Algorithm
+ * @category Genetic Algorithm Components
  */
 export type GenomePhenotypeRow = number[];
 
@@ -96,7 +96,7 @@ export type GenomePhenotypeRow = number[];
  * within the generation.
  *
  * @category Genome
- * @category Genetic Algorithm
+ * @category Genetic Algorithm Components
  */
 export type GenerationFitnessColumn = number[];
 
@@ -107,7 +107,7 @@ export type GenerationFitnessColumn = number[];
  * the phenotype for a single genome.
  *
  * @category Genome
- * @category Genetic Algorithm
+ * @category Genetic Algorithm Components
  */
 export type GenerationPhenotypeMatrix = GenomePhenotypeRow[];
 
@@ -117,7 +117,7 @@ export type GenerationPhenotypeMatrix = GenomePhenotypeRow[];
  * @template TGenome The specific type of genome being evaluated.
  *
  * @category Genome
- * @category Genetic Algorithm
+ * @category Genetic Algorithm Components
  */
 export type EvaluatedGenome<TGenome extends BaseGenome> = {
   /**
@@ -139,9 +139,11 @@ export type EvaluatedGenome<TGenome extends BaseGenome> = {
 /**
  * A callback function that is called before each generation.
  *
+ * Used in configuration type {@link GeneticSearchFitConfig}.
+ *
  * @param generation The current generation number.
  *
- * @category Genetic Algorithm
+ * @category Genetic Algorithm Components
  * @category Genetic Algorithm Config
  */
 export type GenerationBeforeCallback = (generation: number) => void;
@@ -152,7 +154,7 @@ export type GenerationBeforeCallback = (generation: number) => void;
  * @param generation The current generation number.
  * @param scores The fitness scores of the current generation.
  *
- * @category Genetic Algorithm
+ * @category Genetic Algorithm Components
  * @category Genetic Algorithm Config
  */
 export type GenerationAfterCallback = (generation: number, scores: GenerationFitnessColumn) => void;
@@ -160,7 +162,9 @@ export type GenerationAfterCallback = (generation: number, scores: GenerationFit
 /**
  * A function that calculates the phenotype for a genome.
  *
- * This function is called for each genome in the population by PhenotypeStrategy.
+ * This function is called for each genome in the population by {@link PhenotypeStrategyInterface}.
+ *
+ * Used in configuration type {@link PhenotypeStrategyConfig}.
  *
  * @template TTaskConfig The type of configuration required to execute the task.
  *
@@ -168,15 +172,14 @@ export type GenerationAfterCallback = (generation: number, scores: GenerationFit
  *
  * @returns A promise that resolves to the phenotype of the genome.
  *
- * @category Genetic Algorithm
+ * @category Genetic Algorithm Components
  * @category Strategies Config
  */
 export type CalcPhenotypeTask<TTaskConfig> = (data: TTaskConfig) => Promise<GenomePhenotypeRow>;
 
 /**
- * The configuration for a genetic search algorithm.
+ * The main configuration for {@link GeneticSearch}.
  *
- * @category Genetic Algorithm
  * @category Genetic Algorithm Config
  */
 export interface GeneticSearchConfig {
@@ -199,7 +202,8 @@ export interface GeneticSearchConfig {
 /**
  * The configuration for running a genetic search algorithm.
  *
- * @category Genetic Algorithm
+ * Used in {@link GeneticSearchInterface}.
+ *
  * @category Genetic Algorithm Config
  */
 export type GeneticSearchFitConfig = {
@@ -240,12 +244,11 @@ export type GeneticSearchFitConfig = {
 }
 
 /**
- * The configuration for a composed genetic search algorithm.
+ * The main configuration for {@link ComposedGeneticSearch}.
  *
  * The algorithm is configured by providing a separate configuration for
  * the eliminators and the final population.
  *
- * @category Genetic Algorithm
  * @category Genetic Algorithm Config
  */
 export type ComposedGeneticSearchConfig = {
@@ -268,7 +271,7 @@ export type ComposedGeneticSearchConfig = {
 }
 
 /**
- * The configuration for a mutation strategy that mutates a genome with a certain probability.
+ * The configuration for a {@link BaseMutationStrategy} that mutates a genome with a certain probability.
  *
  * @category Strategies Config
  */
@@ -282,7 +285,7 @@ export type BaseMutationStrategyConfig = {
 }
 
 /**
- * The configuration for a phenotype strategy.
+ * The configuration for a {@link BasePhenotypeStrategy}.
  *
  * A phenotype strategy is a component of a genetic search algorithm that
  * calculates the phenotype of a population of genomes.
@@ -309,7 +312,7 @@ export type PhenotypeStrategyConfig<TTaskConfig> = {
 }
 
 /**
- * The configuration for a genetic search strategy.
+ * The configuration for {@link GeneticSearch} and {@link ComposedGeneticSearch} strategies.
  *
  * This configuration is used to define the behavior of a genetic search algorithm.
  *
@@ -360,7 +363,7 @@ export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
 }
 
 /**
- * The configuration for a reference loss fitness strategy.
+ * The configuration for a {@link ReferenceLossFitnessStrategy}.
  *
  * This configuration is used to define the reference row and the weights for a reference loss fitness strategy.
  *
@@ -497,13 +500,11 @@ export type PopulationSummary = {
 }
 
 /**
- * The input data for a scheduler rule.
- *
- * This object is passed to the `condition` and `action` functions of
- * a scheduler rule.
+ * The input for a {@link SchedulerAction}.
  *
  * @template TGenome The type of genome objects in the population.
- * @template TConfig The type of configuration for the genetic search algorithm.
+ * @template TConfig The type of configuration object of macro parameters,
+ * which the scheduler will be able to manipulate.
  *
  * @category Scheduler
  */
@@ -532,16 +533,20 @@ export type SchedulerActionInput<TGenome extends BaseGenome, TConfig> = {
 }
 
 /**
- * A function that is called when a scheduler rule is activated.
+ * A single action to be executed by the {@link Scheduler}.
  *
- * @param input The input data for the scheduler rule.
+ * @template TGenome The type of genome objects in the population.
+ * @template TConfig The type of configuration object of macro parameters,
+ * which the scheduler will be able to manipulate.
+ *
+ * @param input The input data for the action.
  *
  * @category Scheduler
  */
 export type SchedulerAction<TGenome extends BaseGenome, TConfig> = (input: SchedulerActionInput<TGenome, TConfig>) => void;
 
 /**
- * The configuration for the scheduler.
+ * The configuration for the {@link Scheduler}.
  *
  * @template TGenome The type of genome objects in the population.
  * @template TConfig The type of configuration object of macro parameters,
@@ -574,6 +579,8 @@ export type SchedulerConfig<TGenome extends BaseGenome, TConfig> = {
 /**
  * An interface for a population generator.
  *
+ * Used in {@link GeneticSearchStrategyConfig}.
+ *
  * @template TGenome The type of genome objects in the population.
  *
  * @category Strategies
@@ -590,6 +597,8 @@ export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
 
 /**
  * An interface for a mutation strategy.
+ *
+ * Used in {@link GeneticSearchStrategyConfig}.
  *
  * @template TGenome The type of genome objects in the population.
  *
@@ -608,6 +617,8 @@ export interface MutationStrategyInterface<TGenome extends BaseGenome> {
 /**
  * An interface for a crossover strategy.
  *
+ * Used in {@link GeneticSearchStrategyConfig}.
+ *
  * @template TGenome The type of genome objects in the population.
  *
  * @category Strategies
@@ -624,6 +635,8 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
 
 /**
  * An interface for a phenotype strategy.
+ *
+ * Used in {@link GeneticSearchStrategyConfig}.
  *
  * @template TGenome The type of genome objects in the population.
  *
@@ -642,6 +655,8 @@ export interface PhenotypeStrategyInterface<TGenome extends BaseGenome> {
 /**
  * An interface for a fitness strategy.
  *
+ * Used in {@link GeneticSearchStrategyConfig}.
+ *
  * @category Strategies
  */
 export interface FitnessStrategyInterface {
@@ -654,7 +669,9 @@ export interface FitnessStrategyInterface {
 }
 
 /**
- * An interface for a sort strategy.
+ * An interface for a sorting strategy.
+ *
+ * Used in {@link GeneticSearchStrategyConfig}.
  *
  * @template TGenome The type of genome objects in the population.
  *
@@ -672,6 +689,8 @@ export interface SortStrategyInterface<TGenome extends BaseGenome> {
 
 /**
  * An interface for selection strategy.
+ *
+ * Used in {@link GeneticSearchStrategyConfig}.
  *
  * @template TGenome The type of genome objects in the population.
  *
@@ -703,7 +722,6 @@ export interface SelectionStrategyInterface<TGenome extends BaseGenome> {
  * @template TGenome The type of genome objects in the population.
  *
  * @category Genetic Algorithm
- * @category Genetic Algorithm Implementation
  */
 export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   /**
@@ -806,6 +824,8 @@ export interface IdGeneratorInterface<TGenome extends BaseGenome> {
  *
  * This cache is used by the genetic search algorithm to store and retrieve
  * the phenotype of genomes.
+ *
+ * Used in {@link GeneticSearchStrategyConfig}.
  *
  * @remarks
  * The cache is used to store the phenotype of genomes, which are used to calculate

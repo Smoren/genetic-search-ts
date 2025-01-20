@@ -39,7 +39,6 @@ import { GenomeStatsManager, PopulationSummaryManager } from "./stats";
  * - A [[PhenotypeCacheInterface]] to cache the phenotype of the population.
  *
  * @category Genetic Algorithm
- * @category Genetic Algorithm Implementation
  */
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   protected readonly config: GeneticSearchConfig;
@@ -359,7 +358,6 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
  * - An [[IdGeneratorInterface]] to generate unique IDs for the genomes.
  *
  * @category Genetic Algorithm
- * @category Genetic Algorithm Implementation
  */
 export class ComposedGeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   private readonly strategy: GeneticSearchStrategyConfig<TGenome>;
