@@ -197,6 +197,13 @@ export class DescendingSortingStrategy<TGenome extends BaseGenome> implements So
   }
 }
 
+/**
+ * A random selection strategy.
+ *
+ * This selection strategy randomly selects parents for mutation and crossover.
+ *
+ * @template TGenome The type of genome objects in the population.
+ */
 export class RandomSelectionStrategy<TGenome extends BaseGenome> implements SelectionStrategyInterface<TGenome> {
   protected crossoverParentsCount: number;
 
