@@ -69,22 +69,48 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this._populationBuffer = this.population;
   }
 
+  /**
+   * The current generation number.
+   *
+   * @returns The current generation number.
+   */
   public get generation(): number {
     return this._generation;
   }
 
+  /**
+   * Gets the best genome from the population.
+   *
+   * @returns The best genome from the population.
+   */
   public get bestGenome(): TGenome {
     return this._population[0];
   }
 
+  /**
+   * The current population of genomes.
+   *
+   * @returns The current population of genomes.
+   */
   public get population(): Population<TGenome> {
     return this._population;
   }
 
+  /**
+   * Sets the current population of genomes.
+   *
+   * @param population The new population of genomes.
+   */
   public set population(population: Population<TGenome>) {
     this.setPopulation(population);
   }
 
+  /**
+   * Sets the current population of genomes.
+   *
+   * @param population The new population of genomes.
+   * @param resetIdGenerator Whether to reset the ID generator. Defaults to true.
+   */
   public setPopulation(population: Population<TGenome>, resetIdGenerator: boolean = true): void {
     if (resetIdGenerator) {
       this.idGenerator.reset(population);
@@ -92,6 +118,14 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this._populationBuffer = population;
   }
 
+  /**
+   * Calculates and returns the partitions of the population for the genetic operations.
+   *
+   * @returns A tuple containing:
+   * - The number of genomes that will survive.
+   * - The number of genomes that will be created by crossover.
+   * - The number of genomes that will be created by mutation.
+   */
   public get partitions(): [number, number, number] {
     // Calculate the number of genomes that will survive based on the survival rate.
     const countToSurvive = Math.round(this.config.populationSize * this.config.survivalRate);
@@ -108,16 +142,34 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return [countToSurvive, countToCross, countToMutate];
   }
 
+  /**
+   * Retrieves the metrics cache used by the genetic search algorithm.
+   *
+   * @returns {MetricsCacheInterface} The metrics cache instance.
+   */
   public get cache(): MetricsCacheInterface {
     return this.strategy.cache;
   }
 
+  /**
+   * Retrieves the population summary, optionally rounding the statistics to a specified precision.
+   *
+   * @param roundPrecision Optional. The number of decimal places to round the summary statistics to.
+   *                       If not provided, no rounding is applied.
+   * @returns The population summary, with statistics rounded to the specified precision if provided.
+   */
   public getPopulationSummary(roundPrecision?: number): PopulationSummary {
     return roundPrecision === undefined
       ? this.populationSummaryManager.get()
       : this.populationSummaryManager.getRounded(roundPrecision);
   }
 
+  /**
+   * Runs the genetic search algorithm.
+   *
+   * @param config The configuration for the genetic search algorithm.
+   * @returns A promise that resolves when the algorithm has finished running.
+   */
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     // Determine the number of generations to run, defaulting to Infinity if not specified.
     const generationsCount = config.generationsCount ?? Infinity;
@@ -150,6 +202,12 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     }
   }
 
+  /**
+   * Runs a single step of the genetic search algorithm.
+   *
+   * @param scheduler Optional. The scheduler to use for the genetic search algorithm.
+   * @returns A promise that resolves with the fitness of the best genome in the population.
+   */
   public async fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn> {
     // Refresh population from buffer.
     this.refreshPopulation();
@@ -185,14 +243,35 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return sortedFitnessColumn;
   }
 
+  /**
+   * Clears the cache.
+   *
+   * @remarks
+   * This method clears the cache, which is used to store the metrics of the genomes.
+   * The cache is used to avoid re-calculating the metrics of the genomes if they remain unchanged.
+   */
   public clearCache() {
     this.strategy.cache.clear(this.population.map((genome) => genome.id));
   }
 
+  /**
+   * Refreshes the population.
+   *
+   * @remarks
+   * This method is used to refresh the population, which is the array of genomes that are currently being evaluated.
+   * The population is refreshed by swapping the current population with the population buffer.
+   */
   public refreshPopulation(): void {
     this._population = this._populationBuffer;
   }
 
+  /**
+   * Crosses the given input population.
+   *
+   * @param input The population of genomes to cross.
+   * @param count The number of new genomes to create.
+   * @returns An array of new genomes created by crossing the input population.
+   */
   protected crossover(input: Array<EvaluatedGenome<TGenome>>, count: number): Population<TGenome> {
     const newPopulation: Population<TGenome> = [];
 
@@ -209,6 +288,13 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return newPopulation;
   }
 
+  /**
+   * Mutates the given input population.
+   *
+   * @param input The population of genomes to mutate.
+   * @param count The number of new genomes to create.
+   * @returns An array of new genomes created by mutating the input population.
+   */
   protected mutate(input: Array<EvaluatedGenome<TGenome>>, count: number): Population<TGenome> {
     const newPopulation: Population<TGenome> = [];
 
@@ -227,6 +313,11 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return newPopulation;
   }
 
+  /**
+   * Refreshes the population buffer from the evaluated population.
+   *
+   * @param input The population of genomes to refresh the population buffer with.
+   */
   protected refreshPopulationBuffer(input: Array<EvaluatedGenome<TGenome>>): void {
     const [countToSurvive, countToCross, countToMutate] = this.partitions;
     const sortedPopulation = input.map((x) => x.genome);
@@ -271,6 +362,13 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   private readonly idGenerator: IdGeneratorInterface<TGenome>;
   private readonly config: ComposedGeneticSearchConfig;
 
+  /**
+   * Constructs a new instance of the ComposedGeneticSearch class.
+   *
+   * @param config - The configuration for the composed genetic search algorithm.
+   * @param strategy - The strategy configuration for genetic operations.
+   * @param idGenerator - An optional ID generator for the genomes.
+   */
   constructor(
     config: ComposedGeneticSearchConfig,
     strategy: GeneticSearchStrategyConfig<TGenome>,
@@ -286,14 +384,29 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     this.final = new GeneticSearch(config.final, strategy, this.idGenerator);
   }
 
+  /**
+   * The current generation number.
+   *
+   * @returns The current generation number.
+   */
   public get generation(): number {
     return this.final.generation;
   }
 
+  /**
+   * Gets the best genome from the population.
+   *
+   * @returns The best genome from the population.
+   */
   public get bestGenome(): TGenome {
     return this.final.bestGenome;
   }
 
+  /**
+   * The current population of genomes.
+   *
+   * @returns The current population of genomes.
+   */
   public get population(): Population<TGenome> {
     // Initialize an empty population result array.
     const result: Population<TGenome> = [];
@@ -314,6 +427,12 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     this.setPopulation(population);
   }
 
+  /**
+   * Sets the current population of genomes.
+   *
+   * @param population The new population of genomes.
+   * @param resetIdGenerator Whether to reset the ID generator. Defaults to true.
+   */
   public setPopulation(population: Population<TGenome>, resetIdGenerator: boolean = true): void {
     // If the resetIdGenerator option is specified, reset the ID generator.
     if (resetIdGenerator) {
@@ -336,6 +455,14 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     }
   }
 
+  /**
+   * Calculates and returns the partitions of the population for the genetic operations.
+   *
+   * @returns A tuple containing:
+   * - The number of genomes that will survive.
+   * - The number of genomes that will be created by crossover.
+   * - The number of genomes that will be created by mutation.
+   */
   public get partitions(): [number, number, number] {
     // Calculate the total number of genomes that will survive, be crossed, and be mutated.
     // This is the sum of the counts from each eliminator.
@@ -351,14 +478,32 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     return result;
   }
 
+  /**
+   * Retrieves the metrics cache used by the genetic search algorithm.
+   *
+   * @returns {MetricsCacheInterface} The metrics cache instance.
+   */
   public get cache(): MetricsCacheInterface {
     return this.strategy.cache;
   }
 
+  /**
+   * Retrieves the population summary, optionally rounding the statistics to a specified precision.
+   *
+   * @param roundPrecision Optional. The number of decimal places to round the summary statistics to.
+   *                       If not provided, no rounding is applied.
+   * @returns The population summary, with statistics rounded to the specified precision if provided.
+   */
   public getPopulationSummary(roundPrecision?: number): PopulationSummary {
     return this.final.getPopulationSummary(roundPrecision);
   }
 
+  /**
+   * Runs the genetic search algorithm.
+   *
+   * @param config The configuration for the genetic search algorithm.
+   * @returns A promise that resolves when the algorithm has finished running.
+   */
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
     // Determine the number of generations to run, defaulting to Infinity if not specified.
     const generationsCount = config.generationsCount ?? Infinity;
@@ -391,6 +536,12 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     }
   }
 
+  /**
+   * Runs a single step of the genetic search algorithm.
+   *
+   * @param scheduler Optional. The scheduler to use for the genetic search algorithm.
+   * @returns A promise that resolves with the fitness of the best genome in the population.
+   */
   public async fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn> {
     // Run a single step of the genetic search algorithm for each eliminator.
     for (const eliminators of this.eliminators) {
@@ -408,10 +559,24 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     return await this.final.fitStep(scheduler);
   }
 
+  /**
+   * Clears the cache.
+   *
+   * @remarks
+   * This method clears the cache, which is used to store the metrics of the genomes.
+   * The cache is used to avoid re-calculating the metrics of the genomes if they remain unchanged.
+   */
   public clearCache() {
     this.strategy.cache.clear(this.population.map((genome) => genome.id));
   }
 
+  /**
+   * Refreshes the population.
+   *
+   * @remarks
+   * This method is used to refresh the population, which is the array of genomes that are currently being evaluated.
+   * The population is refreshed by swapping the current population with the population buffer.
+   */
   public refreshPopulation() {
     // Refresh the population for the final search algorithm.
     this.final.refreshPopulation();
@@ -422,6 +587,16 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
     }
   }
 
+  /**
+   * Gets the best genomes from the eliminators.
+   *
+   * @remarks
+   * This method returns the best genomes from each eliminator.
+   * The best genomes are the genomes that have the highest fitness score.
+   * The best genomes are determined by calling {@link GeneticSearch.bestGenome} on each eliminator.
+   *
+   * @returns The best genomes from the eliminators.
+   */
   protected get bestGenomes(): Population<TGenome> {
     return this.eliminators.map((eliminators) => eliminators.bestGenome);
   }
