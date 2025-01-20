@@ -13,7 +13,7 @@ import type {
   PopulationSummaryManagerInterface,
   PopulationSummary,
   SchedulerInterface,
-  GenerationMetricsMatrix,
+  GenerationMetricsMatrix, GenomeMetricsRow,
 } from "./types";
 import { getRandomArrayItem, IdGenerator } from "./utils";
 import { zip, distinctBy, repeat } from "./itertools";
@@ -139,14 +139,15 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     this.genomeStatsManager.update(this.population, metricsMatrix, fitnessColumn);
 
-    const [sortedPopulation, sortedFitnessColumn] = this.sortPopulation(fitnessColumn, metricsMatrix);
+    const sortedTuples = this.strategy.sorting.sort([...zip(this._population, fitnessColumn, metricsMatrix)]);
+    const [sortedPopulation, sortedFitnessColumn] = [sortedTuples.map((x) => x[0]), sortedTuples.map((x) => x[1])];
     this.populationSummaryManager.update(sortedPopulation);
 
     if (scheduler !== undefined) {
       scheduler.step();
     }
 
-    this.refreshPopulationBuffer(sortedPopulation);
+    this.refreshPopulationBuffer(sortedTuples);
 
     this._generation++;
 
@@ -161,37 +162,35 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this._population = this._populationBuffer;
   }
 
-  protected sortPopulation(
-    scores: GenerationFitnessColumn,
-    metricsMatrix: GenerationMetricsMatrix,
-  ): [Population<TGenome>, GenerationFitnessColumn] {
-    const zipped = zip(this._population, scores, metricsMatrix);
-    const sorted = this.strategy.sorting.sort([...zipped]);
+  protected sortPopulation(input: Array<[TGenome, number, GenomeMetricsRow]>): [
+    Population<TGenome>,
+    GenerationFitnessColumn,
+    GenerationMetricsMatrix,
+  ] {
+    const sorted = this.strategy.sorting.sort(input);
     return [
       sorted.map((x) => x[0]),
       sorted.map((x) => x[1]),
+      sorted.map((x) => x[2]),
     ];
   }
 
-  protected crossover(genomes: Population<TGenome>, count: number): Population<TGenome> {
+  protected crossover(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): Population<TGenome> {
     const newPopulation: Population<TGenome> = [];
 
-    for (let i = 0; i < count; i++) {
-      const lhs = getRandomArrayItem(genomes);
-      const rhs = getRandomArrayItem(genomes);
-      const crossedGenome = this.strategy.crossover.cross(lhs, rhs, this.idGenerator.nextId());
-      this.genomeStatsManager.initItem(crossedGenome, 'crossover', [lhs, rhs]);
+    for (const parents of this.strategy.selection.selectForCrossover(input, count)) {
+      const crossedGenome = this.strategy.crossover.cross(parents, this.idGenerator.nextId());
+      this.genomeStatsManager.initItem(crossedGenome, 'crossover', parents);
       newPopulation.push(crossedGenome);
     }
 
     return newPopulation;
   }
 
-  protected mutate(genomes: Population<TGenome>, count: number): Population<TGenome> {
+  protected mutate(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): Population<TGenome> {
     const newPopulation: Population<TGenome> = [];
 
-    for (let i = 0; i < count; i++) {
-      const genome = getRandomArrayItem(genomes);
+    for (const genome of this.strategy.selection.selectForMutation(input, count)) {
       const mutatedGenome = this.strategy.mutation.mutate(genome, this.idGenerator.nextId());
       this.genomeStatsManager.initItem(mutatedGenome, 'mutation', [genome]);
       newPopulation.push(mutatedGenome);
@@ -200,12 +199,14 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     return newPopulation;
   }
 
-  protected refreshPopulationBuffer(sortedPopulation: Population<TGenome>): void {
+  protected refreshPopulationBuffer(input: Array<[TGenome, number, GenomeMetricsRow]>): void {
     const [countToSurvive, countToCross, countToClone] = this.partitions;
 
-    const survivedPopulation = sortedPopulation.slice(0, countToSurvive);
-    const crossedPopulation = this.crossover(survivedPopulation, countToCross);
-    const mutatedPopulation = this.mutate(survivedPopulation, countToClone);
+    const sortedPopulation = input.map((x) => x[0]);
+    const survivedPopulationTuples = input.slice(0, countToSurvive);
+    const survivedPopulation = survivedPopulationTuples.map((x) => x[0]);
+    const crossedPopulation = this.crossover(survivedPopulationTuples, countToCross);
+    const mutatedPopulation = this.mutate(survivedPopulationTuples, countToClone);
 
     this._population = sortedPopulation;
     this._populationBuffer = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];

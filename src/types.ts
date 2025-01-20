@@ -279,6 +279,11 @@ export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
   sorting: SortStrategyInterface<TGenome>;
 
   /**
+   * The strategy to select genomes for crossover and mutation.
+   */
+  selection: SelectionStrategyInterface<TGenome>;
+
+  /**
    * The cache to store the metrics of the population.
    */
   cache: MetricsCacheInterface;
@@ -539,11 +544,10 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
   /**
    * Cross two genomes.
    *
-   * @param lhs The left hand genome.
-   * @param rhs The right hand genome.
+   * @param parents The parents to cross.
    * @param newGenomeId The ID to assign to the new genome.
    */
-  cross(lhs: TGenome, rhs: TGenome, newGenomeId: number): TGenome;
+  cross(parents: TGenome[], newGenomeId: number): TGenome;
 }
 
 /**
@@ -586,6 +590,31 @@ export interface SortStrategyInterface<TGenome extends BaseGenome> {
    * @returns An array of sorted tuples of genomes, fitness scores, and metrics rows.
    */
   sort(input: Array<[TGenome, number, GenomeMetricsRow]>): Array<[TGenome, number, GenomeMetricsRow]>;
+}
+
+/**
+ * An interface for selection strategy.
+ *
+ * @template TGenome The type of genome objects in the population.
+ */
+export interface SelectionStrategyInterface<TGenome extends BaseGenome> {
+  /**
+   * Selects parents pairs for crossover.
+   *
+   * @param input The population to select parents from.
+   * @param count The number of parents to select.
+   * @returns An array of tuples of parents. Each tuple contains several parents.
+   */
+  selectForCrossover(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): Array<TGenome[]>;
+
+  /**
+   * Selects parents for mutation.
+   *
+   * @param input The population to select parents from.
+   * @param count The number of parents to select.
+   * @returns An array of parents.
+   */
+  selectForMutation(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): TGenome[];
 }
 
 /**

@@ -11,9 +11,9 @@ import type {
   GenomeMetricsRow,
   GenerationFitnessColumn,
   MetricsCacheInterface,
-  SortStrategyInterface,
+  SortStrategyInterface, SelectionStrategyInterface,
 } from "./types";
-import { normalizeMetricsMatrix, arrayBinaryOperation, arraySum } from "./utils";
+import { normalizeMetricsMatrix, arrayBinaryOperation, arraySum, getRandomArrayItem } from "./utils";
 import {sort, zip} from "./itertools";
 
 /**
@@ -159,14 +159,65 @@ export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {
   }
 }
 
+/**
+ * Sorts a given iterable of genomes, fitness scores, and metrics rows in ascending order of their fitness scores.
+ *
+ * @param input An iterable containing tuples of genomes, their fitness scores, and their associated metrics rows.
+ * @returns An array of sorted tuples of genomes, fitness scores, and metrics rows.
+ */
 export class AscendingSortingStrategy<TGenome extends BaseGenome> implements SortStrategyInterface<TGenome> {
+  /**
+   * Sorts a given iterable of genomes, fitness scores, and metrics rows in ascending order of their fitness scores.
+   *
+   * @param input An iterable containing tuples of genomes, their fitness scores, and their associated metrics rows.
+   * @returns An array of sorted tuples of genomes, fitness scores, and metrics rows.
+   */
   sort(input: Array<[TGenome, number, GenomeMetricsRow]>): Array<[TGenome, number, GenomeMetricsRow]> {
     return [...sort(input, (lhs, rhs) => lhs[1] - rhs[1])];
   }
 }
 
+/**
+ * Sorts a given iterable of genomes, fitness scores, and metrics rows in descending order of their fitness scores.
+ *
+ * @param input An iterable containing tuples of genomes, their fitness scores, and their associated metrics rows.
+ * @returns An array of sorted tuples of genomes, fitness scores, and metrics rows.
+ */
 export class DescendingSortingStrategy<TGenome extends BaseGenome> implements SortStrategyInterface<TGenome> {
+  /**
+   * Sorts a given iterable of genomes, fitness scores, and metrics rows in descending order of their fitness scores.
+   *
+   * @param input An iterable containing tuples of genomes, their fitness scores, and their associated metrics rows.
+   * @returns An array of sorted tuples of genomes, fitness scores, and metrics rows.
+   */
   sort(input: Array<[TGenome, number, GenomeMetricsRow]>): Array<[TGenome, number, GenomeMetricsRow]> {
     return [...sort(input, (lhs, rhs) => rhs[1] - lhs[1])];
+  }
+}
+
+export class RandomSelectionStrategy<TGenome extends BaseGenome> implements SelectionStrategyInterface<TGenome> {
+  protected parentsCount: number;
+
+  /**
+   * Constructor of the random selection strategy.
+   *
+   * @param parentsCount The number of parents to select.
+   */
+  constructor(parentsCount: number) {
+    this.parentsCount = parentsCount;
+  }
+
+  public selectForCrossover(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): Array<TGenome[]> {
+    const result: Array<TGenome[]> = [];
+
+    for (let i = 0; i < count; i++) {
+      result.push(input.map(() => getRandomArrayItem(input)[0]).slice(0, this.parentsCount));
+    }
+
+    return result;
+  }
+
+  public selectForMutation(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): TGenome[] {
+    return input.map(() => getRandomArrayItem(input)[0]).slice(0, count);
   }
 }
