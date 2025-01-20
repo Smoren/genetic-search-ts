@@ -198,15 +198,15 @@ export class DescendingSortingStrategy<TGenome extends BaseGenome> implements So
 }
 
 export class RandomSelectionStrategy<TGenome extends BaseGenome> implements SelectionStrategyInterface<TGenome> {
-  protected parentsCount: number;
+  protected crossoverParentsCount: number;
 
   /**
    * Constructor of the random selection strategy.
    *
-   * @param parentsCount The number of parents to select.
+   * @param crossoverParentsCount The number of parents to select for crossover.
    */
-  constructor(parentsCount: number) {
-    this.parentsCount = parentsCount;
+  constructor(crossoverParentsCount: number) {
+    this.crossoverParentsCount = crossoverParentsCount;
   }
 
   /**
@@ -221,7 +221,7 @@ export class RandomSelectionStrategy<TGenome extends BaseGenome> implements Sele
 
     for (let i = 0; i < count; i++) {
       const parents: TGenome[] = []
-      for (let j = 0; j < this.parentsCount; j++) {
+      for (let j = 0; j < this.crossoverParentsCount; j++) {
         parents.push(getRandomArrayItem(input).genome);
       }
 
