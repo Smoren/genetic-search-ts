@@ -4,6 +4,7 @@ import { GroupedStatSummary, normalizePhenotypeMatrix, normalizePhenotypeRow, St
 import { expectNumberArrayToBeClose } from "../helpers";
 import { zip } from "../../src/itertools";
 import { calcStatSummary, roundGroupedStatSummary, roundStatSummary } from '../../src/utils';
+import { SchedulerConditionException } from "../../src";
 
 describe.each([
   ...dataProviderForNormalizePhenotypeRow(),
@@ -455,3 +456,12 @@ function dataProviderForRoundGroupedStatSummary(): Array<[GroupedStatSummary, Gr
     ],
   ];
 }
+
+it('SchedulerConditionException Test', () => {
+  try {
+    throw new SchedulerConditionException();
+  } catch (e) {
+    expect(e).toBeInstanceOf(SchedulerConditionException);
+    expect((e as Error).name).toBe('SchedulerConditionException');
+  }
+});

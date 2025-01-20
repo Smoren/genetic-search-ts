@@ -83,7 +83,7 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
       try {
         rule(this.getRuleInput());
       } catch (e) {
-        if (e instanceof SchedulerConditionException) {
+        if ((e as Error).name === 'SchedulerConditionException') {
           continue;
         }
         throw e;
@@ -148,8 +148,7 @@ export class SchedulerConditionException extends Error {
 /**
  * Checks if a scheduler condition is satisfied.
  *
- * If the condition is not satisfied, this function throws a
- * `SchedulerConditionException`.
+ * If the condition is not satisfied, this function throws a {@link SchedulerConditionException}`.
  *
  * @see SchedulerConditionException
  *
