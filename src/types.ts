@@ -18,9 +18,9 @@ export type GenomeStats = {
   fitness: number;
 
   /**
-   * The metrics associated with the genome.
+   * The phenotype associated with the genome.
    */
-  metrics: GenomeMetricsRow;
+  phenotype: GenomePhenotypeRow;
 
   /**
    * The origin of the genome, indicating how it was created.
@@ -67,12 +67,12 @@ export type BaseGenome = {
 export type Population<TGenome extends BaseGenome> = TGenome[];
 
 /**
- * Represents a row of metrics associated with a genome.
+ * Represents a row of phenotype associated with a genome.
  *
  * Each number in the array corresponds to a specific metric value
  * calculated for the genome.
  */
-export type GenomeMetricsRow = number[];
+export type GenomePhenotypeRow = number[];
 
 /**
  * Represents a column of fitness scores for a generation.
@@ -83,12 +83,12 @@ export type GenomeMetricsRow = number[];
 export type GenerationFitnessColumn = number[];
 
 /**
- * Represents a matrix of metrics for a generation of genomes.
+ * Represents a matrix of phenotype for a generation of genomes.
  *
- * Each row in the matrix corresponds to a GenomeMetricsRow, storing
- * the metrics for a single genome.
+ * Each row in the matrix corresponds to a GenomePhenotypeRow, storing
+ * the phenotype for a single genome.
  */
-export type GenerationMetricsMatrix = GenomeMetricsRow[];
+export type GenerationPhenotypeMatrix = GenomePhenotypeRow[];
 
 /**
  * Represents a genome that has been evaluated.
@@ -107,9 +107,9 @@ export type EvaluatedGenome<TGenome extends BaseGenome> = {
   fitness: number;
 
   /**
-   * The metrics of the genome.
+   * The phenotype of the genome.
    */
-  metrics: GenomeMetricsRow;
+  phenotype: GenomePhenotypeRow;
 }
 /**
  * A callback function that is called before each generation.
@@ -127,17 +127,17 @@ export type GenerationBeforeCallback = (generation: number) => void;
 export type GenerationAfterCallback = (generation: number, scores: GenerationFitnessColumn) => void;
 
 /**
- * A function that calculates the metrics for a genome.
+ * A function that calculates the phenotype for a genome.
  *
- * This function is called for each genome in the population by MetricsStrategy.
+ * This function is called for each genome in the population by PhenotypeStrategy.
  *
  * @template TTaskConfig The type of configuration required to execute the task.
  *
  * @param data The configuration required to execute the task.
  *
- * @returns A promise that resolves to the metrics of the genome.
+ * @returns A promise that resolves to the phenotype of the genome.
  */
-export type CalcMetricsTask<TTaskConfig> = (data: TTaskConfig) => Promise<GenomeMetricsRow>;
+export type CalcPhenotypeTask<TTaskConfig> = (data: TTaskConfig) => Promise<GenomePhenotypeRow>;
 
 /**
  * The configuration for a genetic search algorithm.
@@ -237,28 +237,28 @@ export type BaseMutationStrategyConfig = {
 }
 
 /**
- * The configuration for a metrics strategy.
+ * The configuration for a phenotype strategy.
  *
- * A metrics strategy is a component of a genetic search algorithm that
- * calculates the metrics of a population of genomes.
+ * A phenotype strategy is a component of a genetic search algorithm that
+ * calculates the phenotype of a population of genomes.
  *
  * @template TTaskConfig The type of configuration required to execute the task.
  */
-export type MetricsStrategyConfig<TTaskConfig> = {
+export type PhenotypeStrategyConfig<TTaskConfig> = {
   /**
-   * The function to call to calculate the metrics for a genome.
+   * The function to call to calculate the phenotype for a genome.
    *
    * This function is called for each genome in the population.
    */
-  task: CalcMetricsTask<TTaskConfig>;
+  task: CalcPhenotypeTask<TTaskConfig>;
 
   /**
-   * A callback function that is called after the metrics for a genome has been calculated.
+   * A callback function that is called after the phenotype for a genome has been calculated.
    *
-   * @param result The metrics of the genome.
+   * @param result The phenotype of the genome.
    * @param input The configuration required to execute the task.
    */
-  onTaskResult?: (result: GenomeMetricsRow, input: TTaskConfig) => void;
+  onTaskResult?: (result: GenomePhenotypeRow, input: TTaskConfig) => void;
 }
 
 /**
@@ -275,9 +275,9 @@ export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
   populate: PopulateStrategyInterface<TGenome>;
 
   /**
-   * The strategy to calculate the metrics of the population.
+   * The strategy to calculate the phenotype of the population.
    */
-  metrics: MetricsStrategyInterface<TGenome>;
+  phenotype: PhenotypeStrategyInterface<TGenome>;
 
   /**
    * The strategy to calculate the fitness of the population.
@@ -305,9 +305,9 @@ export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
   selection: SelectionStrategyInterface<TGenome>;
 
   /**
-   * The cache to store the metrics of the population.
+   * The cache to store the phenotype of the population.
    */
-  cache: MetricsCacheInterface;
+  cache: PhenotypeCacheInterface;
 }
 
 /**
@@ -317,14 +317,14 @@ export type GeneticSearchStrategyConfig<TGenome extends BaseGenome> = {
  */
 export type GeneticSearchReferenceConfig = {
   /**
-   * The reference row of metrics used to calculate the fitness of the population.
+   * The reference row of phenotype used to calculate the fitness of the population.
    */
-  readonly reference: GenomeMetricsRow;
+  readonly reference: GenomePhenotypeRow;
 
   /**
    * The weights used to calculate the fitness of the population.
    */
-  readonly weights: GenomeMetricsRow;
+  readonly weights: GenomePhenotypeRow;
 }
 
 /**
@@ -572,18 +572,18 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
 }
 
 /**
- * An interface for a metrics strategy.
+ * An interface for a phenotype strategy.
  *
  * @template TGenome The type of genome objects in the population.
  */
-export interface MetricsStrategyInterface<TGenome extends BaseGenome> {
+export interface PhenotypeStrategyInterface<TGenome extends BaseGenome> {
   /**
-   * Collect metrics for a population.
+   * Collect phenotype for a population.
    *
-   * @param population The population to collect metrics for.
-   * @param cache The cache to use for storing the metrics.
+   * @param population The population to collect phenotype for.
+   * @param cache The cache to use for storing the phenotype.
    */
-  collect(population: Population<TGenome>, cache: MetricsCacheInterface): Promise<GenerationMetricsMatrix>;
+  collect(population: Population<TGenome>, cache: PhenotypeCacheInterface): Promise<GenerationPhenotypeMatrix>;
 }
 
 /**
@@ -593,9 +593,9 @@ export interface FitnessStrategyInterface {
   /**
    * Score a population.
    *
-   * @param results The results of the metrics collection.
+   * @param results The results of the phenotype collection.
    */
-  score(results: GenerationMetricsMatrix): GenerationFitnessColumn;
+  score(results: GenerationPhenotypeMatrix): GenerationFitnessColumn;
 }
 
 /**
@@ -605,10 +605,10 @@ export interface FitnessStrategyInterface {
  */
 export interface SortStrategyInterface<TGenome extends BaseGenome> {
   /**
-   * Sorts a given iterable of genomes, fitness scores, and metrics rows.
+   * Sorts a given iterable of genomes, fitness scores, and phenotype rows.
    *
-   * @param input The array of genomes extended with fitness scores and metrics.
-   * @returns An array of sorted tuples of genomes, fitness scores, and metrics rows.
+   * @param input The array of genomes extended with fitness scores and phenotype.
+   * @returns An array of sorted tuples of genomes, fitness scores, and phenotype rows.
    */
   sort(input: Array<EvaluatedGenome<TGenome>>): Array<EvaluatedGenome<TGenome>>;
 }
@@ -622,7 +622,7 @@ export interface SelectionStrategyInterface<TGenome extends BaseGenome> {
   /**
    * Selects parents pairs for crossover.
    *
-   * @param input The population extended with fitness scores and metrics to select parents from.
+   * @param input The population extended with fitness scores and phenotype to select parents from.
    * @param count The number of parents to select.
    * @returns An array of parent pairs.
    */
@@ -631,7 +631,7 @@ export interface SelectionStrategyInterface<TGenome extends BaseGenome> {
   /**
    * Selects parents for mutation.
    *
-   * @param input The population extended with fitness scores and metrics to select parents from.
+   * @param input The population extended with fitness scores and phenotype to select parents from.
    * @param count The number of parents to select.
    * @returns An array of parents.
    */
@@ -658,9 +658,9 @@ export interface GeneticSearchInterface<TGenome extends BaseGenome> {
   readonly partitions: [number, number, number];
 
   /**
-   * Metrics cache.
+   * Phenotype cache.
    */
-  readonly cache: MetricsCacheInterface;
+  readonly cache: PhenotypeCacheInterface;
 
   /**
    * Current generation number.
@@ -738,40 +738,40 @@ export interface IdGeneratorInterface<TGenome extends BaseGenome> {
 }
 
 /**
- * Interface for a cache of metrics associated with genomes.
+ * Interface for a cache of phenotype associated with genomes.
  *
  * This cache is used by the genetic search algorithm to store and retrieve
- * the metrics of genomes.
+ * the phenotype of genomes.
  *
  * @remarks
- * The cache is used to store the metrics of genomes, which are used to calculate
+ * The cache is used to store the phenotype of genomes, which are used to calculate
  * the fitness of the population.
  */
-export interface MetricsCacheInterface {
+export interface PhenotypeCacheInterface {
   /**
-   * Gets the metrics of a genome, or undefined if the genome is not ready.
+   * Gets the phenotype of a genome, or undefined if the genome is not ready.
    *
    * @param genomeId The ID of the genome.
-   * @returns The metrics of the genome, or undefined if the genome is not ready.
+   * @returns The phenotype of the genome, or undefined if the genome is not ready.
    */
-  getReady(genomeId: number): GenomeMetricsRow | undefined;
+  getReady(genomeId: number): GenomePhenotypeRow | undefined;
 
   /**
-   * Gets the metrics of a genome.
+   * Gets the phenotype of a genome.
    *
    * @param genomeId The ID of the genome.
    * @param defaultValue The default value to return if the genome is not found.
-   * @returns The metrics of the genome, or the default value if the genome metrics is not found.
+   * @returns The phenotype of the genome, or the default value if the genome phenotype is not found.
    */
-  get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined;
+  get(genomeId: number, defaultValue?: GenomePhenotypeRow): GenomePhenotypeRow | undefined;
 
   /**
-   * Sets the metrics of a genome.
+   * Sets the phenotype of a genome.
    *
    * @param genomeId The ID of the genome.
-   * @param metrics The metrics of the genome.
+   * @param phenotype The phenotype of the genome.
    */
-  set(genomeId: number, metrics: GenomeMetricsRow): void;
+  set(genomeId: number, phenotype: GenomePhenotypeRow): void;
 
   /**
    * Clears the cache, excluding the specified genome IDs.
@@ -781,16 +781,16 @@ export interface MetricsCacheInterface {
   clear(excludeGenomeIds: number[]): void;
 
   /**
-   * Exports the cache as a record of genome IDs to metrics.
+   * Exports the cache as a record of genome IDs to phenotype.
    *
-   * @returns The cache as a record of genome IDs to metrics.
+   * @returns The cache as a record of genome IDs to phenotype.
    */
   export(): Record<number, unknown>;
 
   /**
-   * Imports the cache from a record of genome IDs to metrics.
+   * Imports the cache from a record of genome IDs to phenotype.
    *
-   * @param data The cache as a record of genome IDs to metrics.
+   * @param data The cache as a record of genome IDs to phenotype.
    */
   import(data: Record<number, unknown>): void;
 }
@@ -820,15 +820,15 @@ export interface GenomeStatsManagerInterface<TGenome extends BaseGenome> {
   initItem(genome: BaseGenome, origin: GenomeOrigin, parents?: BaseGenome[]): GenomeStats
 
   /**
-   * Updates the genome stats manager with the given population, metrics matrix, and fitness column.
+   * Updates the genome stats manager with the given population, phenotype matrix, and fitness column.
    *
    * @param population The population to update the manager with.
-   * @param metricsMatrix The metrics matrix of the population.
+   * @param phenotypeMatrix The phenotype matrix of the population.
    * @param fitnessColumn The fitness column of the population.
    */
   update(
     population: Population<TGenome>,
-    metricsMatrix: GenerationMetricsMatrix,
+    phenotypeMatrix: GenerationPhenotypeMatrix,
     fitnessColumn: GenerationFitnessColumn,
   ): void;
 }

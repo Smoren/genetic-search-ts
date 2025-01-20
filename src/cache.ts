@@ -1,22 +1,22 @@
-import type { GenomeMetricsRow, MetricsCacheInterface } from "./types";
+import type { GenomePhenotypeRow, PhenotypeCacheInterface } from "./types";
 import { arrayBinaryOperation, createFilledArray } from "./utils";
 
 /**
- * A dummy metrics cache implementation that does nothing.
+ * A dummy phenotype cache implementation that does nothing.
  *
  * This class is used when the {@link GeneticSearch} is created without a
- * metrics cache.
+ * phenotype cache.
  */
-export class DummyMetricsCache implements MetricsCacheInterface {
-  getReady(_: number): GenomeMetricsRow | undefined {
+export class DummyPhenotypeCache implements PhenotypeCacheInterface {
+  getReady(_: number): GenomePhenotypeRow | undefined {
     return undefined;
   }
 
-  get(_: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined {
+  get(_: number, defaultValue?: GenomePhenotypeRow): GenomePhenotypeRow | undefined {
     return defaultValue;
   }
 
-  set(_: number, __: GenomeMetricsRow): void {
+  set(_: number, __: GenomePhenotypeRow): void {
     return;
   }
 
@@ -34,27 +34,27 @@ export class DummyMetricsCache implements MetricsCacheInterface {
 }
 
 /**
- * A simple metrics cache implementation.
+ * A simple phenotype cache implementation.
  *
- * This cache stores the constant metrics value for each genome.
+ * This cache stores the constant phenotype value for each genome.
  *
- * @implements {MetricsCacheInterface}
+ * @implements {PhenotypeCacheInterface}
  */
-export class SimpleMetricsCache implements MetricsCacheInterface {
-  protected readonly cache: Map<number, GenomeMetricsRow> = new Map();
+export class SimplePhenotypeCache implements PhenotypeCacheInterface {
+  protected readonly cache: Map<number, GenomePhenotypeRow> = new Map();
 
-  get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined {
+  get(genomeId: number, defaultValue?: GenomePhenotypeRow): GenomePhenotypeRow | undefined {
     return this.cache.has(genomeId)
       ? this.cache.get(genomeId)!
       : defaultValue;
   }
 
-  getReady(genomeId: number): GenomeMetricsRow | undefined {
+  getReady(genomeId: number): GenomePhenotypeRow | undefined {
     return this.cache.has(genomeId) ? this.get(genomeId) : undefined;
   }
 
-  set(genomeId: number, metrics: GenomeMetricsRow): void {
-    this.cache.set(genomeId, metrics);
+  set(genomeId: number, phenotype: GenomePhenotypeRow): void {
+    this.cache.set(genomeId, phenotype);
   }
 
   clear(excludeGenomeIds: number[]): void {
@@ -66,11 +66,11 @@ export class SimpleMetricsCache implements MetricsCacheInterface {
     }
   }
 
-  export(): Record<number, GenomeMetricsRow> {
+  export(): Record<number, GenomePhenotypeRow> {
     return Object.fromEntries(this.cache);
   }
 
-  import(data: Record<number, GenomeMetricsRow>): void {
+  import(data: Record<number, GenomePhenotypeRow>): void {
     this.cache.clear();
     for (const [id, cacheItem] of Object.entries(data)) {
       this.cache.set(Number(id), cacheItem);
@@ -79,22 +79,22 @@ export class SimpleMetricsCache implements MetricsCacheInterface {
 }
 
 /**
- * A metrics cache implementation that stores the metrics for each genome as a
- * weighted average of all metrics that have been set for that genome.
+ * A phenotype cache implementation that stores the phenotype for each genome as a
+ * weighted average of all phenotype that have been set for that genome.
  *
- * @implements {MetricsCacheInterface}
+ * @implements {PhenotypeCacheInterface}
  */
-export class AverageMetricsCache implements MetricsCacheInterface {
+export class AveragePhenotypeCache implements PhenotypeCacheInterface {
   /**
-   * A map of genome IDs to their respective metrics and the number of times they have been set.
+   * A map of genome IDs to their respective phenotype and the number of times they have been set.
    *
    * The key is the genome ID, and the value is an array with two elements. The first element is the
-   * current metrics for the genome, and the second element is the number of times the metrics have
+   * current phenotype for the genome, and the second element is the number of times the phenotype have
    * been set.
    */
-  protected readonly cache: Map<number, [GenomeMetricsRow, number]> = new Map();
+  protected readonly cache: Map<number, [GenomePhenotypeRow, number]> = new Map();
 
-  get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined {
+  get(genomeId: number, defaultValue?: GenomePhenotypeRow): GenomePhenotypeRow | undefined {
     if (!this.cache.has(genomeId)) {
       return defaultValue;
     }
@@ -102,18 +102,18 @@ export class AverageMetricsCache implements MetricsCacheInterface {
     return row.map((x) => x / count);
   }
 
-  getReady(): GenomeMetricsRow | undefined {
+  getReady(): GenomePhenotypeRow | undefined {
     return undefined;
   }
 
-  set(genomeId: number, metrics: GenomeMetricsRow): void {
+  set(genomeId: number, phenotype: GenomePhenotypeRow): void {
     if (!this.cache.has(genomeId)) {
-      this.cache.set(genomeId, [metrics, 1]);
+      this.cache.set(genomeId, [phenotype, 1]);
       return;
     }
 
     const [row, count] = this.cache.get(genomeId)!;
-    this.cache.set(genomeId, [row.map((x, i) => x + metrics[i]), count + 1]);
+    this.cache.set(genomeId, [row.map((x, i) => x + phenotype[i]), count + 1]);
   }
 
   clear(excludeGenomeIds: number[]): void {
@@ -125,11 +125,11 @@ export class AverageMetricsCache implements MetricsCacheInterface {
     }
   }
 
-  export(): Record<number, [GenomeMetricsRow, number]> {
+  export(): Record<number, [GenomePhenotypeRow, number]> {
     return Object.fromEntries(this.cache);
   }
 
-  import(data: Record<number, [GenomeMetricsRow, number]>): void {
+  import(data: Record<number, [GenomePhenotypeRow, number]>): void {
     this.cache.clear();
     for (const [id, cacheItem] of Object.entries(data)) {
       this.cache.set(Number(id), cacheItem);
@@ -138,27 +138,27 @@ export class AverageMetricsCache implements MetricsCacheInterface {
 }
 
 /**
- * A metrics cache implementation that stores the metrics for each genome as a
- * weighted average of all metrics that have been set for that genome.
+ * A phenotype cache implementation that stores the phenotype for each genome as a
+ * weighted average of all phenotype that have been set for that genome.
  *
- * The closer the genome age is to 0, the closer the metrics are to the average metrics of the population,
+ * The closer the genome age is to 0, the closer the phenotype are to the average phenotype of the population,
  * which helps to combat outliers for new genomes.
  *
- * @implements {MetricsCacheInterface}
+ * @implements {PhenotypeCacheInterface}
  */
-export class WeightedAgeAverageMetricsCache extends AverageMetricsCache {
+export class WeightedAgeAveragePhenotypeCache extends AveragePhenotypeCache {
   /**
    * The weight factor used for calculating the weighted average.
    */
   private weight: number;
 
   /**
-   * The current average metrics row, or undefined if not yet calculated.
+   * The current average phenotype row, or undefined if not yet calculated.
    */
-  private averageRow: GenomeMetricsRow | undefined = undefined;
+  private averageRow: GenomePhenotypeRow | undefined = undefined;
 
   /**
-   * Constructs a new WeightedAgeAverageMetricsCache.
+   * Constructs a new WeightedAgeAveragePhenotypeCache.
    * @param weight The weight factor used for calculating the weighted average.
    */
   constructor(weight: number) {
@@ -166,12 +166,12 @@ export class WeightedAgeAverageMetricsCache extends AverageMetricsCache {
     this.weight = weight;
   }
 
-  set(genomeId: number, metrics: GenomeMetricsRow): void {
-    super.set(genomeId, metrics);
+  set(genomeId: number, phenotype: GenomePhenotypeRow): void {
+    super.set(genomeId, phenotype);
     this.resetAverageRow();
   }
 
-  get(genomeId: number, defaultValue?: GenomeMetricsRow): GenomeMetricsRow | undefined {
+  get(genomeId: number, defaultValue?: GenomePhenotypeRow): GenomePhenotypeRow | undefined {
     const row = super.get(genomeId, defaultValue);
     if (row === undefined) {
       return undefined;
@@ -195,9 +195,9 @@ export class WeightedAgeAverageMetricsCache extends AverageMetricsCache {
     }
 
     let weightedTotal = 0;
-    const result = createFilledArray(this.getMetricsCount(), 0);
-    for (const metrics of this.cache.values()) {
-      const [row, weight] = metrics;
+    const result = createFilledArray(this.getPhenotypeCount(), 0);
+    for (const phenotype of this.cache.values()) {
+      const [row, weight] = phenotype;
       for (let i = 0; i < row.length; ++i) {
         result[i] += row[i];
       }
@@ -213,7 +213,7 @@ export class WeightedAgeAverageMetricsCache extends AverageMetricsCache {
     this.averageRow = undefined;
   }
 
-  private getMetricsCount(): number {
+  private getPhenotypeCount(): number {
     return this.cache.values().next().value![0].length!;
   }
 }

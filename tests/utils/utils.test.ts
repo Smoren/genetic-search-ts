@@ -1,23 +1,23 @@
 import { describe, it } from "@jest/globals";
-import { GroupedStatSummary, normalizeMetricsMatrix, normalizeMetricsRow, StatSummary } from "../../src";
+import { GroupedStatSummary, normalizePhenotypeMatrix, normalizePhenotypeRow, StatSummary } from "../../src";
 // @ts-ignore
 import { expectNumberArrayToBeClose } from "../helpers";
 import { zip } from "../../src/itertools";
 import { calcStatSummary, roundGroupedStatSummary, roundStatSummary } from '../../src/utils';
 
 describe.each([
-  ...dataProviderForNormalizeMetricsRow(),
+  ...dataProviderForNormalizePhenotypeRow(),
 ] as Array<[number[], number, number[]]>)(
-  'Function normalizeMetricsRow Test',
+  'Function normalizePhenotypeRow Test',
   (input, mean, expected) => {
     it('', async () => {
-      const actual = normalizeMetricsRow(input, mean);
+      const actual = normalizePhenotypeRow(input, mean);
       expectNumberArrayToBeClose(actual, expected);
     });
   },
 );
 
-function dataProviderForNormalizeMetricsRow(): Array<[number[], number, number[]]> {
+function dataProviderForNormalizePhenotypeRow(): Array<[number[], number, number[]]> {
   return [
     [
       [0, 0, 0, 0, 0],
@@ -58,12 +58,12 @@ function dataProviderForNormalizeMetricsRow(): Array<[number[], number, number[]
 }
 
 describe.each([
-  ...dataProviderForNormalizeMetricsMatrix(),
+  ...dataProviderForNormalizePhenotypeMatrix(),
 ] as Array<[number[][], number[], number[][]]>)(
-  'Function normalizeMetricsMatrix Test',
+  'Function normalizePhenotypeMatrix Test',
   (input, mean, expected) => {
     it('', async () => {
-      const actual = normalizeMetricsMatrix(input, mean, false);
+      const actual = normalizePhenotypeMatrix(input, mean, false);
       for (const [rowActual, rowExpected] of zip(actual, expected)) {
         expectNumberArrayToBeClose(rowActual, rowExpected);
       }
@@ -71,7 +71,7 @@ describe.each([
   },
 );
 
-function dataProviderForNormalizeMetricsMatrix(): Array<[number[][], number[], number[][]]> {
+function dataProviderForNormalizePhenotypeMatrix(): Array<[number[][], number[], number[][]]> {
   return [
     [
       [],
@@ -170,12 +170,12 @@ function dataProviderForNormalizeMetricsMatrix(): Array<[number[][], number[], n
 }
 
 describe.each([
-  ...dataProviderForNormalizeMetricsMatrixWithAbs(),
+  ...dataProviderForNormalizePhenotypeMatrixWithAbs(),
 ] as Array<[number[][], number[], number[][]]>)(
-  'Function normalizeMetricsMatrix With Abs Test',
+  'Function normalizePhenotypeMatrix With Abs Test',
   (input, mean, expected) => {
     it('', async () => {
-      const actual = normalizeMetricsMatrix(input, mean, true);
+      const actual = normalizePhenotypeMatrix(input, mean, true);
       for (const [rowActual, rowExpected] of zip(actual, expected)) {
         expectNumberArrayToBeClose(rowActual, rowExpected);
       }
@@ -183,7 +183,7 @@ describe.each([
   },
 );
 
-function dataProviderForNormalizeMetricsMatrixWithAbs(): Array<[number[][], number[], number[][]]> {
+function dataProviderForNormalizePhenotypeMatrixWithAbs(): Array<[number[][], number[], number[][]]> {
   return [
     [
       [],

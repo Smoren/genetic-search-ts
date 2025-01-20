@@ -99,7 +99,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
           stats: {
             age: 1,
             fitness: 100,
-            metrics: [10],
+            phenotype: [10],
             origin: 'initial',
             originCounters: {
               crossover: 0,
@@ -113,7 +113,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
           stats: {
             age: 1,
             fitness: 90,
-            metrics: [9],
+            phenotype: [9],
             origin: 'crossover',
             originCounters: {
               crossover: 0,
@@ -127,7 +127,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
           stats: {
             age: 2,
             fitness: 80,
-            metrics: [8],
+            phenotype: [8],
             origin: 'mutation',
             originCounters: {
               crossover: 0,
@@ -141,7 +141,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
           stats: {
             age: 2,
             fitness: 70,
-            metrics: [7],
+            phenotype: [7],
             origin: 'initial',
             originCounters: {
               crossover: 0,
@@ -155,7 +155,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
           stats: {
             age: 4,
             fitness: 0,
-            metrics: [6],
+            phenotype: [6],
             origin: 'crossover',
             originCounters: {
               crossover: 0,
@@ -215,7 +215,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
           stats: {
             age: 2,
             fitness: 100,
-            metrics: [10],
+            phenotype: [10],
             origin: 'initial',
             originCounters: {
               crossover: 0,
@@ -229,7 +229,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
           stats: {
             age: 1,
             fitness: 90,
-            metrics: [9],
+            phenotype: [9],
             origin: 'crossover',
             originCounters: {
               crossover: 0,
@@ -243,7 +243,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
           stats: {
             age: 2,
             fitness: 80,
-            metrics: [8],
+            phenotype: [8],
             origin: 'crossover',
             originCounters: {
               crossover: 0,
@@ -257,7 +257,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
           stats: {
             age: 4,
             fitness: 70,
-            metrics: [7],
+            phenotype: [7],
             origin: 'initial',
             originCounters: {
               crossover: 0,
@@ -271,7 +271,7 @@ function dataProviderForPopulationSummaryManager(): Array<[Population<BaseGenome
           stats: {
             age: 1,
             fitness: 0,
-            metrics: [6],
+            phenotype: [6],
             origin: 'crossover',
             originCounters: {
               crossover: 0,

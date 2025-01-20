@@ -1,12 +1,12 @@
 import {
   BaseGenome,
-  BaseMetricsStrategy,
+  BasePhenotypeStrategy,
   CrossoverStrategyInterface,
   FitnessStrategyInterface,
   GenerationFitnessColumn,
-  GenerationMetricsMatrix,
-  GenomeMetricsRow,
-  MetricsStrategyConfig,
+  GenerationPhenotypeMatrix,
+  GenomePhenotypeRow,
+  PhenotypeStrategyConfig,
   MutationStrategyInterface,
   PopulateStrategyInterface,
   Population,
@@ -20,11 +20,11 @@ export type TravelingGenome = BaseGenome & {
 
 export type TravelingTaskConfig = [number[], number[][]];
 
-export type TravelingSingleMetricsStrategyConfig = MetricsStrategyConfig<TravelingTaskConfig> & {
+export type TravelingSinglePhenotypeStrategyConfig = PhenotypeStrategyConfig<TravelingTaskConfig> & {
   distanceMatrix: number[][];
 }
 
-export function travelingMetricsTask(data: TravelingTaskConfig): Promise<GenomeMetricsRow> {
+export function travelingPhenotypeTask(data: TravelingTaskConfig): Promise<GenomePhenotypeRow> {
   const [path, distanceMatrix] = data;
   let totalDistance = 0;
 
@@ -112,9 +112,9 @@ export class TravelingCrossoverStrategy implements CrossoverStrategyInterface<Tr
   }
 }
 
-export class TravelingSingleMetricsStrategy extends BaseMetricsStrategy<
+export class TravelingSinglePhenotypeStrategy extends BasePhenotypeStrategy<
   TravelingGenome,
-  TravelingSingleMetricsStrategyConfig,
+  TravelingSinglePhenotypeStrategyConfig,
   TravelingTaskConfig
 > {
   protected createTaskInput(genome: TravelingGenome): TravelingTaskConfig {
@@ -123,7 +123,7 @@ export class TravelingSingleMetricsStrategy extends BaseMetricsStrategy<
 }
 
 export class TravelingFitnessStrategy implements FitnessStrategyInterface {
-  score(results: GenerationMetricsMatrix): GenerationFitnessColumn {
+  score(results: GenerationPhenotypeMatrix): GenerationFitnessColumn {
     return results.map((result) => result[0]);
   }
 }

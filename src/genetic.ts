@@ -8,12 +8,12 @@ import type {
   GeneticSearchFitConfig,
   ComposedGeneticSearchConfig,
   IdGeneratorInterface,
-  MetricsCacheInterface,
+  PhenotypeCacheInterface,
   GenomeStatsManagerInterface,
   PopulationSummaryManagerInterface,
   PopulationSummary,
   SchedulerInterface,
-  GenerationMetricsMatrix, GenomeMetricsRow, EvaluatedGenome,
+  GenerationPhenotypeMatrix, GenomePhenotypeRow, EvaluatedGenome,
 } from "./types";
 import {createEvaluatedPopulation, extractEvaluatedPopulation, getRandomArrayItem, IdGenerator} from "./utils";
 import { zip, distinctBy, repeat } from "./itertools";
@@ -34,9 +34,9 @@ import { GenomeStatsManager, PopulationSummaryManager } from "./stats";
  * - A [[PopulateStrategyInterface]] to generate the initial population.
  * - A [[MutationStrategyInterface]] to mutate the population.
  * - A [[CrossoverStrategyInterface]] to cross over the population.
- * - A [[MetricsStrategyInterface]] to calculate the metrics of the population.
+ * - A [[PhenotypeStrategyInterface]] to calculate the phenotype of the population.
  * - A [[FitnessStrategyInterface]] to calculate the fitness of the population.
- * - A [[MetricsCacheInterface]] to cache the metrics of the population.
+ * - A [[PhenotypeCacheInterface]] to cache the phenotype of the population.
  */
 export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchInterface<TGenome> {
   protected readonly config: GeneticSearchConfig;
@@ -143,11 +143,11 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   /**
-   * Retrieves the metrics cache used by the genetic search algorithm.
+   * Retrieves the phenotype cache used by the genetic search algorithm.
    *
-   * @returns {MetricsCacheInterface} The metrics cache instance.
+   * @returns {PhenotypeCacheInterface} The phenotype cache instance.
    */
-  public get cache(): MetricsCacheInterface {
+  public get cache(): PhenotypeCacheInterface {
     return this.strategy.cache;
   }
 
@@ -179,7 +179,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
       // Refresh the population from the population buffer.
       this.refreshPopulation();
-      // Clear the cache of metrics.
+      // Clear the cache of phenotype.
       this.clearCache();
 
       // Run the before step callback if specified.
@@ -212,17 +212,17 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     // Refresh population from buffer.
     this.refreshPopulation();
 
-    // Collect phenotype metrics for the population.
-    const metricsMatrix = await this.strategy.metrics.collect(this._population, this.strategy.cache);
+    // Collect phenotype phenotype for the population.
+    const phenotypeMatrix = await this.strategy.phenotype.collect(this._population, this.strategy.cache);
 
     // Calculate fitness for the population.
-    const fitnessColumn = this.strategy.fitness.score(metricsMatrix);
+    const fitnessColumn = this.strategy.fitness.score(phenotypeMatrix);
 
     // Update genome statistics.
-    this.genomeStatsManager.update(this.population, metricsMatrix, fitnessColumn);
+    this.genomeStatsManager.update(this.population, phenotypeMatrix, fitnessColumn);
 
     // Sort the population by fitness.
-    const sortedEvaluatedPopulation = this.strategy.sorting.sort(createEvaluatedPopulation(this._population, fitnessColumn, metricsMatrix));
+    const sortedEvaluatedPopulation = this.strategy.sorting.sort(createEvaluatedPopulation(this._population, fitnessColumn, phenotypeMatrix));
     const [sortedPopulation, sortedFitnessColumn] = extractEvaluatedPopulation(sortedEvaluatedPopulation);
 
     // Update population summary.
@@ -247,8 +247,8 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
    * Clears the cache.
    *
    * @remarks
-   * This method clears the cache, which is used to store the metrics of the genomes.
-   * The cache is used to avoid re-calculating the metrics of the genomes if they remain unchanged.
+   * This method clears the cache, which is used to store the phenotype of the genomes.
+   * The cache is used to avoid re-calculating the phenotype of the genomes if they remain unchanged.
    */
   public clearCache() {
     this.strategy.cache.clear(this.population.map((genome) => genome.id));
@@ -479,11 +479,11 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   }
 
   /**
-   * Retrieves the metrics cache used by the genetic search algorithm.
+   * Retrieves the phenotype cache used by the genetic search algorithm.
    *
-   * @returns {MetricsCacheInterface} The metrics cache instance.
+   * @returns {PhenotypeCacheInterface} The phenotype cache instance.
    */
-  public get cache(): MetricsCacheInterface {
+  public get cache(): PhenotypeCacheInterface {
     return this.strategy.cache;
   }
 
@@ -513,7 +513,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
       // Refresh the population for the current generation.
       this.refreshPopulation();
 
-      // Clear any cached metrics to ensure accurate calculations.
+      // Clear any cached phenotype to ensure accurate calculations.
       this.clearCache();
 
       // Execute the before-step callback if it is provided in the config.
@@ -563,8 +563,8 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
    * Clears the cache.
    *
    * @remarks
-   * This method clears the cache, which is used to store the metrics of the genomes.
-   * The cache is used to avoid re-calculating the metrics of the genomes if they remain unchanged.
+   * This method clears the cache, which is used to store the phenotype of the genomes.
+   * The cache is used to avoid re-calculating the phenotype of the genomes if they remain unchanged.
    */
   public clearCache() {
     this.strategy.cache.clear(this.population.map((genome) => genome.id));

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "@jest/globals";
 import {
-  AverageMetricsCache,
+  AveragePhenotypeCache,
   ComposedGeneticSearchConfig,
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
-  DummyMetricsCache,
-  SimpleMetricsCache,
+  DummyPhenotypeCache,
+  SimplePhenotypeCache,
   Scheduler,
   DescendingSortingStrategy,
   AscendingSortingStrategy, RandomSelectionStrategy,
@@ -20,7 +20,7 @@ import {
   ParabolaCrossoverStrategy,
   ParabolaMutationStrategy,
   ParabolaPopulateStrategy,
-  ParabolaSingleMetricsStrategy,
+  ParabolaSinglePhenotypeStrategy,
   ParabolaReferenceFitnessStrategy,
   ParabolaMaxValueFitnessStrategy,
   ParabolaTaskConfig,
@@ -28,7 +28,7 @@ import {
 } from "./fixtures";
 // @ts-ignore
 import { dataProviderForGetParabolaMax } from "./data";
-import { WeightedAgeAverageMetricsCache } from "../../src";
+import { WeightedAgeAveragePhenotypeCache } from "../../src";
 
 describe.each([
   ...dataProviderForGetParabolaMax(),
@@ -44,7 +44,7 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
-        metrics: new ParabolaSingleMetricsStrategy({
+        phenotype: new ParabolaSinglePhenotypeStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
           onTaskResult: () => void 0,
         }),
@@ -53,11 +53,11 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
-        cache: new DummyMetricsCache(),
+        cache: new DummyPhenotypeCache(),
       }
 
       const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
-      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
+      expect(search.cache).toBeInstanceOf(DummyPhenotypeCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
       await search.fit({
@@ -121,7 +121,7 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
-        metrics: new ParabolaSingleMetricsStrategy({
+        phenotype: new ParabolaSinglePhenotypeStrategy({
           task: async (data: ParabolaTaskConfig) => [-(-((data[0]+a)**2) + b)],
           onTaskResult: () => void 0,
         }),
@@ -130,11 +130,11 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
-        cache: new DummyMetricsCache(),
+        cache: new DummyPhenotypeCache(),
       }
 
       const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
-      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
+      expect(search.cache).toBeInstanceOf(DummyPhenotypeCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
       await search.fit({
@@ -198,7 +198,7 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
-        metrics: new ParabolaSingleMetricsStrategy({
+        phenotype: new ParabolaSinglePhenotypeStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
           onTaskResult: () => void 0,
         }),
@@ -207,11 +207,11 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
-        cache: new DummyMetricsCache(),
+        cache: new DummyPhenotypeCache(),
       }
 
       const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
-      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
+      expect(search.cache).toBeInstanceOf(DummyPhenotypeCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
       const scheduler = new Scheduler({
@@ -272,7 +272,7 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
-        metrics: new ParabolaSingleMetricsStrategy({
+        phenotype: new ParabolaSinglePhenotypeStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
           onTaskResult: () => void 0,
         }),
@@ -281,11 +281,11 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
-        cache: new SimpleMetricsCache(),
+        cache: new SimplePhenotypeCache(),
       }
 
       const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
-      expect(search.cache).toBeInstanceOf(SimpleMetricsCache);
+      expect(search.cache).toBeInstanceOf(SimplePhenotypeCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
       await search.fit({
@@ -343,7 +343,7 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
-        metrics: new ParabolaSingleMetricsStrategy({
+        phenotype: new ParabolaSinglePhenotypeStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
           onTaskResult: () => void 0,
         }),
@@ -352,11 +352,11 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
-        cache: new AverageMetricsCache(),
+        cache: new AveragePhenotypeCache(),
       }
 
       const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
-      expect(search.cache).toBeInstanceOf(AverageMetricsCache);
+      expect(search.cache).toBeInstanceOf(AveragePhenotypeCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
       await search.fit({
@@ -414,7 +414,7 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
-        metrics: new ParabolaSingleMetricsStrategy({
+        phenotype: new ParabolaSinglePhenotypeStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
           onTaskResult: () => void 0,
         }),
@@ -423,7 +423,7 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
-        cache: new WeightedAgeAverageMetricsCache(0.2),
+        cache: new WeightedAgeAveragePhenotypeCache(0.2),
       }
 
       const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
@@ -459,7 +459,7 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
-        metrics: new ParabolaSingleMetricsStrategy({
+        phenotype: new ParabolaSinglePhenotypeStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
         }),
         fitness: new ParabolaReferenceFitnessStrategy(y),
@@ -467,11 +467,11 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
-        cache: new DummyMetricsCache(),
+        cache: new DummyPhenotypeCache(),
       }
 
       const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies);
-      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
+      expect(search.cache).toBeInstanceOf(DummyPhenotypeCache);
       expect(search.partitions).toEqual([50, 25, 25]);
 
       await search.fit({
@@ -544,7 +544,7 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
-        metrics: new ParabolaSingleMetricsStrategy({
+        phenotype: new ParabolaSinglePhenotypeStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
         }),
         fitness: new ParabolaReferenceFitnessStrategy(y),
@@ -552,12 +552,12 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
-        cache: new DummyMetricsCache(),
+        cache: new DummyPhenotypeCache(),
       }
 
       const search = new ComposedGeneticSearch<ParabolaArgumentGenome>(config, strategies);
       expect(search.generation).toEqual(1);
-      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
+      expect(search.cache).toBeInstanceOf(DummyPhenotypeCache);
       expect(search.partitions).toEqual([50, 30, 20]);
 
       await search.fit({
@@ -636,7 +636,7 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
         populate: new ParabolaPopulateStrategy(),
-        metrics: new ParabolaSingleMetricsStrategy({
+        phenotype: new ParabolaSinglePhenotypeStrategy({
           task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
@@ -644,12 +644,12 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
-        cache: new DummyMetricsCache(),
+        cache: new DummyPhenotypeCache(),
       }
 
       const search = new ComposedGeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
       expect(search.generation).toEqual(1);
-      expect(search.cache).toBeInstanceOf(DummyMetricsCache);
+      expect(search.cache).toBeInstanceOf(DummyPhenotypeCache);
       expect(search.partitions).toEqual([50, 30, 20]);
       expect(search.getPopulationSummary().stagnationCounter).toEqual(0);
 

@@ -2,7 +2,7 @@ import { describe, it } from '@jest/globals';
 import {
   BaseGenome,
   GenerationFitnessColumn,
-  GenerationMetricsMatrix,
+  GenerationPhenotypeMatrix,
   GenomeStats,
   GenomeStatsManager,
   Population
@@ -10,9 +10,9 @@ import {
 
 describe.each([
   ...dataProviderForGenomeStatsManager(),
-] as Array<[Population<BaseGenome>, GenerationMetricsMatrix, GenerationFitnessColumn, GenomeStats[], GenomeStats[]]>)(
+] as Array<[Population<BaseGenome>, GenerationPhenotypeMatrix, GenerationFitnessColumn, GenomeStats[], GenomeStats[]]>)(
   'GenomeStatsManager Test',
-  (population, metricsMatrix, fitnessColumn, expectedAfterInit, expectedAfterUpdate) => {
+  (population, phenotypeMatrix, fitnessColumn, expectedAfterInit, expectedAfterUpdate) => {
     it('', async () => {
       const extractStats = (population: Population<BaseGenome>) => population
         .filter((genome) => genome.stats)
@@ -30,7 +30,7 @@ describe.each([
         expect(stats).toEqual(expectedAfterInit);
       }
 
-      manager.update(population, metricsMatrix, fitnessColumn);
+      manager.update(population, phenotypeMatrix, fitnessColumn);
 
       {
         const stats = extractStats(population);
@@ -41,7 +41,7 @@ describe.each([
   },
 );
 
-function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, GenerationMetricsMatrix, GenerationFitnessColumn, GenomeStats[], GenomeStats[]]> {
+function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, GenerationPhenotypeMatrix, GenerationFitnessColumn, GenomeStats[], GenomeStats[]]> {
   return [
     [
       [],
@@ -66,7 +66,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
         {
           fitness: 0,
           age: 0,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -77,7 +77,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
         {
           fitness: 0,
           age: 0,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -88,7 +88,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
         {
           fitness: 0,
           age: 0,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -101,7 +101,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
         {
           fitness: 10,
           age: 1,
-          metrics: [1, 2, 3],
+          phenotype: [1, 2, 3],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -112,7 +112,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
         {
           fitness: 20,
           age: 1,
-          metrics: [4, 5, 6],
+          phenotype: [4, 5, 6],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -123,7 +123,7 @@ function dataProviderForGenomeStatsManager(): Array<[Population<BaseGenome>, Gen
         {
           fitness: 30,
           age: 1,
-          metrics: [7, 8, 9],
+          phenotype: [7, 8, 9],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -168,7 +168,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'crossover',
           originCounters: {
             crossover: 1,
@@ -182,7 +182,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'mutation',
           originCounters: {
             crossover: 0,
@@ -194,7 +194,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'crossover',
         originCounters: {
           crossover: 2,
@@ -205,7 +205,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 1,
@@ -216,7 +216,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -231,7 +231,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -245,7 +245,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -257,7 +257,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'crossover',
         originCounters: {
           crossover: 1,
@@ -268,7 +268,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -279,7 +279,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -294,7 +294,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -308,7 +308,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'mutation',
           originCounters: {
             crossover: 0,
@@ -320,7 +320,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'crossover',
         originCounters: {
           crossover: 1,
@@ -331,7 +331,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -342,7 +342,7 @@ function dataProviderForOriginCounters(): Array<[BaseGenome, BaseGenome, GenomeS
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -362,7 +362,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'crossover',
         originCounters: {
           crossover: 1,
@@ -373,7 +373,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -384,7 +384,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -400,7 +400,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -412,7 +412,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'crossover',
         originCounters: {
           crossover: 1,
@@ -423,7 +423,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -434,7 +434,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -449,7 +449,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
         } as unknown as GenomeStats,
       },
@@ -457,7 +457,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'crossover',
         originCounters: {
           crossover: 1,
@@ -468,7 +468,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -479,7 +479,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -494,7 +494,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
         } as unknown as GenomeStats,
       },
@@ -503,7 +503,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
           originCounters: {
             crossover: 0,
@@ -515,7 +515,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'crossover',
         originCounters: {
           crossover: 1,
@@ -526,7 +526,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -537,7 +537,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -552,7 +552,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
         } as unknown as GenomeStats,
       },
@@ -561,14 +561,14 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
         stats: {
           fitness: 0,
           age: 1,
-          metrics: [],
+          phenotype: [],
           origin: 'initial',
         } as unknown as GenomeStats
       },
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'crossover',
         originCounters: {
           crossover: 1,
@@ -579,7 +579,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
@@ -590,7 +590,7 @@ function dataProviderForOriginCountersIncomplete(): Array<[BaseGenome, BaseGenom
       {
         fitness: 0,
         age: 0,
-        metrics: [],
+        phenotype: [],
         origin: 'mutation',
         originCounters: {
           crossover: 0,
