@@ -71,18 +71,26 @@ export abstract class BasePhenotypeStrategy<
     this.config = config;
   }
 
+  /**
+   * Collects and caches the phenotype for a given population of genomes.
+   *
+   * @param population The population of genomes to collect phenotype for.
+   * @param cache The cache used to store and retrieve phenotypes.
+   * @returns A promise that resolves to a matrix of phenotypes for the generation.
+   */
   public async collect(population: Population<TGenome>, cache: PhenotypeCacheInterface): Promise<GenerationPhenotypeMatrix> {
-    const resultsMap = new Map(population.map((genome) => [genome.id, cache.getReady(genome.id)]));
+    const pairs = population.map((genome) => [genome.id, cache.getReady(genome.id)] as [number, GenomePhenotypeRow]);
+    const resultsMap: Map<number, GenomePhenotypeRow> = new Map(pairs);
 
     const genomesToRun = population.filter((genome) => resultsMap.get(genome.id) === undefined);
     const newResults = await this.execTasks(genomesToRun.map((genome) => this.createTaskInput(genome)));
 
     for (const [genome, result] of zip(genomesToRun, newResults)) {
-      cache.set(genome.id, result);
+      cache.set((genome as TGenome).id, result);
     }
 
     for (const [genome, result] of zip(genomesToRun, newResults)) {
-      resultsMap.set(genome.id, cache.get(genome.id, result));
+      resultsMap.set((genome as TGenome).id, cache.get((genome as TGenome).id, result) as GenomePhenotypeRow);
     }
 
     return population.map((genome) => resultsMap.get(genome.id)!);
