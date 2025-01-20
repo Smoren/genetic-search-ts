@@ -209,17 +209,40 @@ export class RandomSelectionStrategy<TGenome extends BaseGenome> implements Sele
     this.parentsCount = parentsCount;
   }
 
+  /**
+   * Selects parents for crossover.
+   *
+   * @param input The population extended with fitness scores and phenotype to select parents from.
+   * @param count The number of parents to select.
+   * @returns An array of parents arrays.
+   */
   public selectForCrossover(input: Array<EvaluatedGenome<TGenome>>, count: number): Array<TGenome[]> {
     const result: Array<TGenome[]> = [];
 
     for (let i = 0; i < count; i++) {
-      result.push(input.map(() => getRandomArrayItem(input).genome).slice(0, this.parentsCount));
+      const parents: TGenome[] = []
+      for (let j = 0; j < this.parentsCount; j++) {
+        parents.push(getRandomArrayItem(input).genome);
+      }
+
+      result.push(parents);
     }
 
     return result;
   }
 
+  /**
+   * Selects parents for mutation.
+   *
+   * @param input The population extended with fitness scores and phenotype to select parents from.
+   * @param count The number of parents to select.
+   * @returns An array of parents.
+   */
   public selectForMutation(input: Array<EvaluatedGenome<TGenome>>, count: number): TGenome[] {
-    return input.map(() => getRandomArrayItem(input).genome).slice(0, count);
+    const result: TGenome[] = [];
+    for (let i = 0; i < count; i++) {
+      result.push(getRandomArrayItem(input).genome);
+    }
+    return result;
   }
 }
