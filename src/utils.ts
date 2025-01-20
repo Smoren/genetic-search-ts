@@ -1,9 +1,13 @@
 import type {
-  BaseGenome, EvaluatedGenome, GenerationFitnessColumn,
+  BaseGenome,
+  EvaluatedGenome,
+  GenerationFitnessColumn,
   GenerationPhenotypeMatrix,
   GenomePhenotypeRow,
   GroupedStatSummary,
-  IdGeneratorInterface, Population, RangeStatSummary,
+  IdGeneratorInterface,
+  Population,
+  RangeStatSummary,
   StatSummary
 } from "./types";
 import {zip} from "./itertools";

@@ -13,10 +13,10 @@ import type {
   PopulationSummaryManagerInterface,
   PopulationSummary,
   SchedulerInterface,
-  GenerationPhenotypeMatrix, GenomePhenotypeRow, EvaluatedGenome,
+  EvaluatedGenome,
 } from "./types";
-import {createEvaluatedPopulation, extractEvaluatedPopulation, getRandomArrayItem, IdGenerator} from "./utils";
-import { zip, distinctBy, repeat } from "./itertools";
+import {createEvaluatedPopulation, extractEvaluatedPopulation, IdGenerator } from "./utils";
+import { distinctBy, repeat } from "./itertools";
 import { GenomeStatsManager, PopulationSummaryManager } from "./stats";
 
 /**
