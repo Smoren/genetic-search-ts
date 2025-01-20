@@ -1,11 +1,12 @@
 import type {
-  BaseGenome,
+  BaseGenome, EvaluatedGenome, GenerationFitnessColumn,
   GenerationMetricsMatrix,
   GenomeMetricsRow,
   GroupedStatSummary,
-  IdGeneratorInterface, RangeStatSummary,
+  IdGeneratorInterface, Population, RangeStatSummary,
   StatSummary
 } from "./types";
+import {zip} from "./itertools";
 
 /**
  * Generates unique identifiers for genomes.
@@ -339,4 +340,23 @@ export function roundRangeStatSummary(summary: RangeStatSummary, precision: numb
     mean: round(summary.mean, precision),
     max: round(summary.max, precision),
   };
+}
+
+export function createEvaluatedPopulation<TGenome extends BaseGenome>(
+  population: Population<TGenome>,
+  fitnessColumn: GenerationFitnessColumn,
+  metricsMatrix: GenerationMetricsMatrix,
+): Array<EvaluatedGenome<TGenome>> {
+  const zipped = [...zip(population, fitnessColumn, metricsMatrix)];
+  return zipped.map(([genome, fitness, metrics]) => ({ genome, fitness, metrics }));
+}
+
+export function extractEvaluatedPopulation<TGenome extends BaseGenome>(
+  input: Array<EvaluatedGenome<TGenome>>,
+): [Population<TGenome>, GenerationFitnessColumn, GenerationMetricsMatrix] {
+  return [
+    input.map((x) => x.genome),
+    input.map((x) => x.fitness),
+    input.map((x) => x.metrics),
+  ];
 }

@@ -91,6 +91,27 @@ export type GenerationFitnessColumn = number[];
 export type GenerationMetricsMatrix = GenomeMetricsRow[];
 
 /**
+ * Represents a genome that has been evaluated.
+ *
+ * @template TGenome The specific type of genome being evaluated.
+ */
+export type EvaluatedGenome<TGenome extends BaseGenome> = {
+  /**
+   * The genome being evaluated.
+   */
+  genome: TGenome;
+
+  /**
+   * The fitness score of the genome.
+   */
+  fitness: number;
+
+  /**
+   * The metrics of the genome.
+   */
+  metrics: GenomeMetricsRow;
+}
+/**
  * A callback function that is called before each generation.
  *
  * @param generation The current generation number.
@@ -586,10 +607,10 @@ export interface SortStrategyInterface<TGenome extends BaseGenome> {
   /**
    * Sorts a given iterable of genomes, fitness scores, and metrics rows.
    *
-   * @param input An iterable containing tuples of genomes, their fitness scores, and their associated metrics rows.
+   * @param input The array of genomes extended with fitness scores and metrics.
    * @returns An array of sorted tuples of genomes, fitness scores, and metrics rows.
    */
-  sort(input: Array<[TGenome, number, GenomeMetricsRow]>): Array<[TGenome, number, GenomeMetricsRow]>;
+  sort(input: Array<EvaluatedGenome<TGenome>>): Array<EvaluatedGenome<TGenome>>;
 }
 
 /**
@@ -601,20 +622,20 @@ export interface SelectionStrategyInterface<TGenome extends BaseGenome> {
   /**
    * Selects parents pairs for crossover.
    *
-   * @param input The population to select parents from.
+   * @param input The population extended with fitness scores and metrics to select parents from.
    * @param count The number of parents to select.
-   * @returns An array of tuples of parents. Each tuple contains several parents.
+   * @returns An array of parent pairs.
    */
-  selectForCrossover(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): Array<TGenome[]>;
+  selectForCrossover(input: Array<EvaluatedGenome<TGenome>>, count: number): Array<TGenome[]>;
 
   /**
    * Selects parents for mutation.
    *
-   * @param input The population to select parents from.
+   * @param input The population extended with fitness scores and metrics to select parents from.
    * @param count The number of parents to select.
    * @returns An array of parents.
    */
-  selectForMutation(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): TGenome[];
+  selectForMutation(input: Array<EvaluatedGenome<TGenome>>, count: number): TGenome[];
 }
 
 /**

@@ -13,9 +13,9 @@ import type {
   PopulationSummaryManagerInterface,
   PopulationSummary,
   SchedulerInterface,
-  GenerationMetricsMatrix, GenomeMetricsRow,
+  GenerationMetricsMatrix, GenomeMetricsRow, EvaluatedGenome,
 } from "./types";
-import { getRandomArrayItem, IdGenerator } from "./utils";
+import {createEvaluatedPopulation, extractEvaluatedPopulation, getRandomArrayItem, IdGenerator} from "./utils";
 import { zip, distinctBy, repeat } from "./itertools";
 import { GenomeStatsManager, PopulationSummaryManager } from "./stats";
 
@@ -93,13 +93,19 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   public get partitions(): [number, number, number] {
+    // Calculate the number of genomes that will survive based on the survival rate.
     const countToSurvive = Math.round(this.config.populationSize * this.config.survivalRate);
+
+    // Calculate the number of genomes that will die (not survive).
     const countToDie = this.config.populationSize - countToSurvive;
 
+    // Calculate the number of new genomes that will be created by crossover.
     const countToCross = Math.round(countToDie * this.config.crossoverRate);
-    const countToClone = countToDie - countToCross;
 
-    return [countToSurvive, countToCross, countToClone];
+    // Calculate the number of new genomes that will be created by mutation.
+    const countToMutate = countToDie - countToCross;
+
+    return [countToSurvive, countToCross, countToMutate];
   }
 
   public get cache(): MetricsCacheInterface {
@@ -113,18 +119,31 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
+    // Determine the number of generations to run, defaulting to Infinity if not specified.
     const generationsCount = config.generationsCount ?? Infinity;
+    // Run the genetic search algorithm for the specified number of generations.
     for (let i=0; i<generationsCount; i++) {
       const generation = this.generation;
+
+      // Refresh the population from the population buffer.
       this.refreshPopulation();
+      // Clear the cache of metrics.
       this.clearCache();
+
+      // Run the before step callback if specified.
       if (config.beforeStep) {
         config.beforeStep(generation);
       }
+
+      // Run a step of the genetic search algorithm.
       const result = await this.fitStep(config.scheduler);
+
+      // Run the after step callback if specified.
       if (config.afterStep) {
         config.afterStep(generation, result);
       }
+
+      // Check if the stop condition is met and stop the algorithm if it is.
       if (config.stopCondition && config.stopCondition(result)) {
         break;
       }
@@ -132,25 +151,37 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
   }
 
   public async fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn> {
+    // Refresh population from buffer.
     this.refreshPopulation();
 
+    // Collect phenotype metrics for the population.
     const metricsMatrix = await this.strategy.metrics.collect(this._population, this.strategy.cache);
+
+    // Calculate fitness for the population.
     const fitnessColumn = this.strategy.fitness.score(metricsMatrix);
 
+    // Update genome statistics.
     this.genomeStatsManager.update(this.population, metricsMatrix, fitnessColumn);
 
-    const sortedTuples = this.strategy.sorting.sort([...zip(this._population, fitnessColumn, metricsMatrix)]);
-    const [sortedPopulation, sortedFitnessColumn] = [sortedTuples.map((x) => x[0]), sortedTuples.map((x) => x[1])];
+    // Sort the population by fitness.
+    const sortedEvaluatedPopulation = this.strategy.sorting.sort(createEvaluatedPopulation(this._population, fitnessColumn, metricsMatrix));
+    const [sortedPopulation, sortedFitnessColumn] = extractEvaluatedPopulation(sortedEvaluatedPopulation);
+
+    // Update population summary.
     this.populationSummaryManager.update(sortedPopulation);
 
+    // Step the scheduler if provided.
     if (scheduler !== undefined) {
       scheduler.step();
     }
 
-    this.refreshPopulationBuffer(sortedTuples);
+    // Run crossover and mutation.
+    this.refreshPopulationBuffer(sortedEvaluatedPopulation);
 
+    // Increase generation counter.
     this._generation++;
 
+    // Return the sorted fitness column.
     return sortedFitnessColumn;
   }
 
@@ -162,53 +193,57 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this._population = this._populationBuffer;
   }
 
-  protected sortPopulation(input: Array<[TGenome, number, GenomeMetricsRow]>): [
-    Population<TGenome>,
-    GenerationFitnessColumn,
-    GenerationMetricsMatrix,
-  ] {
-    const sorted = this.strategy.sorting.sort(input);
-    return [
-      sorted.map((x) => x[0]),
-      sorted.map((x) => x[1]),
-      sorted.map((x) => x[2]),
-    ];
-  }
-
-  protected crossover(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): Population<TGenome> {
+  protected crossover(input: Array<EvaluatedGenome<TGenome>>, count: number): Population<TGenome> {
     const newPopulation: Population<TGenome> = [];
 
+    // Select parents for crossover. Then for each parents array, cross them and create a new genome.
     for (const parents of this.strategy.selection.selectForCrossover(input, count)) {
       const crossedGenome = this.strategy.crossover.cross(parents, this.idGenerator.nextId());
+
+      // Initialize the statistics for the new genome.
       this.genomeStatsManager.initItem(crossedGenome, 'crossover', parents);
+
       newPopulation.push(crossedGenome);
     }
 
     return newPopulation;
   }
 
-  protected mutate(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): Population<TGenome> {
+  protected mutate(input: Array<EvaluatedGenome<TGenome>>, count: number): Population<TGenome> {
     const newPopulation: Population<TGenome> = [];
 
+    // Select parents for mutation. Then for each parent, mutate it and create a new genome.
     for (const genome of this.strategy.selection.selectForMutation(input, count)) {
+      // Mutate the parent and create a new genome.
       const mutatedGenome = this.strategy.mutation.mutate(genome, this.idGenerator.nextId());
+
+      // Initialize the statistics for the new genome.
       this.genomeStatsManager.initItem(mutatedGenome, 'mutation', [genome]);
+
       newPopulation.push(mutatedGenome);
     }
 
+    // Return the new population.
     return newPopulation;
   }
 
-  protected refreshPopulationBuffer(input: Array<[TGenome, number, GenomeMetricsRow]>): void {
-    const [countToSurvive, countToCross, countToClone] = this.partitions;
+  protected refreshPopulationBuffer(input: Array<EvaluatedGenome<TGenome>>): void {
+    const [countToSurvive, countToCross, countToMutate] = this.partitions;
+    const sortedPopulation = input.map((x) => x.genome);
 
-    const sortedPopulation = input.map((x) => x[0]);
-    const survivedPopulationTuples = input.slice(0, countToSurvive);
-    const survivedPopulation = survivedPopulationTuples.map((x) => x[0]);
-    const crossedPopulation = this.crossover(survivedPopulationTuples, countToCross);
-    const mutatedPopulation = this.mutate(survivedPopulationTuples, countToClone);
+    // Select the top fittest genomes to survive.
+    const survivedEvaluatedPopulation = input.slice(0, countToSurvive);
+    const survivedPopulation = survivedEvaluatedPopulation.map((x) => x.genome);
 
+    // Select parents for crossover. Then for each parents array, cross them and create a new genome.
+    const crossedPopulation = this.crossover(survivedEvaluatedPopulation, countToCross);
+
+    // Select parents for mutation. Then for each parent, mutate it and create a new genome.
+    const mutatedPopulation = this.mutate(survivedEvaluatedPopulation, countToMutate);
+
+    // Set the current population to the sorted population.
     this._population = sortedPopulation;
+    // Set the next population to the combination of the survived, crossed, and mutated populations.
     this._populationBuffer = [...survivedPopulation, ...crossedPopulation, ...mutatedPopulation];
   }
 }
@@ -260,11 +295,18 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   }
 
   public get population(): Population<TGenome> {
+    // Initialize an empty population result array.
     const result: Population<TGenome> = [];
+
+    // Add genomes from the final population, limited to the configured size.
     result.push(...this.final.population.slice(0, this.config.final.populationSize));
+
+    // Add genomes from each eliminator's population.
     for (const eliminators of this.eliminators) {
       result.push(...eliminators.population);
     }
+
+    // Return the combined population result.
     return result;
   }
 
@@ -273,24 +315,38 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   }
 
   public setPopulation(population: Population<TGenome>, resetIdGenerator: boolean = true): void {
+    // If the resetIdGenerator option is specified, reset the ID generator.
     if (resetIdGenerator) {
       this.idGenerator.reset(population);
     }
+
+    // Set the population of the final search algorithm.
     this.final.setPopulation(population.slice(0, this.final.population.length), false);
+
+    // Remove the genomes that were assigned to the final search algorithm.
     population = population.slice(this.final.population.length);
+
+    // Assign the remaining genomes to the eliminators.
     for (const eliminator of this.eliminators) {
+      // Set the population of the eliminator.
       eliminator.setPopulation(population.slice(0, eliminator.population.length), false);
+
+      // Remove the genomes that were assigned to the eliminator.
       population = population.slice(eliminator.population.length);
     }
   }
 
   public get partitions(): [number, number, number] {
+    // Calculate the total number of genomes that will survive, be crossed, and be mutated.
+    // This is the sum of the counts from each eliminator.
     const result: [number, number, number] = [0, 0, 0];
     for (const eliminators of this.eliminators) {
-      const [countToSurvive, countToCross, countToClone] = eliminators.partitions;
+      const [countToSurvive, countToCross, countToMutate] = eliminators.partitions;
+
+      // Add the counts from the current eliminator to the result.
       result[0] += countToSurvive;
       result[1] += countToCross;
-      result[2] += countToClone;
+      result[2] += countToMutate;
     }
     return result;
   }
@@ -304,17 +360,31 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   }
 
   public async fit(config: GeneticSearchFitConfig): Promise<void> {
+    // Determine the number of generations to run, defaulting to Infinity if not specified.
     const generationsCount = config.generationsCount ?? Infinity;
-    for (let i=0; i<generationsCount; i++) {
+
+    // Iterate through each generation until the specified count is reached.
+    for (let i = 0; i < generationsCount; i++) {
+      // Refresh the population for the current generation.
       this.refreshPopulation();
+
+      // Clear any cached metrics to ensure accurate calculations.
       this.clearCache();
+
+      // Execute the before-step callback if it is provided in the config.
       if (config.beforeStep) {
         config.beforeStep(i);
       }
+
+      // Run a single step of the genetic search algorithm using the scheduler.
       const result = await this.fitStep(config.scheduler);
+
+      // Execute the after-step callback if it is provided in the config.
       if (config.afterStep) {
         config.afterStep(i, result);
       }
+
+      // Check if the stop condition is met, and break the loop if so.
       if (config.stopCondition && config.stopCondition(result)) {
         break;
       }
@@ -322,14 +392,19 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   }
 
   public async fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn> {
+    // Run a single step of the genetic search algorithm for each eliminator.
     for (const eliminators of this.eliminators) {
       await eliminators.fitStep();
     }
 
-    // TODO pop best genomes ???
-
+    // Run crossing and mutation for the final population.
     this.final.refreshPopulation();
+
+    // Set the population for the final population by combining the best genomes from the eliminators
+    // with the current population.
     this.final.setPopulation([...distinctBy([...this.final.population, ...this.bestGenomes], (x) => x.id)], false);
+
+    // Run the final step of the genetic search algorithm.
     return await this.final.fitStep(scheduler);
   }
 
@@ -338,7 +413,10 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
   }
 
   public refreshPopulation() {
+    // Refresh the population for the final search algorithm.
     this.final.refreshPopulation();
+
+    // Refresh the population for each eliminator.
     for (const eliminator of this.eliminators) {
       eliminator.refreshPopulation();
     }

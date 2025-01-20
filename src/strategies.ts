@@ -11,7 +11,9 @@ import type {
   GenomeMetricsRow,
   GenerationFitnessColumn,
   MetricsCacheInterface,
-  SortStrategyInterface, SelectionStrategyInterface,
+  SortStrategyInterface,
+  SelectionStrategyInterface,
+  EvaluatedGenome,
 } from "./types";
 import { normalizeMetricsMatrix, arrayBinaryOperation, arraySum, getRandomArrayItem } from "./utils";
 import {sort, zip} from "./itertools";
@@ -172,8 +174,8 @@ export class AscendingSortingStrategy<TGenome extends BaseGenome> implements Sor
    * @param input An iterable containing tuples of genomes, their fitness scores, and their associated metrics rows.
    * @returns An array of sorted tuples of genomes, fitness scores, and metrics rows.
    */
-  sort(input: Array<[TGenome, number, GenomeMetricsRow]>): Array<[TGenome, number, GenomeMetricsRow]> {
-    return [...sort(input, (lhs, rhs) => lhs[1] - rhs[1])];
+  sort(input: Array<EvaluatedGenome<TGenome>>): Array<EvaluatedGenome<TGenome>> {
+    return [...sort(input, (lhs, rhs) => lhs.fitness - rhs.fitness)];
   }
 }
 
@@ -190,8 +192,8 @@ export class DescendingSortingStrategy<TGenome extends BaseGenome> implements So
    * @param input An iterable containing tuples of genomes, their fitness scores, and their associated metrics rows.
    * @returns An array of sorted tuples of genomes, fitness scores, and metrics rows.
    */
-  sort(input: Array<[TGenome, number, GenomeMetricsRow]>): Array<[TGenome, number, GenomeMetricsRow]> {
-    return [...sort(input, (lhs, rhs) => rhs[1] - lhs[1])];
+  sort(input: Array<EvaluatedGenome<TGenome>>): Array<EvaluatedGenome<TGenome>> {
+    return [...sort(input, (lhs, rhs) => rhs.fitness - lhs.fitness)];
   }
 }
 
@@ -207,17 +209,17 @@ export class RandomSelectionStrategy<TGenome extends BaseGenome> implements Sele
     this.parentsCount = parentsCount;
   }
 
-  public selectForCrossover(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): Array<TGenome[]> {
+  public selectForCrossover(input: Array<EvaluatedGenome<TGenome>>, count: number): Array<TGenome[]> {
     const result: Array<TGenome[]> = [];
 
     for (let i = 0; i < count; i++) {
-      result.push(input.map(() => getRandomArrayItem(input)[0]).slice(0, this.parentsCount));
+      result.push(input.map(() => getRandomArrayItem(input).genome).slice(0, this.parentsCount));
     }
 
     return result;
   }
 
-  public selectForMutation(input: Array<[TGenome, number, GenomeMetricsRow]>, count: number): TGenome[] {
-    return input.map(() => getRandomArrayItem(input)[0]).slice(0, count);
+  public selectForMutation(input: Array<EvaluatedGenome<TGenome>>, count: number): TGenome[] {
+    return input.map(() => getRandomArrayItem(input).genome).slice(0, count);
   }
 }

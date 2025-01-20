@@ -82,7 +82,8 @@ export class TravelingMutationStrategy implements MutationStrategyInterface<Trav
 }
 
 export class TravelingCrossoverStrategy implements CrossoverStrategyInterface<TravelingGenome> {
-  cross(lhs: TravelingGenome, rhs: TravelingGenome, newGenomeId: number): TravelingGenome {
+  cross(parents: TravelingGenome[], newGenomeId: number): TravelingGenome {
+    const [lhs, rhs] = parents;
     const length = lhs.path.length;
 
     const start = Math.floor(Math.random() * length);

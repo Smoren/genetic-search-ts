@@ -12,6 +12,7 @@ import type {
   SchedulerConfig,
   GenomeMetricsRow,
   GenerationMetricsMatrix,
+  EvaluatedGenome,
   CalcMetricsTask,
   GenerationFitnessColumn,
   GenerationAfterCallback,
@@ -28,6 +29,7 @@ import type {
   MetricsStrategyInterface,
   FitnessStrategyInterface,
   SortStrategyInterface,
+  SelectionStrategyInterface,
   GeneticSearchInterface,
   IdGeneratorInterface,
   MetricsCacheInterface,
@@ -63,6 +65,7 @@ import {
   ReferenceLossFitnessStrategy,
   AscendingSortingStrategy,
   DescendingSortingStrategy,
+  RandomSelectionStrategy,
 } from './strategies';
 
 import {
@@ -85,6 +88,7 @@ export type {
   SchedulerConfig,
   GenomeMetricsRow,
   GenerationMetricsMatrix,
+  EvaluatedGenome,
   CalcMetricsTask,
   GenerationFitnessColumn,
   GenerationAfterCallback,
@@ -101,6 +105,7 @@ export type {
   MetricsStrategyInterface,
   FitnessStrategyInterface,
   SortStrategyInterface,
+  SelectionStrategyInterface,
   GeneticSearchInterface,
   IdGeneratorInterface,
   MetricsCacheInterface,
@@ -117,6 +122,7 @@ export {
   ReferenceLossFitnessStrategy,
   AscendingSortingStrategy,
   DescendingSortingStrategy,
+  RandomSelectionStrategy,
   IdGenerator,
   DummyMetricsCache,
   SimpleMetricsCache,

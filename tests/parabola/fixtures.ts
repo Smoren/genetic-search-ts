@@ -45,7 +45,8 @@ export class ParabolaMutationStrategy extends BaseMutationStrategy<ParabolaArgum
 }
 
 export class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<ParabolaArgumentGenome> {
-  cross(lhs: ParabolaArgumentGenome, rhs: ParabolaArgumentGenome, newGenomeId: number): ParabolaArgumentGenome {
+  cross(parents: ParabolaArgumentGenome[], newGenomeId: number): ParabolaArgumentGenome {
+    const [lhs, rhs] = parents;
     return { x: (lhs.x + rhs.x) / 2, id: newGenomeId };
   }
 }
