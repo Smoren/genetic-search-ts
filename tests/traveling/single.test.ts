@@ -1,13 +1,13 @@
 import { describe, expect, it } from "@jest/globals";
 import {
-  AveragePhenotypeCache,
+  AveragePhenomeCache,
   ComposedGeneticSearch,
   ComposedGeneticSearchConfig,
   GeneticSearch,
   GeneticSearchConfig,
   GeneticSearchStrategyConfig,
-  DummyPhenotypeCache,
-  SimplePhenotypeCache,
+  DummyPhenomeCache,
+  SimplePhenomeCache,
   DescendingSortingStrategy,
   RandomSelectionStrategy,
 } from "../../src";
@@ -17,8 +17,8 @@ import {
   TravelingGenome,
   TravelingMutationStrategy,
   TravelingPopulateStrategy,
-  TravelingSinglePhenotypeStrategy,
-  travelingPhenotypeTask,
+  TravelingSinglePhenomeStrategy,
+  travelingPhenomeTask,
   calcPathDistance,
   getPermutations,
   // @ts-ignore
@@ -40,8 +40,8 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<TravelingGenome> = {
         populate: new TravelingPopulateStrategy(distanceMatrix.length),
-        phenotype: new TravelingSinglePhenotypeStrategy({
-          task: travelingPhenotypeTask,
+        phenome: new TravelingSinglePhenomeStrategy({
+          task: travelingPhenomeTask,
           distanceMatrix,
         }),
         fitness: new TravelingFitnessStrategy(),
@@ -49,7 +49,7 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
-        cache: new DummyPhenotypeCache(),
+        cache: new DummyPhenomeCache(),
       }
 
       const search = new GeneticSearch<TravelingGenome>(config, strategies);
@@ -79,8 +79,8 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<TravelingGenome> = {
         populate: new TravelingPopulateStrategy(distanceMatrix.length),
-        phenotype: new TravelingSinglePhenotypeStrategy({
-          task: travelingPhenotypeTask,
+        phenome: new TravelingSinglePhenomeStrategy({
+          task: travelingPhenomeTask,
           distanceMatrix,
         }),
         fitness: new TravelingFitnessStrategy(),
@@ -88,7 +88,7 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
-        cache: new SimplePhenotypeCache(),
+        cache: new SimplePhenomeCache(),
       }
 
       const search = new GeneticSearch<TravelingGenome>(config, strategies);
@@ -118,8 +118,8 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<TravelingGenome> = {
         populate: new TravelingPopulateStrategy(distanceMatrix.length),
-        phenotype: new TravelingSinglePhenotypeStrategy({
-          task: travelingPhenotypeTask,
+        phenome: new TravelingSinglePhenomeStrategy({
+          task: travelingPhenomeTask,
           distanceMatrix,
         }),
         fitness: new TravelingFitnessStrategy(),
@@ -127,7 +127,7 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
-        cache: new AveragePhenotypeCache(),
+        cache: new AveragePhenomeCache(),
       }
 
       const search = new GeneticSearch<TravelingGenome>(config, strategies);
@@ -164,8 +164,8 @@ describe.each([
 
       const strategies: GeneticSearchStrategyConfig<TravelingGenome> = {
         populate: new TravelingPopulateStrategy(distanceMatrix.length),
-        phenotype: new TravelingSinglePhenotypeStrategy({
-          task: travelingPhenotypeTask,
+        phenome: new TravelingSinglePhenomeStrategy({
+          task: travelingPhenomeTask,
           distanceMatrix,
         }),
         fitness: new TravelingFitnessStrategy(),
@@ -173,7 +173,7 @@ describe.each([
         selection: new RandomSelectionStrategy(2),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
-        cache: new DummyPhenotypeCache(),
+        cache: new DummyPhenomeCache(),
       }
 
       const search = new ComposedGeneticSearch<TravelingGenome>(config, strategies);

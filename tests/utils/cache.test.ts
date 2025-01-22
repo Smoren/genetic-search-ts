@@ -1,10 +1,10 @@
 import { it, expect } from "@jest/globals";
-import { AveragePhenotypeCache, DummyPhenotypeCache, SimplePhenotypeCache, WeightedAgeAveragePhenotypeCache } from "../../src";
+import { AveragePhenomeCache, DummyPhenomeCache, SimplePhenomeCache, WeightedAgeAveragePhenomeCache } from "../../src";
 // @ts-ignore
 import { expectNumberArrayToBeClose } from "../helpers";
 
-it('Dummy Phenotype Cache Test', async () => {
-  const cache = new DummyPhenotypeCache();
+it('Dummy Phenome Cache Test', async () => {
+  const cache = new DummyPhenomeCache();
   expect(cache.get(1)).toEqual(undefined);
   expect(cache.get(1, undefined)).toEqual(undefined);
   expect(cache.get(1, [1, 2, 3])).toEqual([1, 2, 3]);
@@ -17,8 +17,8 @@ it('Dummy Phenotype Cache Test', async () => {
   expect(cache.get(2)).toEqual(undefined);
 });
 
-it('Simple Phenotype Cache Test', async () => {
-  const cache = new SimplePhenotypeCache();
+it('Simple Phenome Cache Test', async () => {
+  const cache = new SimplePhenomeCache();
   expect(cache.get(1)).toEqual(undefined);
   expect(cache.get(1, undefined)).toEqual(undefined);
   expect(cache.get(1, [1, 2, 3])).toEqual([1, 2, 3]);
@@ -50,8 +50,8 @@ it('Simple Phenotype Cache Test', async () => {
   expect(cache.get(2)).toEqual([8, 9, 10]);
 });
 
-it('Average Phenotype Cache Test', async () => {
-  const cache = new AveragePhenotypeCache();
+it('Average Phenome Cache Test', async () => {
+  const cache = new AveragePhenomeCache();
   expect(cache.get(1)).toEqual(undefined);
   expect(cache.get(1, undefined)).toEqual(undefined);
   expect(cache.get(1, [1, 2, 3])).toEqual([1, 2, 3]);
@@ -85,9 +85,9 @@ it('Average Phenotype Cache Test', async () => {
   expect(cache.get(3)).toEqual([10, 11, 12]);
 });
 
-it('Weighted Age Average Phenotype Cache Test', async () => {
+it('Weighted Age Average Phenome Cache Test', async () => {
   {
-    const cache = new WeightedAgeAveragePhenotypeCache(0.5);
+    const cache = new WeightedAgeAveragePhenomeCache(0.5);
 
     expect(cache.get(1)).toEqual(undefined);
     expect(cache.get(1, undefined)).toEqual(undefined);
@@ -99,7 +99,7 @@ it('Weighted Age Average Phenotype Cache Test', async () => {
     expect(cache.get(1, [1, 2, 3])).toEqual([3, 4, 5]);
   }
   {
-    const cache = new WeightedAgeAveragePhenotypeCache(0.5);
+    const cache = new WeightedAgeAveragePhenomeCache(0.5);
 
     cache.set(1, [1, 2, 3]);
     expect(cache.get(1)).toEqual([1, 2, 3]);
@@ -111,7 +111,7 @@ it('Weighted Age Average Phenotype Cache Test', async () => {
     expect(cache.get(1)).toEqual([2, 3, 4]);
   }
   {
-    const cache = new WeightedAgeAveragePhenotypeCache(0.5);
+    const cache = new WeightedAgeAveragePhenomeCache(0.5);
 
     cache.set(1, [1, 2, 3]);
     cache.set(2, [1, 2, 3]);
@@ -124,7 +124,7 @@ it('Weighted Age Average Phenotype Cache Test', async () => {
     expect(cache.get(2)).toEqual([2, 3, 4]);
   }
   {
-    const cache = new WeightedAgeAveragePhenotypeCache(0.5);
+    const cache = new WeightedAgeAveragePhenomeCache(0.5);
 
     cache.set(1, [1, 2, 3]);
     cache.set(2, [1, 2, 3]);
@@ -140,7 +140,7 @@ it('Weighted Age Average Phenotype Cache Test', async () => {
     expect(cache.get(2)).toEqual([1, 2, 3]);
   }
   {
-    const cache = new WeightedAgeAveragePhenotypeCache(0.5);
+    const cache = new WeightedAgeAveragePhenomeCache(0.5);
 
     cache.set(1, [1, 2, 3]);
     cache.set(2, [5, 6, 7]);
@@ -154,7 +154,7 @@ it('Weighted Age Average Phenotype Cache Test', async () => {
     expect(cache.get(2)).toEqual([3.4, 4.4, 5.4]);
   }
   {
-    const cache = new WeightedAgeAveragePhenotypeCache(0.5);
+    const cache = new WeightedAgeAveragePhenomeCache(0.5);
 
     cache.set(1, [1, 2, 3]);
     cache.set(2, [5, 6, 7]);
@@ -173,7 +173,7 @@ it('Weighted Age Average Phenotype Cache Test', async () => {
     expectNumberArrayToBeClose(cache.get(3)!, [1, 2, 3], 2);
   }
   {
-    const cache = new WeightedAgeAveragePhenotypeCache(0.5);
+    const cache = new WeightedAgeAveragePhenomeCache(0.5);
 
     cache.set(1, [1, 2, 3]);
     cache.set(2, [5, 6, 7]);
@@ -193,7 +193,7 @@ it('Weighted Age Average Phenotype Cache Test', async () => {
     expectNumberArrayToBeClose(cache.get(3)!, [1, 2, 3], 2);
   }
   {
-    const cache = new WeightedAgeAveragePhenotypeCache(0.5);
+    const cache = new WeightedAgeAveragePhenomeCache(0.5);
 
     cache.set(1, [1, 2, 3]);
     cache.set(2, [2, 3, 4]);
@@ -217,7 +217,7 @@ it('Weighted Age Average Phenotype Cache Test', async () => {
     expectNumberArrayToBeClose(cache.get(3)!, [1.25, 2.25, 3.25], 2);
   }
   {
-    const cache = new WeightedAgeAveragePhenotypeCache(1);
+    const cache = new WeightedAgeAveragePhenomeCache(1);
 
     cache.set(1, [1, 2, 3]);
     cache.set(2, [3, 4, 5]);

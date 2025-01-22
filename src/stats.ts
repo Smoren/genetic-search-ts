@@ -2,9 +2,9 @@ import type {
   BaseGenome,
   GenomeStats,
   GenomeStatsManagerInterface,
-  GenomePhenotypeRow,
+  GenomePhenomeRow,
   Population,
-  GenerationPhenotypeMatrix,
+  GenerationPhenomeMatrix,
   GenerationFitnessColumn,
   GenomeOrigin,
   StatSummary,
@@ -43,11 +43,11 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
 
   public update(
     population: Population<BaseGenome>,
-    phenotypeMatrix: GenerationPhenotypeMatrix,
+    phenomeMatrix: GenerationPhenomeMatrix,
     fitnessColumn: GenerationFitnessColumn,
   ): void {
-    for (const [genome, phenotype, fitness] of zip(population, phenotypeMatrix, fitnessColumn)) {
-      this.updateItem(genome, phenotype, fitness);
+    for (const [genome, phenome, fitness] of zip(population, phenomeMatrix, fitnessColumn)) {
+      this.updateItem(genome, phenome, fitness);
     }
   }
 
@@ -58,7 +58,7 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
     genome.stats = {
       fitness: 0,
       age: 0,
-      phenotype: [],
+      phenome: [],
       origin,
       originCounters: {
         crossover: arraySum(parents.map((p) => p.stats?.originCounters?.crossover ?? 0)) + Number(origin === 'crossover'),
@@ -73,16 +73,16 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
    * Updates the statistics of a genome.
    *
    * @param genome The genome to update.
-   * @param phenotype The phenotype of the genome.
+   * @param phenome The phenome of the genome.
    * @param fitness The fitness of the genome.
    *
    * @returns The updated genome statistics.
    */
-  protected updateItem(genome: BaseGenome, phenotype: GenomePhenotypeRow, fitness: number): GenomeStats {
+  protected updateItem(genome: BaseGenome, phenome: GenomePhenomeRow, fitness: number): GenomeStats {
     const stats = this.initItem(genome, 'initial');
     stats.age++;
     stats.fitness = fitness;
-    stats.phenotype = phenotype;
+    stats.phenome = phenome;
     return stats;
   }
 }

@@ -2,8 +2,8 @@ import type {
   BaseGenome,
   EvaluatedGenome,
   GenerationFitnessColumn,
-  GenerationPhenotypeMatrix,
-  GenomePhenotypeRow,
+  GenerationPhenomeMatrix,
+  GenomePhenomeRow,
   GroupedStatSummary,
   IdGeneratorInterface,
   Population,
@@ -153,7 +153,7 @@ export function getRandomArrayItem<T>(input: T[]): T {
  *
  * @category Utils
  */
-export function normalizePhenotypeRow(input: GenomePhenotypeRow, reference: number): GenomePhenotypeRow {
+export function normalizePhenomeRow(input: GenomePhenomeRow, reference: number): GenomePhenomeRow {
   // Find the minimum and maximum values in the array
   const minVal = Math.min(...input);
   const maxVal = Math.max(...input);
@@ -169,18 +169,18 @@ export function normalizePhenotypeRow(input: GenomePhenotypeRow, reference: numb
 }
 
 /**
- * Normalizes the columns of a matrix of phenotype to the range from -1 to 1, where the `reference` value is mapped to 0.
+ * Normalizes the columns of a matrix of phenome to the range from -1 to 1, where the `reference` value is mapped to 0.
  *
- * @param input The matrix of phenotype to normalize.
+ * @param input The matrix of phenome to normalize.
  * @param reference The reference value to map to 0.
- * @returns The normalized matrix of phenotype.
+ * @returns The normalized matrix of phenome.
  *
  * @category Utils
  */
-export function normalizePhenotypeMatrixColumns(
-  input: GenerationPhenotypeMatrix,
-  reference: GenomePhenotypeRow,
-): GenerationPhenotypeMatrix {
+export function normalizePhenomeMatrixColumns(
+  input: GenerationPhenomeMatrix,
+  reference: GenomePhenomeRow,
+): GenerationPhenomeMatrix {
   const result = fullCopyObject(input);
 
   if (result.length === 0) {
@@ -188,7 +188,7 @@ export function normalizePhenotypeMatrixColumns(
   }
 
   for (let i = 0; i < result[0].length; i++) {
-    const columnNormalized = normalizePhenotypeRow(result.map((row) => row[i]), reference[i]);
+    const columnNormalized = normalizePhenomeRow(result.map((row) => row[i]), reference[i]);
     for (let j = 0; j < result.length; j++) {
       result[j][i] = columnNormalized[j];
     }
@@ -198,17 +198,17 @@ export function normalizePhenotypeMatrixColumns(
 }
 
 /**
- * Normalizes the columns of a matrix of phenotype to the range from -1 to 1, where the `reference` value is mapped to 0.
+ * Normalizes the columns of a matrix of phenome to the range from -1 to 1, where the `reference` value is mapped to 0.
  *
- * @param matrix The matrix of phenotype to normalize.
+ * @param matrix The matrix of phenome to normalize.
  * @param reference The reference value to map to 0.
  * @param abs Whether to take the absolute value of the normalized values.
- * @returns The normalized matrix of phenotype.
+ * @returns The normalized matrix of phenome.
  *
  * @category Utils
  */
-export function normalizePhenotypeMatrix(matrix: GenerationPhenotypeMatrix, reference: GenomePhenotypeRow, abs: boolean = true): GenerationPhenotypeMatrix {
-  const result = normalizePhenotypeMatrixColumns(matrix, reference);
+export function normalizePhenomeMatrix(matrix: GenerationPhenomeMatrix, reference: GenomePhenomeRow, abs: boolean = true): GenerationPhenomeMatrix {
+  const result = normalizePhenomeMatrixColumns(matrix, reference);
 
   if (abs) {
     return result.map((row) => row.map((x) => Math.abs(x)));
@@ -387,11 +387,11 @@ export function roundRangeStatSummary(summary: RangeStatSummary, precision: numb
 }
 
 /**
- * Creates an array of `EvaluatedGenome` objects from a population and its fitness and phenotype.
+ * Creates an array of `EvaluatedGenome` objects from a population and its fitness and phenome.
  *
  * @param population The population of genomes.
  * @param fitnessColumn The fitness column of the population.
- * @param phenotypeMatrix The phenotype matrix of the population.
+ * @param phenomeMatrix The phenome matrix of the population.
  * @returns An array of EvaluatedGenome objects.
  *
  * @category Utils
@@ -399,27 +399,27 @@ export function roundRangeStatSummary(summary: RangeStatSummary, precision: numb
 export function createEvaluatedPopulation<TGenome extends BaseGenome>(
   population: Population<TGenome>,
   fitnessColumn: GenerationFitnessColumn,
-  phenotypeMatrix: GenerationPhenotypeMatrix,
+  phenomeMatrix: GenerationPhenomeMatrix,
 ): Array<EvaluatedGenome<TGenome>> {
-  const zipped = [...zip(population, fitnessColumn, phenotypeMatrix)];
-  return zipped.map(([genome, fitness, phenotype]) => ({ genome, fitness, phenotype }));
+  const zipped = [...zip(population, fitnessColumn, phenomeMatrix)];
+  return zipped.map(([genome, fitness, phenome]) => ({ genome, fitness, phenome }));
 }
 
 /**
- * Extracts the population, fitness column, and phenotype matrix from an array of
+ * Extracts the population, fitness column, and phenome matrix from an array of
  * [[EvaluatedGenome]] objects.
  *
  * @param input The array of [[EvaluatedGenome]] objects.
- * @returns An array of three elements: the population, fitness column, and phenotype matrix.
+ * @returns An array of three elements: the population, fitness column, and phenome matrix.
  *
  * @category Utils
  */
 export function extractEvaluatedPopulation<TGenome extends BaseGenome>(
   input: Array<EvaluatedGenome<TGenome>>,
-): [Population<TGenome>, GenerationFitnessColumn, GenerationPhenotypeMatrix] {
+): [Population<TGenome>, GenerationFitnessColumn, GenerationPhenomeMatrix] {
   return [
     input.map((x) => x.genome),
     input.map((x) => x.fitness),
-    input.map((x) => x.phenotype),
+    input.map((x) => x.phenome),
   ];
 }

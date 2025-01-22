@@ -3,19 +3,19 @@ import type {
   Population,
   BaseMutationStrategyConfig,
   MutationStrategyInterface,
-  PhenotypeStrategyInterface,
+  PhenomeStrategyInterface,
   FitnessStrategyInterface,
   GeneticSearchReferenceConfig,
-  PhenotypeStrategyConfig,
-  GenerationPhenotypeMatrix,
-  GenomePhenotypeRow,
+  PhenomeStrategyConfig,
+  GenerationPhenomeMatrix,
+  GenomePhenomeRow,
   GenerationFitnessColumn,
-  PhenotypeCacheInterface,
+  PhenomeCacheInterface,
   SortStrategyInterface,
   SelectionStrategyInterface,
   EvaluatedGenome,
 } from "./types";
-import { normalizePhenotypeMatrix, arrayBinaryOperation, arraySum, getRandomArrayItem } from "./utils";
+import { normalizePhenomeMatrix, arrayBinaryOperation, arraySum, getRandomArrayItem } from "./utils";
 import {sort, zip} from "./itertools";
 
 /**
@@ -48,43 +48,43 @@ export abstract class BaseMutationStrategy<
 }
 
 /**
- * Base class for phenotype strategies.
+ * Base class for phenome strategies.
  *
  * @template TGenome The type of genome objects in the population.
- * @template TConfig The type of configuration for the phenotype strategy.
- * @template TTaskConfig The type of configuration required to execute the task of the calculating phenotype.
+ * @template TConfig The type of configuration for the phenome strategy.
+ * @template TTaskConfig The type of configuration required to execute the task of the calculating phenome.
  *
  * @category Strategies
  */
-export abstract class BasePhenotypeStrategy<
+export abstract class BasePhenomeStrategy<
   TGenome extends BaseGenome,
-  TConfig extends PhenotypeStrategyConfig<TTaskConfig>,
+  TConfig extends PhenomeStrategyConfig<TTaskConfig>,
   TTaskConfig,
-> implements PhenotypeStrategyInterface<TGenome> {
+> implements PhenomeStrategyInterface<TGenome> {
   /**
-   * The configuration for the phenotype strategy.
+   * The configuration for the phenome strategy.
    */
   protected readonly config: TConfig;
 
   /**
-   * Constructs a new instance of the phenotype strategy.
+   * Constructs a new instance of the phenome strategy.
    *
-   * @param config The configuration for the phenotype strategy.
+   * @param config The configuration for the phenome strategy.
    */
   constructor(config: TConfig) {
     this.config = config;
   }
 
   /**
-   * Collects and caches the phenotype for a given population of genomes.
+   * Collects and caches the phenome for a given population of genomes.
    *
-   * @param population The population of genomes to collect phenotype for.
-   * @param cache The cache used to store and retrieve phenotypes.
-   * @returns A promise that resolves to a matrix of phenotypes for the generation.
+   * @param population The population of genomes to collect phenome for.
+   * @param cache The cache used to store and retrieve phenomes.
+   * @returns A promise that resolves to a matrix of phenomes for the generation.
    */
-  public async collect(population: Population<TGenome>, cache: PhenotypeCacheInterface): Promise<GenerationPhenotypeMatrix> {
-    const pairs = population.map((genome) => [genome.id, cache.getReady(genome.id)] as [number, GenomePhenotypeRow]);
-    const resultsMap: Map<number, GenomePhenotypeRow> = new Map(pairs);
+  public async collect(population: Population<TGenome>, cache: PhenomeCacheInterface): Promise<GenerationPhenomeMatrix> {
+    const pairs = population.map((genome) => [genome.id, cache.getReady(genome.id)] as [number, GenomePhenomeRow]);
+    const resultsMap: Map<number, GenomePhenomeRow> = new Map(pairs);
 
     const genomesToRun = population.filter((genome) => resultsMap.get(genome.id) === undefined);
     const newResults = await this.execTasks(genomesToRun.map((genome) => this.createTaskInput(genome)));
@@ -94,20 +94,20 @@ export abstract class BasePhenotypeStrategy<
     }
 
     for (const [genome, result] of zip(genomesToRun, newResults)) {
-      resultsMap.set((genome as TGenome).id, cache.get((genome as TGenome).id, result) as GenomePhenotypeRow);
+      resultsMap.set((genome as TGenome).id, cache.get((genome as TGenome).id, result) as GenomePhenomeRow);
     }
 
     return population.map((genome) => resultsMap.get(genome.id)!);
   }
 
   /**
-   * Executes the tasks to calculate the phenotype of the given genomes.
+   * Executes the tasks to calculate the phenome of the given genomes.
    *
    * @param inputs The inputs for the tasks to execute.
-   * @returns A promise that resolves to an array of phenotype for each genome.
+   * @returns A promise that resolves to an array of phenome for each genome.
    */
-  protected async execTasks(inputs: TTaskConfig[]): Promise<GenerationPhenotypeMatrix> {
-    const result: GenerationPhenotypeMatrix = [];
+  protected async execTasks(inputs: TTaskConfig[]): Promise<GenerationPhenomeMatrix> {
+    const result: GenerationPhenomeMatrix = [];
     for (const input of inputs) {
       const taskResult = await this.config.task(input);
       this.config.onTaskResult?.(taskResult, input);
@@ -117,7 +117,7 @@ export abstract class BasePhenotypeStrategy<
   }
 
   /**
-   * Creates the task input required for calculating phenotype for
+   * Creates the task input required for calculating phenome for
    * a given genome.
    *
    * @param genome The genome for which to create the task input.
@@ -149,46 +149,46 @@ export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {
     this.referenceConfig = referenceConfig;
   }
 
-  public score(results: GenerationPhenotypeMatrix): GenerationFitnessColumn {
+  public score(results: GenerationPhenomeMatrix): GenerationFitnessColumn {
     const normalizedLosses = this.formatLosses(results);
     return normalizedLosses.map((x) => -arraySum(x));
   }
 
   /**
-   * Formats the losses by normalizing the phenotype matrix and applying weights to each row.
+   * Formats the losses by normalizing the phenome matrix and applying weights to each row.
    *
-   * @param results The generation phenotype matrix to format.
+   * @param results The generation phenome matrix to format.
    * @returns A matrix of formatted losses.
    */
-  protected formatLosses(results: GenerationPhenotypeMatrix): GenerationPhenotypeMatrix {
-    return normalizePhenotypeMatrix(results, this.referenceConfig.reference).map((result) => this.weighRow(result));
+  protected formatLosses(results: GenerationPhenomeMatrix): GenerationPhenomeMatrix {
+    return normalizePhenomeMatrix(results, this.referenceConfig.reference).map((result) => this.weighRow(result));
   }
 
   /**
-   * Weighs a row of phenotype by multiplying each element with its corresponding weight.
+   * Weighs a row of phenome by multiplying each element with its corresponding weight.
    *
-   * @param result The genome phenotype row to weigh.
-   * @returns A genome phenotype row with applied weights.
+   * @param result The genome phenome row to weigh.
+   * @returns A genome phenome row with applied weights.
    */
-  protected weighRow(result: GenomePhenotypeRow): GenomePhenotypeRow {
+  protected weighRow(result: GenomePhenomeRow): GenomePhenomeRow {
     return arrayBinaryOperation(result, this.referenceConfig.weights, (x, y) => x * y);
   }
 }
 
 /**
- * Sorts a given iterable of genomes, fitness scores, and phenotype rows in ascending order of their fitness scores.
+ * Sorts a given iterable of genomes, fitness scores, and phenome rows in ascending order of their fitness scores.
  *
- * @param input An iterable containing tuples of genomes, their fitness scores, and their associated phenotype rows.
- * @returns An array of sorted tuples of genomes, fitness scores, and phenotype rows.
+ * @param input An iterable containing tuples of genomes, their fitness scores, and their associated phenome rows.
+ * @returns An array of sorted tuples of genomes, fitness scores, and phenome rows.
  *
  * @category Strategies
  */
 export class AscendingSortingStrategy<TGenome extends BaseGenome> implements SortStrategyInterface<TGenome> {
   /**
-   * Sorts a given iterable of genomes, fitness scores, and phenotype rows in ascending order of their fitness scores.
+   * Sorts a given iterable of genomes, fitness scores, and phenome rows in ascending order of their fitness scores.
    *
-   * @param input An iterable containing tuples of genomes, their fitness scores, and their associated phenotype rows.
-   * @returns An array of sorted tuples of genomes, fitness scores, and phenotype rows.
+   * @param input An iterable containing tuples of genomes, their fitness scores, and their associated phenome rows.
+   * @returns An array of sorted tuples of genomes, fitness scores, and phenome rows.
    */
   sort(input: Array<EvaluatedGenome<TGenome>>): Array<EvaluatedGenome<TGenome>> {
     return [...sort(input, (lhs, rhs) => lhs.fitness - rhs.fitness)];
@@ -196,19 +196,19 @@ export class AscendingSortingStrategy<TGenome extends BaseGenome> implements Sor
 }
 
 /**
- * Sorts a given iterable of genomes, fitness scores, and phenotype rows in descending order of their fitness scores.
+ * Sorts a given iterable of genomes, fitness scores, and phenome rows in descending order of their fitness scores.
  *
- * @param input An iterable containing tuples of genomes, their fitness scores, and their associated phenotype rows.
- * @returns An array of sorted tuples of genomes, fitness scores, and phenotype rows.
+ * @param input An iterable containing tuples of genomes, their fitness scores, and their associated phenome rows.
+ * @returns An array of sorted tuples of genomes, fitness scores, and phenome rows.
  *
  * @category Strategies
  */
 export class DescendingSortingStrategy<TGenome extends BaseGenome> implements SortStrategyInterface<TGenome> {
   /**
-   * Sorts a given iterable of genomes, fitness scores, and phenotype rows in descending order of their fitness scores.
+   * Sorts a given iterable of genomes, fitness scores, and phenome rows in descending order of their fitness scores.
    *
-   * @param input An iterable containing tuples of genomes, their fitness scores, and their associated phenotype rows.
-   * @returns An array of sorted tuples of genomes, fitness scores, and phenotype rows.
+   * @param input An iterable containing tuples of genomes, their fitness scores, and their associated phenome rows.
+   * @returns An array of sorted tuples of genomes, fitness scores, and phenome rows.
    */
   sort(input: Array<EvaluatedGenome<TGenome>>): Array<EvaluatedGenome<TGenome>> {
     return [...sort(input, (lhs, rhs) => rhs.fitness - lhs.fitness)];
@@ -239,7 +239,7 @@ export class RandomSelectionStrategy<TGenome extends BaseGenome> implements Sele
   /**
    * Selects parents for crossover.
    *
-   * @param input The population extended with fitness scores and phenotype to select parents from.
+   * @param input The population extended with fitness scores and phenome to select parents from.
    * @param count The number of parents to select.
    * @returns An array of parents arrays.
    */
@@ -261,7 +261,7 @@ export class RandomSelectionStrategy<TGenome extends BaseGenome> implements Sele
   /**
    * Selects parents for mutation.
    *
-   * @param input The population extended with fitness scores and phenotype to select parents from.
+   * @param input The population extended with fitness scores and phenome to select parents from.
    * @param count The number of parents to select.
    * @returns An array of parents.
    */

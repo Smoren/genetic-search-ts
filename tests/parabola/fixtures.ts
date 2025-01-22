@@ -1,12 +1,12 @@
 import {
   BaseGenome,
-  BasePhenotypeStrategy,
-  GenerationPhenotypeMatrix,
+  BasePhenomeStrategy,
+  GenerationPhenomeMatrix,
   CrossoverStrategyInterface,
   GenerationFitnessColumn,
   PopulateStrategyInterface,
   ReferenceLossFitnessStrategy,
-  PhenotypeStrategyConfig,
+  PhenomeStrategyConfig,
   FitnessStrategyInterface,
   BaseMutationStrategy,
   BaseMutationStrategyConfig,
@@ -51,7 +51,7 @@ export class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<Par
   }
 }
 
-export class ParabolaSinglePhenotypeStrategy extends BasePhenotypeStrategy<ParabolaArgumentGenome, PhenotypeStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
+export class ParabolaSinglePhenomeStrategy extends BasePhenomeStrategy<ParabolaArgumentGenome, PhenomeStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
     return [genome.x];
   }
@@ -67,7 +67,7 @@ export class ParabolaReferenceFitnessStrategy extends ReferenceLossFitnessStrate
 }
 
 export class ParabolaMaxValueFitnessStrategy implements FitnessStrategyInterface {
-  score(results: GenerationPhenotypeMatrix): GenerationFitnessColumn {
+  score(results: GenerationPhenomeMatrix): GenerationFitnessColumn {
     return results.map((result) => result[0]);
   }
 }

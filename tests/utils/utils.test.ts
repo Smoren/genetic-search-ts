@@ -1,5 +1,5 @@
 import { describe, it } from "@jest/globals";
-import { GroupedStatSummary, normalizePhenotypeMatrix, normalizePhenotypeRow, StatSummary } from "../../src";
+import { GroupedStatSummary, normalizePhenomeMatrix, normalizePhenomeRow, StatSummary } from "../../src";
 // @ts-ignore
 import { expectNumberArrayToBeClose } from "../helpers";
 import { zip } from "../../src/itertools";
@@ -7,18 +7,18 @@ import { calcStatSummary, roundGroupedStatSummary, roundStatSummary } from '../.
 import { SchedulerConditionException } from "../../src";
 
 describe.each([
-  ...dataProviderForNormalizePhenotypeRow(),
+  ...dataProviderForNormalizePhenomeRow(),
 ] as Array<[number[], number, number[]]>)(
-  'Function normalizePhenotypeRow Test',
+  'Function normalizePhenomeRow Test',
   (input, mean, expected) => {
     it('', async () => {
-      const actual = normalizePhenotypeRow(input, mean);
+      const actual = normalizePhenomeRow(input, mean);
       expectNumberArrayToBeClose(actual, expected);
     });
   },
 );
 
-function dataProviderForNormalizePhenotypeRow(): Array<[number[], number, number[]]> {
+function dataProviderForNormalizePhenomeRow(): Array<[number[], number, number[]]> {
   return [
     [
       [0, 0, 0, 0, 0],
@@ -59,12 +59,12 @@ function dataProviderForNormalizePhenotypeRow(): Array<[number[], number, number
 }
 
 describe.each([
-  ...dataProviderForNormalizePhenotypeMatrix(),
+  ...dataProviderForNormalizePhenomeMatrix(),
 ] as Array<[number[][], number[], number[][]]>)(
-  'Function normalizePhenotypeMatrix Test',
+  'Function normalizePhenomeMatrix Test',
   (input, mean, expected) => {
     it('', async () => {
-      const actual = normalizePhenotypeMatrix(input, mean, false);
+      const actual = normalizePhenomeMatrix(input, mean, false);
       for (const [rowActual, rowExpected] of zip(actual, expected)) {
         expectNumberArrayToBeClose(rowActual, rowExpected);
       }
@@ -72,7 +72,7 @@ describe.each([
   },
 );
 
-function dataProviderForNormalizePhenotypeMatrix(): Array<[number[][], number[], number[][]]> {
+function dataProviderForNormalizePhenomeMatrix(): Array<[number[][], number[], number[][]]> {
   return [
     [
       [],
@@ -171,12 +171,12 @@ function dataProviderForNormalizePhenotypeMatrix(): Array<[number[][], number[],
 }
 
 describe.each([
-  ...dataProviderForNormalizePhenotypeMatrixWithAbs(),
+  ...dataProviderForNormalizePhenomeMatrixWithAbs(),
 ] as Array<[number[][], number[], number[][]]>)(
-  'Function normalizePhenotypeMatrix With Abs Test',
+  'Function normalizePhenomeMatrix With Abs Test',
   (input, mean, expected) => {
     it('', async () => {
-      const actual = normalizePhenotypeMatrix(input, mean, true);
+      const actual = normalizePhenomeMatrix(input, mean, true);
       for (const [rowActual, rowExpected] of zip(actual, expected)) {
         expectNumberArrayToBeClose(rowActual, rowExpected);
       }
@@ -184,7 +184,7 @@ describe.each([
   },
 );
 
-function dataProviderForNormalizePhenotypeMatrixWithAbs(): Array<[number[][], number[], number[][]]> {
+function dataProviderForNormalizePhenomeMatrixWithAbs(): Array<[number[][], number[], number[][]]> {
   return [
     [
       [],
