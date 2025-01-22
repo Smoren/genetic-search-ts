@@ -8,7 +8,7 @@ import type {
   GeneticSearchReferenceConfig,
   PhenomeStrategyConfig,
   GenerationPhenomeMatrix,
-  GenomePhenomeRow,
+  PhenomeRow,
   GenerationFitnessColumn,
   PhenomeCacheInterface,
   SortStrategyInterface,
@@ -83,8 +83,8 @@ export abstract class BasePhenomeStrategy<
    * @returns A promise that resolves to a matrix of phenomes for the generation.
    */
   public async collect(population: Population<TGenome>, cache: PhenomeCacheInterface): Promise<GenerationPhenomeMatrix> {
-    const pairs = population.map((genome) => [genome.id, cache.getReady(genome.id)] as [number, GenomePhenomeRow]);
-    const resultsMap: Map<number, GenomePhenomeRow> = new Map(pairs);
+    const pairs = population.map((genome) => [genome.id, cache.getReady(genome.id)] as [number, PhenomeRow]);
+    const resultsMap: Map<number, PhenomeRow> = new Map(pairs);
 
     const genomesToRun = population.filter((genome) => resultsMap.get(genome.id) === undefined);
     const newResults = await this.execTasks(genomesToRun.map((genome) => this.createTaskInput(genome)));
@@ -94,7 +94,7 @@ export abstract class BasePhenomeStrategy<
     }
 
     for (const [genome, result] of zip(genomesToRun, newResults)) {
-      resultsMap.set((genome as TGenome).id, cache.get((genome as TGenome).id, result) as GenomePhenomeRow);
+      resultsMap.set((genome as TGenome).id, cache.get((genome as TGenome).id, result) as PhenomeRow);
     }
 
     return population.map((genome) => resultsMap.get(genome.id)!);
@@ -170,7 +170,7 @@ export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {
    * @param result The genome phenome row to weigh.
    * @returns A genome phenome row with applied weights.
    */
-  protected weighRow(result: GenomePhenomeRow): GenomePhenomeRow {
+  protected weighRow(result: PhenomeRow): PhenomeRow {
     return arrayBinaryOperation(result, this.referenceConfig.weights, (x, y) => x * y);
   }
 }

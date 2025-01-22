@@ -2,7 +2,7 @@ import type {
   BaseGenome,
   GenomeStats,
   GenomeStatsManagerInterface,
-  GenomePhenomeRow,
+  PhenomeRow,
   Population,
   GenerationPhenomeMatrix,
   GenerationFitnessColumn,
@@ -78,7 +78,7 @@ export class GenomeStatsManager implements GenomeStatsManagerInterface<BaseGenom
    *
    * @returns The updated genome statistics.
    */
-  protected updateItem(genome: BaseGenome, phenome: GenomePhenomeRow, fitness: number): GenomeStats {
+  protected updateItem(genome: BaseGenome, phenome: PhenomeRow, fitness: number): GenomeStats {
     const stats = this.initItem(genome, 'initial');
     stats.age++;
     stats.fitness = fitness;

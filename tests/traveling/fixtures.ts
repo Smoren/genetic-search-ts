@@ -5,7 +5,7 @@ import {
   FitnessStrategyInterface,
   GenerationFitnessColumn,
   GenerationPhenomeMatrix,
-  GenomePhenomeRow,
+  PhenomeRow,
   PhenomeStrategyConfig,
   MutationStrategyInterface,
   PopulateStrategyInterface,
@@ -24,7 +24,7 @@ export type TravelingSinglePhenomeStrategyConfig = PhenomeStrategyConfig<Traveli
   distanceMatrix: number[][];
 }
 
-export function travelingPhenomeTask(data: TravelingTaskConfig): Promise<GenomePhenomeRow> {
+export function travelingPhenomeTask(data: TravelingTaskConfig): Promise<PhenomeRow> {
   const [path, distanceMatrix] = data;
   let totalDistance = 0;
 

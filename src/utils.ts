@@ -3,7 +3,7 @@ import type {
   EvaluatedGenome,
   GenerationFitnessColumn,
   GenerationPhenomeMatrix,
-  GenomePhenomeRow,
+  PhenomeRow,
   GroupedStatSummary,
   IdGeneratorInterface,
   Population,
@@ -153,7 +153,7 @@ export function getRandomArrayItem<T>(input: T[]): T {
  *
  * @category Utils
  */
-export function normalizePhenomeRow(input: GenomePhenomeRow, reference: number): GenomePhenomeRow {
+export function normalizePhenomeRow(input: PhenomeRow, reference: number): PhenomeRow {
   // Find the minimum and maximum values in the array
   const minVal = Math.min(...input);
   const maxVal = Math.max(...input);
@@ -179,7 +179,7 @@ export function normalizePhenomeRow(input: GenomePhenomeRow, reference: number):
  */
 export function normalizePhenomeMatrixColumns(
   input: GenerationPhenomeMatrix,
-  reference: GenomePhenomeRow,
+  reference: PhenomeRow,
 ): GenerationPhenomeMatrix {
   const result = fullCopyObject(input);
 
@@ -207,7 +207,7 @@ export function normalizePhenomeMatrixColumns(
  *
  * @category Utils
  */
-export function normalizePhenomeMatrix(matrix: GenerationPhenomeMatrix, reference: GenomePhenomeRow, abs: boolean = true): GenerationPhenomeMatrix {
+export function normalizePhenomeMatrix(matrix: GenerationPhenomeMatrix, reference: PhenomeRow, abs: boolean = true): GenerationPhenomeMatrix {
   const result = normalizePhenomeMatrixColumns(matrix, reference);
 
   if (abs) {

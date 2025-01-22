@@ -26,7 +26,7 @@ export type GenomeStats = {
   /**
    * The phenome associated with the genome.
    */
-  phenome: GenomePhenomeRow;
+  phenome: PhenomeRow;
 
   /**
    * The origin of the genome, indicating how it was created.
@@ -87,7 +87,7 @@ export type Population<TGenome extends BaseGenome> = TGenome[];
  * @category Genome
  * @category Genetic Algorithm Components
  */
-export type GenomePhenomeRow = number[];
+export type PhenomeRow = number[];
 
 /**
  * Represents a column of fitness scores for a generation.
@@ -103,13 +103,13 @@ export type GenerationFitnessColumn = number[];
 /**
  * Represents a matrix of phenome for a generation of genomes.
  *
- * Each row in the matrix corresponds to a GenomePhenomeRow, storing
+ * Each row in the matrix corresponds to a PhenomeRow, storing
  * the phenome for a single genome.
  *
  * @category Genome
  * @category Genetic Algorithm Components
  */
-export type GenerationPhenomeMatrix = GenomePhenomeRow[];
+export type GenerationPhenomeMatrix = PhenomeRow[];
 
 /**
  * Represents a genome that has been evaluated.
@@ -133,7 +133,7 @@ export type EvaluatedGenome<TGenome extends BaseGenome> = {
   /**
    * The phenome of the genome.
    */
-  phenome: GenomePhenomeRow;
+  phenome: PhenomeRow;
 }
 
 /**
@@ -175,7 +175,7 @@ export type GenerationAfterCallback = (generation: number, scores: GenerationFit
  * @category Genetic Algorithm Components
  * @category Strategies Config
  */
-export type CalcPhenomeTask<TTaskConfig> = (data: TTaskConfig) => Promise<GenomePhenomeRow>;
+export type CalcPhenomeTask<TTaskConfig> = (data: TTaskConfig) => Promise<PhenomeRow>;
 
 /**
  * The main configuration for {@link GeneticSearch}.
@@ -308,7 +308,7 @@ export type PhenomeStrategyConfig<TTaskConfig> = {
    * @param result The phenome of the genome.
    * @param input The configuration required to execute the task.
    */
-  onTaskResult?: (result: GenomePhenomeRow, input: TTaskConfig) => void;
+  onTaskResult?: (result: PhenomeRow, input: TTaskConfig) => void;
 }
 
 /**
@@ -373,12 +373,12 @@ export type GeneticSearchReferenceConfig = {
   /**
    * The reference row of phenome used to calculate the fitness of the population.
    */
-  readonly reference: GenomePhenomeRow;
+  readonly reference: PhenomeRow;
 
   /**
    * The weights used to calculate the fitness of the population.
    */
-  readonly weights: GenomePhenomeRow;
+  readonly weights: PhenomeRow;
 }
 
 /**
@@ -841,7 +841,7 @@ export interface PhenomeCacheInterface {
    * @param genomeId The ID of the genome.
    * @returns The phenome of the genome, or undefined if the genome is not ready.
    */
-  getReady(genomeId: number): GenomePhenomeRow | undefined;
+  getReady(genomeId: number): PhenomeRow | undefined;
 
   /**
    * Gets the phenome of a genome.
@@ -850,7 +850,7 @@ export interface PhenomeCacheInterface {
    * @param defaultValue The default value to return if the genome is not found.
    * @returns The phenome of the genome, or the default value if the genome phenome is not found.
    */
-  get(genomeId: number, defaultValue?: GenomePhenomeRow): GenomePhenomeRow | undefined;
+  get(genomeId: number, defaultValue?: PhenomeRow): PhenomeRow | undefined;
 
   /**
    * Sets the phenome of a genome.
@@ -858,7 +858,7 @@ export interface PhenomeCacheInterface {
    * @param genomeId The ID of the genome.
    * @param phenome The phenome of the genome.
    */
-  set(genomeId: number, phenome: GenomePhenomeRow): void;
+  set(genomeId: number, phenome: PhenomeRow): void;
 
   /**
    * Clears the cache, excluding the specified genome IDs.

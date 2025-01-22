@@ -1,4 +1,4 @@
-import type { GenomePhenomeRow, PhenomeCacheInterface } from "./types";
+import type { PhenomeRow, PhenomeCacheInterface } from "./types";
 import { arrayBinaryOperation, createFilledArray } from "./utils";
 
 /**
@@ -11,15 +11,15 @@ import { arrayBinaryOperation, createFilledArray } from "./utils";
  * @category Strategies
  */
 export class DummyPhenomeCache implements PhenomeCacheInterface {
-  getReady(_: number): GenomePhenomeRow | undefined {
+  getReady(_: number): PhenomeRow | undefined {
     return undefined;
   }
 
-  get(_: number, defaultValue?: GenomePhenomeRow): GenomePhenomeRow | undefined {
+  get(_: number, defaultValue?: PhenomeRow): PhenomeRow | undefined {
     return defaultValue;
   }
 
-  set(_: number, __: GenomePhenomeRow): void {
+  set(_: number, __: PhenomeRow): void {
     return;
   }
 
@@ -45,19 +45,19 @@ export class DummyPhenomeCache implements PhenomeCacheInterface {
  * @category Strategies
  */
 export class SimplePhenomeCache implements PhenomeCacheInterface {
-  protected readonly cache: Map<number, GenomePhenomeRow> = new Map();
+  protected readonly cache: Map<number, PhenomeRow> = new Map();
 
-  get(genomeId: number, defaultValue?: GenomePhenomeRow): GenomePhenomeRow | undefined {
+  get(genomeId: number, defaultValue?: PhenomeRow): PhenomeRow | undefined {
     return this.cache.has(genomeId)
       ? this.cache.get(genomeId)!
       : defaultValue;
   }
 
-  getReady(genomeId: number): GenomePhenomeRow | undefined {
+  getReady(genomeId: number): PhenomeRow | undefined {
     return this.cache.has(genomeId) ? this.get(genomeId) : undefined;
   }
 
-  set(genomeId: number, phenome: GenomePhenomeRow): void {
+  set(genomeId: number, phenome: PhenomeRow): void {
     this.cache.set(genomeId, phenome);
   }
 
@@ -70,11 +70,11 @@ export class SimplePhenomeCache implements PhenomeCacheInterface {
     }
   }
 
-  export(): Record<number, GenomePhenomeRow> {
+  export(): Record<number, PhenomeRow> {
     return Object.fromEntries(this.cache);
   }
 
-  import(data: Record<number, GenomePhenomeRow>): void {
+  import(data: Record<number, PhenomeRow>): void {
     this.cache.clear();
     for (const [id, cacheItem] of Object.entries(data)) {
       this.cache.set(Number(id), cacheItem);
@@ -97,9 +97,9 @@ export class AveragePhenomeCache implements PhenomeCacheInterface {
    * current phenome for the genome, and the second element is the number of times the phenome have
    * been set.
    */
-  protected readonly cache: Map<number, [GenomePhenomeRow, number]> = new Map();
+  protected readonly cache: Map<number, [PhenomeRow, number]> = new Map();
 
-  get(genomeId: number, defaultValue?: GenomePhenomeRow): GenomePhenomeRow | undefined {
+  get(genomeId: number, defaultValue?: PhenomeRow): PhenomeRow | undefined {
     if (!this.cache.has(genomeId)) {
       return defaultValue;
     }
@@ -107,11 +107,11 @@ export class AveragePhenomeCache implements PhenomeCacheInterface {
     return row.map((x) => x / count);
   }
 
-  getReady(): GenomePhenomeRow | undefined {
+  getReady(): PhenomeRow | undefined {
     return undefined;
   }
 
-  set(genomeId: number, phenome: GenomePhenomeRow): void {
+  set(genomeId: number, phenome: PhenomeRow): void {
     if (!this.cache.has(genomeId)) {
       this.cache.set(genomeId, [phenome, 1]);
       return;
@@ -130,11 +130,11 @@ export class AveragePhenomeCache implements PhenomeCacheInterface {
     }
   }
 
-  export(): Record<number, [GenomePhenomeRow, number]> {
+  export(): Record<number, [PhenomeRow, number]> {
     return Object.fromEntries(this.cache);
   }
 
-  import(data: Record<number, [GenomePhenomeRow, number]>): void {
+  import(data: Record<number, [PhenomeRow, number]>): void {
     this.cache.clear();
     for (const [id, cacheItem] of Object.entries(data)) {
       this.cache.set(Number(id), cacheItem);
@@ -161,7 +161,7 @@ export class WeightedAgeAveragePhenomeCache extends AveragePhenomeCache {
   /**
    * The current average phenome row, or undefined if not yet calculated.
    */
-  private averageRow: GenomePhenomeRow | undefined = undefined;
+  private averageRow: PhenomeRow | undefined = undefined;
 
   /**
    * Constructs a new WeightedAgeAveragePhenomeCache.
@@ -172,12 +172,12 @@ export class WeightedAgeAveragePhenomeCache extends AveragePhenomeCache {
     this.weight = weight;
   }
 
-  set(genomeId: number, phenome: GenomePhenomeRow): void {
+  set(genomeId: number, phenome: PhenomeRow): void {
     super.set(genomeId, phenome);
     this.resetAverageRow();
   }
 
-  get(genomeId: number, defaultValue?: GenomePhenomeRow): GenomePhenomeRow | undefined {
+  get(genomeId: number, defaultValue?: PhenomeRow): PhenomeRow | undefined {
     const row = super.get(genomeId, defaultValue);
     if (row === undefined) {
       return undefined;
