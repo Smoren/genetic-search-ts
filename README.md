@@ -20,10 +20,10 @@ Features
 * **Multiprocessing support**: The algorithm can be run in parallel using multiple processes, making it suitable for large-scale optimization problems.
 * **Deep customization**: The algorithm can be customized by providing custom implementations for various components:
   * **base parameters** (population size, survival rate, crossover rate);
-  * **strategies** (population, phenotype, fitness, sorting, selection, mutation, crossover, caching);
+  * **strategies** (population, phenome, fitness, sorting, selection, mutation, crossover, caching);
   * **scheduler** for dynamic tuning of all the macro parameters.
-* **Separation of phenotype metrics and fitness calculation**: The algorithm separates the computation of phenotypes
-  and fitness values, allowing normalization and other operations to be applied to the phenotypes of all genomes prior
+* **Separation of phenome metrics and fitness calculation**: The algorithm separates the computation of phenomes
+  and fitness values, allowing normalization and other operations to be applied to the phenomes of all genomes prior
   to evaluating the fitness function.
 * **Type-safe**: The project uses TypeScript, which provides type safety and helps catch errors at compile-time.
 
@@ -52,7 +52,7 @@ import type {
 } from "genetic-search";
 import {
   GeneticSearch,
-  SimplePhenotypeCache,
+  SimplePhenomeCache,
   DescendingSortingStrategy,
   RandomSelectionStrategy,
 } from "genetic-search";
@@ -65,7 +65,7 @@ const config: GeneticSearchConfig = {
 
 const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
   populate: new ParabolaPopulateStrategy(),
-  phenotype: new ParabolaMultiprocessingPhenotypeStrategy({
+  phenome: new ParabolaMultiprocessingPhenomeStrategy({
     poolSize: 4,
     task: async (data) => [-((data[0] - 12)**2) - 3],
     onTaskResult: () => void 0,
@@ -75,7 +75,7 @@ const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
   selection: new RandomSelectionStrategy(2),
   mutation: new ParabolaMutationStrategy(),
   crossover: new ParabolaCrossoverStrategy(),
-  cache: new SimplePhenotypeCache(),
+  cache: new SimplePhenomeCache(),
 }
 
 const search = new GeneticSearch(config, strategies);
@@ -101,13 +101,13 @@ import type {
   CrossoverStrategyInterface,
   FitnessStrategyInterface,
   GenerationFitnessColumn,
-  GenerationPhenotypeMatrix,
+  GenerationPhenomeMatrix,
   IdGeneratorInterface,
   PopulateStrategyInterface,
 } from "genetic-search";
-import type { MultiprocessingPhenotypeStrategyConfig } from "genetic-search-multiprocess";
+import type { MultiprocessingPhenomeStrategyConfig } from "genetic-search-multiprocess";
 import { BaseMutationStrategy } from "genetic-search";
-import { MultiprocessingPhenotypeStrategyConfig } from "genetic-search-multiprocess";
+import { MultiprocessingPhenomeStrategyConfig } from "genetic-search-multiprocess";
 
 export type ParabolaArgumentGenome = BaseGenome & {
   id: number;
@@ -142,14 +142,14 @@ export class ParabolaCrossoverStrategy implements CrossoverStrategyInterface<Par
   }
 }
 
-export class ParabolaMultiprocessingPhenotypeStrategy extends BaseMultiprocessingPhenotypeStrategy<ParabolaArgumentGenome, MultiprocessingPhenotypeStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
+export class ParabolaMultiprocessingPhenomeStrategy extends BaseMultiprocessingPhenomeStrategy<ParabolaArgumentGenome, MultiprocessingPhenomeStrategyConfig<ParabolaTaskConfig>, ParabolaTaskConfig> {
   protected createTaskInput(genome: ParabolaArgumentGenome): ParabolaTaskConfig {
     return [genome.x];
   }
 }
 
 export class ParabolaMaxValueFitnessStrategy implements FitnessStrategyInterface {
-  score(results: GenerationPhenotypeMatrix): GenerationFitnessColumn {
+  score(results: GenerationPhenomeMatrix): GenerationFitnessColumn {
     return results.map((result) => result[0]);
   }
 }
