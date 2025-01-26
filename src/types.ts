@@ -1010,7 +1010,7 @@ export interface ArrayManagerInterface<T> {
    *
    * @returns The number of objects removed.
    */
-  remove(filter: (genome: T) => boolean, maxCount: number, order: 'asc' | 'desc'): number;
+  remove(filter: (genome: T) => boolean, maxCount?: number, order?: 'asc' | 'desc'): number;
 }
 
 /**
