@@ -54,16 +54,18 @@ export class ArrayManager<T> implements ArrayManagerInterface<T> {
    *
    * @param filter A function that returns true if the element should be updated.
    * @param update A function that updates the element.
+   *
+   * @returns The updated items.
    */
-  update(filter: (genome: T) => boolean, update: (genome: T) => void): number {
-    let updatedCount = 0;
+  update(filter: (genome: T) => boolean, update: (genome: T) => void): T[] {
+    let updated: T[] = [];
     for (const genome of this._data) {
       if (filter(genome)) {
         update(genome);
-        ++updatedCount;
+        updated.push(genome);
       }
     }
-    return updatedCount;
+    return updated;
   }
 
   /**
@@ -72,8 +74,10 @@ export class ArrayManager<T> implements ArrayManagerInterface<T> {
    * @param filter A function that returns true if the element should be removed.
    * @param maxCount The maximum number of elements to remove.
    * @param order The order to sort the remaining elements.
+   *
+   * @returns The removed items.
    */
-  remove(filter: (genome: T) => boolean, maxCount: number = Infinity, order: 'asc' | 'desc' = 'asc'): number {
+  remove(filter: (genome: T) => boolean, maxCount: number = Infinity, order: 'asc' | 'desc' = 'asc'): T[] {
     const buf = [...this._data];
 
     if (order === 'desc') {
@@ -81,11 +85,11 @@ export class ArrayManager<T> implements ArrayManagerInterface<T> {
     }
 
     this._data.length = 0;
-    let removedCount = 0;
+    let removed: T[] = [];
 
     for (const genome of buf) {
-      if (filter(genome) && removedCount < maxCount) {
-        ++removedCount;
+      if (filter(genome) && removed.length < maxCount) {
+        removed.push(genome);
       } else {
         this._data.push(genome);
       }
@@ -95,7 +99,7 @@ export class ArrayManager<T> implements ArrayManagerInterface<T> {
       this._data.reverse();
     }
 
-    return removedCount;
+    return removed;
   }
 }
 

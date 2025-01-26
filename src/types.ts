@@ -1004,9 +1004,9 @@ export interface ArrayManagerInterface<T> {
    * @param filter - A function to determine which objects to update.
    * @param update - A function to apply to each object that matches the filter.
    *
-   * @returns The number of objects updated.
+   * @returns The updated items.
    */
-  update(filter: (genome: T) => boolean, update: (genome: T) => void): number;
+  update(filter: (genome: T) => boolean, update: (genome: T) => void): T[];
 
   /**
    * Removes objects from the array based on a filter condition, with optional sorting and count limit.
@@ -1015,9 +1015,9 @@ export interface ArrayManagerInterface<T> {
    * @param maxCount - An optional maximum number of objects to remove.
    * @param order - An optional sorting order ('asc' or 'desc').
    *
-   * @returns The number of objects removed.
+   * @returns The removed items.
    */
-  remove(filter: (genome: T) => boolean, maxCount?: number, order?: 'asc' | 'desc'): number;
+  remove(filter: (genome: T) => boolean, maxCount?: number, order?: 'asc' | 'desc'): T[];
 }
 
 /**

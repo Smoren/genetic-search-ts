@@ -10,24 +10,24 @@ describe.each([
   ...dataProviderForArrayManagerRemove(),
 ])(
   'ArrayManager Remove Test',
-  (input, [filter, maxCount, order], expectedRemovedCount, expected) => {
+  (input, [filter, maxCount, order], expectedRemoved, expectedKept) => {
     it('', async () => {
       const manager = new ArrayManager(input);
       const removedCount = manager.remove(filter, maxCount, order);
-      expect(removedCount).toEqual(expectedRemovedCount);
-      expect(input).toEqual(expected);
+      expect(removedCount).toEqual(expectedRemoved);
+      expect(input).toEqual(expectedKept);
     });
   },
 );
 
-function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean, number?, ('asc' | 'desc')?], number, any[]]> {
+function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean, number?, ('asc' | 'desc')?], any[], any[]]> {
   return [
     [
       [],
       [
         () => false,
       ],
-      0,
+      [],
       [],
     ],
     [
@@ -35,7 +35,7 @@ function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean
       [
         () => true,
       ],
-      0,
+      [],
       [],
     ],
     [
@@ -43,7 +43,7 @@ function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean
       [
         () => false,
       ],
-      0,
+      [],
       [1, 2, 3, 4, 5],
     ],
     [
@@ -51,7 +51,7 @@ function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean
       [
         () => true,
       ],
-      5,
+      [1, 2, 3, 4, 5],
       [],
     ],
     [
@@ -59,7 +59,7 @@ function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean
       [
         (x) => x % 2 === 0,
       ],
-      4,
+      [2, 4, 6, 8],
       [1, 3, 5, 7, 9],
     ],
     [
@@ -68,7 +68,7 @@ function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean
         (x) => x % 2 === 0,
         10,
       ],
-      4,
+      [2, 4, 6, 8],
       [1, 3, 5, 7, 9],
     ],
     [
@@ -78,7 +78,7 @@ function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean
         10,
         'asc',
       ],
-      4,
+      [2, 4, 6, 8],
       [1, 3, 5, 7, 9],
     ],
     [
@@ -88,7 +88,7 @@ function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean
         10,
         'desc',
       ],
-      4,
+      [8, 6, 4, 2],
       [1, 3, 5, 7, 9],
     ],
     [
@@ -97,7 +97,7 @@ function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean
         (x) => x % 2 === 0,
         3,
       ],
-      3,
+      [2, 4, 6],
       [1, 3, 5, 7, 8, 9],
     ],
     [
@@ -107,7 +107,7 @@ function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean
         3,
         'asc',
       ],
-      3,
+      [2, 4, 6],
       [1, 3, 5, 7, 8, 9],
     ],
     [
@@ -117,7 +117,7 @@ function dataProviderForArrayManagerRemove(): Array<[any[], [(x: any) => boolean
         3,
         'desc',
       ],
-      3,
+      [8, 6, 4],
       [1, 2, 3, 5, 7, 9],
     ],
   ];
@@ -127,17 +127,17 @@ describe.each([
   ...dataProviderForArrayManagerUpdate(),
 ])(
   'ArrayManager Update Test',
-  (input, [filter, update], expectedUpdatedCount, expected) => {
+  (input, [filter, update], expectedUpdated, expectedAll) => {
     it('', async () => {
       const manager = new ArrayManager(input);
       const updatedCount = manager.update(filter, update);
-      expect(updatedCount).toEqual(expectedUpdatedCount);
-      expect(input).toEqual(expected);
+      expect(updatedCount).toEqual(expectedUpdated);
+      expect(input).toEqual(expectedAll);
     });
   },
 );
 
-function dataProviderForArrayManagerUpdate(): Array<[any[], [(x: any) => boolean, (x: any) => void], number, any[]]> {
+function dataProviderForArrayManagerUpdate(): Array<[any[], [(x: any) => boolean, (x: any) => void], any[], any[]]> {
   return [
     [
       [],
@@ -145,7 +145,7 @@ function dataProviderForArrayManagerUpdate(): Array<[any[], [(x: any) => boolean
         () => false,
         (x: Record<string, any>) => { x['value'] = -1; }
       ],
-      0,
+      [],
       [],
     ],
     [
@@ -154,7 +154,7 @@ function dataProviderForArrayManagerUpdate(): Array<[any[], [(x: any) => boolean
         () => true,
         (x: Record<string, any>) => { x['value'] = -1; }
       ],
-      0,
+      [],
       [],
     ],
     [
@@ -167,7 +167,7 @@ function dataProviderForArrayManagerUpdate(): Array<[any[], [(x: any) => boolean
         () => false,
         (x: Record<string, any>) => { x['value'] = -1; }
       ],
-      0,
+      [],
       [
         { value: 1 },
         { value: 2 },
@@ -184,7 +184,11 @@ function dataProviderForArrayManagerUpdate(): Array<[any[], [(x: any) => boolean
         () => true,
         (x: Record<string, any>) => { x['value'] = -1; }
       ],
-      3,
+      [
+        { value: -1 },
+        { value: -1 },
+        { value: -1 },
+      ],
       [
         { value: -1 },
         { value: -1 },
@@ -193,19 +197,22 @@ function dataProviderForArrayManagerUpdate(): Array<[any[], [(x: any) => boolean
     ],
     [
       [
-        { value: 1 },
-        { value: 2 },
-        { value: 3 },
+        { id: 1, value: 1 },
+        { id: 2, value: 2 },
+        { id: 3, value: 3 },
       ],
       [
         (x: Record<string, any>) => x['value'] % 2 !== 0,
         (x: Record<string, any>) => { x['value'] = -1; }
       ],
-      2,
       [
-        { value: -1 },
-        { value: 2 },
-        { value: -1 },
+        { id: 1, value: -1 },
+        { id: 3, value: -1 },
+      ],
+      [
+        { id: 1, value: -1 },
+        { id: 2, value: 2 },
+        { id: 3, value: -1 },
       ],
     ],
   ];
