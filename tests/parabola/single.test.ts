@@ -12,6 +12,7 @@ import {
   RandomSelectionStrategy,
   TruncationSelectionStrategy,
   ProportionalSelectionStrategy,
+  TournamentSelectionStrategy,
   checkSchedulerCondition,
 } from "../../src";
 import {
@@ -219,7 +220,84 @@ describe.each([
       expect(search.partitions).toEqual([50, 25, 25]);
 
       await search.fit({
-        generationsCount: 100,
+        generationsCount: 200,
+        beforeStep: () => void 0,
+        afterStep: () => {
+          const summary = search.getPopulationSummary();
+          expect(summary.fitnessSummary.count).toBe(100);
+
+          const roundedSummary = search.getPopulationSummary(4);
+          expect(roundedSummary.fitnessSummary.count).toBe(100);
+        },
+      });
+
+      const bestGenome = search.bestGenome;
+
+      expect(bestGenome.x).toBeCloseTo(x);
+      expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
+
+      const population = search.population;
+      expect(population.length).toBe(100);
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, false);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+
+      {
+        const oldFirstIdx = population[0].id;
+        search.setPopulation(population, true);
+        const newFirstIdx = search.population[0].id;
+        expect(search.population).toEqual(population);
+        expect(oldFirstIdx).toEqual(newFirstIdx);
+      }
+    });
+  },
+);
+
+describe.each([
+  ...dataProviderForGetParabolaMax(),
+] as Array<[[number, number], [number, number]]>)(
+  'Get Parabola With Tournament Selection Max Test',
+  ([a, b], [x, y]) => {
+    it('', async () => {
+      const config: GeneticSearchConfig = {
+        populationSize: 100,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      };
+
+      const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
+        populate: new ParabolaPopulateStrategy(),
+        phenome: new ParabolaSinglePhenomeStrategy({
+          task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
+          onTaskResult: () => void 0,
+        }),
+        fitness: new ParabolaMaxValueFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
+        selection: new TournamentSelectionStrategy(2, 5),
+        mutation: new ParabolaMutationStrategy(),
+        crossover: new ParabolaCrossoverStrategy(),
+        cache: new DummyPhenomeCache(),
+      }
+
+      const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
+      expect(search.cache).toBeInstanceOf(DummyPhenomeCache);
+      expect(search.partitions).toEqual([50, 25, 25]);
+
+      await search.fit({
+        generationsCount: 200,
         beforeStep: () => void 0,
         afterStep: () => {
           const summary = search.getPopulationSummary();
