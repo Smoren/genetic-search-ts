@@ -1,11 +1,11 @@
-import type {
+import {
   BaseGenome,
   GeneticSearchInterface,
   PopulationSummary,
   SchedulerConfig,
   SchedulerInterface,
   SchedulerAction,
-  SchedulerActionInput, Population,
+  SchedulerActionInput, Population, EvaluatedGenome,
 } from "./types";
 
 /**
@@ -76,12 +76,12 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
   /**
    * Executes a single step or iteration in the scheduler.
    */
-  public step(population: TGenome[]): void {
+  public step(evaluatedPopulation: EvaluatedGenome<TGenome>[]): void {
     this.clearLogs();
     this.handleHistory();
     for (const rule of this.actions) {
       try {
-        rule(this.getRuleInput(population));
+        rule(this.getRuleInput(evaluatedPopulation));
       } catch (e) {
         if ((e as Error).name === 'SchedulerConditionException') {
           continue;
@@ -112,10 +112,10 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
    *
    * @returns An object containing the runner, history, config, and logger.
    */
-  protected getRuleInput(population: Population<TGenome>): SchedulerActionInput<TGenome, TConfig> {
+  protected getRuleInput(evaluatedPopulation: EvaluatedGenome<TGenome>[]): SchedulerActionInput<TGenome, TConfig> {
     return {
       runner: this.runner,
-      population,
+      evaluatedPopulation,
       history: this.history,
       config: this.config,
       logger: this.logger,

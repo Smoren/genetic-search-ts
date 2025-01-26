@@ -232,7 +232,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     // Step the scheduler if provided.
     if (scheduler !== undefined) {
-      scheduler.step(sortedPopulation);
+      scheduler.step(sortedEvaluatedPopulation);
     }
 
     // Run crossover and mutation.

@@ -517,9 +517,9 @@ export type SchedulerActionInput<TGenome extends BaseGenome, TConfig> = {
   runner: GeneticSearchInterface<TGenome>;
 
   /**
-   * The current population.
+   * The current sorted population with stats.
    */
-  population: Population<TGenome>;
+  evaluatedPopulation: EvaluatedGenome<TGenome>[];
 
   /**
    * The history of population summaries.
@@ -977,5 +977,5 @@ export interface SchedulerInterface<TGenome extends BaseGenome> {
   /**
    * Executes a single step or iteration in the scheduler.
    */
-  step(population: Population<TGenome>): void;
+  step(evaluatedPopulation: EvaluatedGenome<TGenome>[]): void;
 }
