@@ -8,7 +8,8 @@ import type {
   IdGeneratorInterface,
   Population,
   RangeStatSummary,
-  StatSummary
+  StatSummary,
+  ArrayManagerInterface,
 } from "./types";
 import {zip} from "./itertools";
 
@@ -28,6 +29,73 @@ export class IdGenerator<TGenome extends BaseGenome> implements IdGeneratorInter
 
   public reset(population: TGenome[]): void {
     this.id = population.reduce((max, genome) => Math.max(max, genome.id), 0) + 1;
+  }
+}
+
+/**
+ * Manages an array of `T` objects.
+ *
+ * @template T The type of the objects to manage.
+ */
+export class ArrayManager<T> implements ArrayManagerInterface<T> {
+  protected readonly _data: T[];
+
+  /**
+   * Creates a new `ArrayManager` from an array of `T` objects.
+   *
+   * @param data The array of `T` objects to manage.
+   */
+  constructor(data: T[]) {
+    this._data = data;
+  }
+
+  /**
+   * Updates elements of the managed array that match the given filter.
+   *
+   * @param filter A function that returns true if the element should be updated.
+   * @param update A function that updates the element.
+   */
+  update(filter: (genome: T) => boolean, update: (genome: T) => void): number {
+    let updatedCount = 0;
+    for (const genome of this._data) {
+      if (filter(genome)) {
+        update(genome);
+        ++updatedCount;
+      }
+    }
+    return updatedCount;
+  }
+
+  /**
+   * Removes elements of the managed array that match the given filter and optionally sorts the rest of the array.
+   *
+   * @param filter A function that returns true if the element should be removed.
+   * @param maxCount The maximum number of elements to remove.
+   * @param order The order to sort the remaining elements.
+   */
+  remove(filter: (genome: T) => boolean, maxCount: number = Infinity, order: 'asc' | 'desc' = 'asc'): number {
+    const buf = [...this._data];
+
+    if (order === 'desc') {
+      buf.reverse();
+    }
+
+    this._data.length = 0;
+    let removedCount = 0;
+
+    for (const genome of buf) {
+      if (filter(genome) && removedCount < maxCount) {
+        ++removedCount;
+      } else {
+        this._data.push(genome);
+      }
+    }
+
+    if (order === 'desc') {
+      this._data.reverse();
+    }
+
+    return removedCount;
   }
 }
 

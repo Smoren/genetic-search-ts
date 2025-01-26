@@ -522,6 +522,11 @@ export type SchedulerActionInput<TGenome extends BaseGenome, TConfig> = {
   evaluatedPopulation: EvaluatedGenome<TGenome>[];
 
   /**
+   * The manager for the evaluated population.
+   */
+  evaluatedPopulationManager: EvaluatedPopulationManagerInterface<TGenome>;
+
+  /**
    * The history of population summaries.
    */
   history: PopulationSummary[];
@@ -979,3 +984,36 @@ export interface SchedulerInterface<TGenome extends BaseGenome> {
    */
   step(evaluatedPopulation: EvaluatedGenome<TGenome>[]): void;
 }
+
+/**
+ * Interface for managing arrays.
+ *
+ * @template T The type of objects in the array.
+ */
+export interface ArrayManagerInterface<T> {
+  /**
+   * Updates objects in the array based on a filter condition.
+   *
+   * @param filter - A function to determine which objects to update.
+   * @param update - A function to apply to each object that matches the filter.
+   *
+   * @returns The number of objects updated.
+   */
+  update(filter: (genome: T) => boolean, update: (genome: T) => void): number;
+
+  /**
+   * Removes objects from the array based on a filter condition, with optional sorting and count limit.
+   *
+   * @param filter - A function to determine which objects to remove.
+   * @param maxCount - An optional maximum number of objects to remove.
+   * @param order - An optional sorting order ('asc' or 'desc').
+   *
+   * @returns The number of objects removed.
+   */
+  remove(filter: (genome: T) => boolean, maxCount: number, order: 'asc' | 'desc'): number;
+}
+
+/**
+ * Interface for managing evaluated populations.
+ */
+export interface EvaluatedPopulationManagerInterface<TGenome extends BaseGenome> extends ArrayManagerInterface<EvaluatedGenome<TGenome>> {}

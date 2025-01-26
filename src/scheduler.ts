@@ -7,6 +7,7 @@ import {
   SchedulerAction,
   SchedulerActionInput, Population, EvaluatedGenome,
 } from "./types";
+import { ArrayManager } from "./utils";
 
 /**
  * A scheduler for a genetic search algorithm.
@@ -113,9 +114,11 @@ export class Scheduler<TGenome extends BaseGenome, TConfig> implements Scheduler
    * @returns An object containing the runner, history, config, and logger.
    */
   protected getRuleInput(evaluatedPopulation: EvaluatedGenome<TGenome>[]): SchedulerActionInput<TGenome, TConfig> {
+    const evaluatedPopulationManager = new ArrayManager(evaluatedPopulation);
     return {
       runner: this.runner,
       evaluatedPopulation,
+      evaluatedPopulationManager,
       history: this.history,
       config: this.config,
       logger: this.logger,
