@@ -25,6 +25,7 @@ import {sort, zip} from "./itertools";
  * @template TConfig The type of configuration for the mutation strategy.
  *
  * @category Strategies
+ * @category Mutation
  */
 export abstract class BaseMutationStrategy<
   TGenome extends BaseGenome,
@@ -55,6 +56,7 @@ export abstract class BaseMutationStrategy<
  * @template TTaskConfig The type of configuration required to execute the task of the calculating phenome.
  *
  * @category Strategies
+ * @category Phenome
  */
 export abstract class BasePhenomeStrategy<
   TGenome extends BaseGenome,
@@ -133,6 +135,7 @@ export abstract class BasePhenomeStrategy<
  * and the loss calculated for the genome.
  *
  * @category Strategies
+ * @category Fitness
  */
 export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {
   /**
@@ -182,6 +185,7 @@ export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {
  * @returns An array of sorted tuples of genomes, fitness scores, and phenome rows.
  *
  * @category Strategies
+ * @category Sorting
  */
 export class AscendingSortingStrategy<TGenome extends BaseGenome> implements SortStrategyInterface<TGenome> {
   /**
@@ -202,6 +206,7 @@ export class AscendingSortingStrategy<TGenome extends BaseGenome> implements Sor
  * @returns An array of sorted tuples of genomes, fitness scores, and phenome rows.
  *
  * @category Strategies
+ * @category Sorting
  */
 export class DescendingSortingStrategy<TGenome extends BaseGenome> implements SortStrategyInterface<TGenome> {
   /**
@@ -223,17 +228,21 @@ export class DescendingSortingStrategy<TGenome extends BaseGenome> implements So
  * @template TGenome The type of genome objects in the population.
  *
  * @category Strategies
+ * @category Selection
  */
 export class RandomSelectionStrategy<TGenome extends BaseGenome> implements SelectionStrategyInterface<TGenome> {
   protected readonly crossoverParentsCount: number;
+  protected readonly sliceThreshold?: number;
 
   /**
    * Constructor of the random selection strategy.
    *
    * @param crossoverParentsCount The number of parents to select for crossover.
+   * @param sliceThreshold The threshold for slicing the input population.
    */
-  constructor(crossoverParentsCount: number) {
+  constructor(crossoverParentsCount: number, sliceThreshold?: number) {
     this.crossoverParentsCount = crossoverParentsCount;
+    this.sliceThreshold = sliceThreshold;
   }
 
   /**
@@ -244,6 +253,10 @@ export class RandomSelectionStrategy<TGenome extends BaseGenome> implements Sele
    * @returns An array of parents arrays.
    */
   public selectForCrossover(input: Array<EvaluatedGenome<TGenome>>, count: number): Array<TGenome[]> {
+    if (this.sliceThreshold) {
+      input = input.slice(0, this.sliceThreshold);
+    }
+
     const result: Array<TGenome[]> = [];
 
     for (let i = 0; i < count; i++) {
@@ -274,6 +287,17 @@ export class RandomSelectionStrategy<TGenome extends BaseGenome> implements Sele
   }
 }
 
+/**
+ * A selection strategy that uses a tournament to select parents.
+ *
+ * This selection strategy runs a tournament between random participants from the population,
+ * and selects the best participant as a parent.
+ *
+ * @template TGenome The type of genome objects in the population.
+ *
+ * @category Strategies
+ * @category Selection
+ */
 export class TournamentSelectionStrategy<TGenome extends BaseGenome> implements SelectionStrategyInterface<TGenome> {
   protected readonly crossoverParentsCount: number;
   protected readonly tournamentSize: number;
@@ -341,7 +365,7 @@ export class TournamentSelectionStrategy<TGenome extends BaseGenome> implements 
     }
 
     // Sort participants and select the best
-    tournamentParticipants.sort((a, b) => b.fitness - a.fitness);
+    tournamentParticipants.sort((lhs, rhs) => rhs.fitness - lhs.fitness);
     return tournamentParticipants[0]; // Best participant
   }
 }

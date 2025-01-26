@@ -52,7 +52,7 @@ describe.each([
         }),
         fitness: new ParabolaMaxValueFitnessStrategy(),
         sorting: new DescendingSortingStrategy(),
-        selection: new RandomSelectionStrategy(2),
+        selection: new RandomSelectionStrategy(2, config.populationSize*config.survivalRate),
         mutation: new ParabolaMutationStrategy(),
         crossover: new ParabolaCrossoverStrategy(),
         cache: new DummyPhenomeCache(),

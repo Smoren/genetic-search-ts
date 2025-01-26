@@ -596,6 +596,7 @@ export type SchedulerConfig<TGenome extends BaseGenome, TConfig> = {
  * @template TGenome The type of genome objects in the population.
  *
  * @category Strategies
+ * @category Populate
  */
 export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -615,6 +616,7 @@ export interface PopulateStrategyInterface<TGenome extends BaseGenome> {
  * @template TGenome The type of genome objects in the population.
  *
  * @category Strategies
+ * @category Mutation
  */
 export interface MutationStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -634,6 +636,7 @@ export interface MutationStrategyInterface<TGenome extends BaseGenome> {
  * @template TGenome The type of genome objects in the population.
  *
  * @category Strategies
+ * @category Crossover
  */
 export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -653,6 +656,7 @@ export interface CrossoverStrategyInterface<TGenome extends BaseGenome> {
  * @template TGenome The type of genome objects in the population.
  *
  * @category Strategies
+ * @category Phenome
  */
 export interface PhenomeStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -670,6 +674,7 @@ export interface PhenomeStrategyInterface<TGenome extends BaseGenome> {
  * Used in {@link GeneticSearchStrategyConfig}.
  *
  * @category Strategies
+ * @category Fitness
  */
 export interface FitnessStrategyInterface {
   /**
@@ -688,6 +693,7 @@ export interface FitnessStrategyInterface {
  * @template TGenome The type of genome objects in the population.
  *
  * @category Strategies
+ * @category Sorting
  */
 export interface SortStrategyInterface<TGenome extends BaseGenome> {
   /**
@@ -707,6 +713,7 @@ export interface SortStrategyInterface<TGenome extends BaseGenome> {
  * @template TGenome The type of genome objects in the population.
  *
  * @category Strategies
+ * @category Selection
  */
 export interface SelectionStrategyInterface<TGenome extends BaseGenome> {
   /**
