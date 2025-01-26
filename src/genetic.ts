@@ -172,7 +172,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
    * @param config The configuration for the genetic search algorithm.
    * @returns A promise that resolves when the algorithm has finished running.
    */
-  public async fit(config: GeneticSearchFitConfig): Promise<void> {
+  public async fit(config: GeneticSearchFitConfig<TGenome>): Promise<void> {
     // Determine the number of generations to run, defaulting to Infinity if not specified.
     const generationsCount = config.generationsCount ?? Infinity;
     // Run the genetic search algorithm for the specified number of generations.
@@ -210,7 +210,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
    * @param scheduler Optional. The scheduler to use for the genetic search algorithm.
    * @returns A promise that resolves with the fitness of the best genome in the population.
    */
-  public async fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn> {
+  public async fitStep(scheduler?: SchedulerInterface<TGenome>): Promise<GenerationFitnessColumn> {
     // Refresh population from buffer.
     this.refreshPopulation();
 
@@ -232,7 +232,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
 
     // Step the scheduler if provided.
     if (scheduler !== undefined) {
-      scheduler.step();
+      scheduler.step(sortedPopulation);
     }
 
     // Run crossover and mutation.
@@ -508,7 +508,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
    * @param config The configuration for the genetic search algorithm.
    * @returns A promise that resolves when the algorithm has finished running.
    */
-  public async fit(config: GeneticSearchFitConfig): Promise<void> {
+  public async fit(config: GeneticSearchFitConfig<TGenome>): Promise<void> {
     // Determine the number of generations to run, defaulting to Infinity if not specified.
     const generationsCount = config.generationsCount ?? Infinity;
 
@@ -546,7 +546,7 @@ export class ComposedGeneticSearch<TGenome extends BaseGenome> implements Geneti
    * @param scheduler Optional. The scheduler to use for the genetic search algorithm.
    * @returns A promise that resolves with the fitness of the best genome in the population.
    */
-  public async fitStep(scheduler?: SchedulerInterface): Promise<GenerationFitnessColumn> {
+  public async fitStep(scheduler?: SchedulerInterface<TGenome>): Promise<GenerationFitnessColumn> {
     // Run a single step of the genetic search algorithm for each eliminator.
     for (const eliminators of this.eliminators) {
       await eliminators.fitStep();
