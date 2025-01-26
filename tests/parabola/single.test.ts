@@ -9,7 +9,8 @@ import {
   Scheduler,
   DescendingSortingStrategy,
   AscendingSortingStrategy,
-  RandomSelectionStrategy, checkSchedulerCondition,
+  RandomSelectionStrategy,
+  checkSchedulerCondition,
 } from "../../src";
 import {
   ComposedGeneticSearch,

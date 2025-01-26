@@ -329,10 +329,10 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const survivedPopulation = survivedEvaluatedPopulation.map((x) => x.genome);
 
     // Select parents for crossover. Then for each parents array, cross them and create a new genome.
-    const crossedPopulation = this.crossover(survivedEvaluatedPopulation, countToCross);
+    const crossedPopulation = this.crossover(input, countToCross);
 
     // Select parents for mutation. Then for each parent, mutate it and create a new genome.
-    const mutatedPopulation = this.mutate(survivedEvaluatedPopulation, countToMutate);
+    const mutatedPopulation = this.mutate(input, countToMutate);
 
     // Set the current population to the sorted population.
     this._population = sortedPopulation;

@@ -25,6 +25,7 @@ import {
 } from "./fixtures";
 // @ts-ignore
 import { dataProviderForTravelingSalesman } from "./data";
+import { TournamentSelectionStrategy } from "../../src";
 
 describe.each([
   ...dataProviderForTravelingSalesman(),
@@ -46,7 +47,7 @@ describe.each([
         }),
         fitness: new TravelingFitnessStrategy(),
         sorting: new DescendingSortingStrategy(),
-        selection: new RandomSelectionStrategy(2),
+        selection: new TournamentSelectionStrategy(2, 5),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
         cache: new DummyPhenomeCache(),
@@ -170,7 +171,7 @@ describe.each([
         }),
         fitness: new TravelingFitnessStrategy(),
         sorting: new DescendingSortingStrategy(),
-        selection: new RandomSelectionStrategy(2),
+        selection: new TournamentSelectionStrategy(2, 10),
         mutation: new TravelingMutationStrategy(),
         crossover: new TravelingCrossoverStrategy(),
         cache: new DummyPhenomeCache(),

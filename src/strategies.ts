@@ -225,7 +225,7 @@ export class DescendingSortingStrategy<TGenome extends BaseGenome> implements So
  * @category Strategies
  */
 export class RandomSelectionStrategy<TGenome extends BaseGenome> implements SelectionStrategyInterface<TGenome> {
-  protected crossoverParentsCount: number;
+  protected readonly crossoverParentsCount: number;
 
   /**
    * Constructor of the random selection strategy.
@@ -271,5 +271,77 @@ export class RandomSelectionStrategy<TGenome extends BaseGenome> implements Sele
       result.push(getRandomArrayItem(input).genome);
     }
     return result;
+  }
+}
+
+export class TournamentSelectionStrategy<TGenome extends BaseGenome> implements SelectionStrategyInterface<TGenome> {
+  protected readonly crossoverParentsCount: number;
+  protected readonly tournamentSize: number;
+
+  /**
+   * Constructor of the tournament selection strategy.
+   *
+   * @param crossoverParentsCount The number of parents to select for crossover.
+   * @param tournamentSize The number of participants in a tournament.
+   */
+  constructor(crossoverParentsCount: number, tournamentSize: number) {
+    this.crossoverParentsCount = crossoverParentsCount;
+    this.tournamentSize = tournamentSize;
+  }
+
+  /**
+   * Selects parents for crossover.
+   *
+   * @param input The population extended with fitness scores and phenome to select parents from.
+   * @param count The number of parents to select.
+   * @returns An array of parents arrays.
+   */
+  public selectForCrossover(input: Array<EvaluatedGenome<TGenome>>, count: number): Array<TGenome[]> {
+    const result: Array<TGenome[]> = [];
+
+    for (let i = 0; i < count; i++) {
+      const parents: TGenome[] = [];
+      for (let j = 0; j < this.crossoverParentsCount; j++) {
+        // Select the best from the tournament
+        parents.push(this.runTournament(input).genome);
+      }
+      result.push(parents);
+    }
+
+    return result;
+  }
+
+  /**
+   * Selects parents for mutation.
+   *
+   * @param input The population extended with fitness scores and phenome to select parents from.
+   * @param count The number of parents to select.
+   * @returns An array of parents.
+   */
+  public selectForMutation(input: Array<EvaluatedGenome<TGenome>>, count: number): TGenome[] {
+    const result: TGenome[] = [];
+    for (let i = 0; i < count; i++) {
+      // Select the best from the tournament
+      result.push(this.runTournament(input).genome);
+    }
+    return result;
+  }
+
+  /**
+   * Conducts a tournament and returns the best participant.
+   *
+   * @param input The population.
+   * @returns The best `EvaluatedGenome` from the tournament.
+   */
+  private runTournament(input: Array<EvaluatedGenome<TGenome>>): EvaluatedGenome<TGenome> {
+    // Select random participants
+    const tournamentParticipants: EvaluatedGenome<TGenome>[] = [];
+    for (let k = 0; k < this.tournamentSize; k++) {
+      tournamentParticipants.push(getRandomArrayItem(input));
+    }
+
+    // Sort participants and select the best
+    tournamentParticipants.sort((a, b) => b.fitness - a.fitness);
+    return tournamentParticipants[0]; // Best participant
   }
 }
