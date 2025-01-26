@@ -232,17 +232,14 @@ export class DescendingSortingStrategy<TGenome extends BaseGenome> implements So
  */
 export class RandomSelectionStrategy<TGenome extends BaseGenome> implements SelectionStrategyInterface<TGenome> {
   protected readonly crossoverParentsCount: number;
-  protected readonly sliceThreshold?: number;
 
   /**
    * Constructor of the random selection strategy.
    *
    * @param crossoverParentsCount The number of parents to select for crossover.
-   * @param sliceThreshold The threshold for slicing the input population.
    */
-  constructor(crossoverParentsCount: number, sliceThreshold?: number) {
+  constructor(crossoverParentsCount: number) {
     this.crossoverParentsCount = crossoverParentsCount;
-    this.sliceThreshold = sliceThreshold;
   }
 
   /**
@@ -253,10 +250,6 @@ export class RandomSelectionStrategy<TGenome extends BaseGenome> implements Sele
    * @returns An array of parents arrays.
    */
   public selectForCrossover(input: Array<EvaluatedGenome<TGenome>>, count: number): Array<TGenome[]> {
-    if (this.sliceThreshold) {
-      input = input.slice(0, this.sliceThreshold);
-    }
-
     const result: Array<TGenome[]> = [];
 
     for (let i = 0; i < count; i++) {
@@ -284,6 +277,60 @@ export class RandomSelectionStrategy<TGenome extends BaseGenome> implements Sele
       result.push(getRandomArrayItem(input).genome);
     }
     return result;
+  }
+}
+
+/**
+ * A truncation selection strategy.
+ *
+ * This selection strategy selects the top `sliceThresholdRate` fraction of the population
+ * as parents for mutation and crossover.
+ *
+ * @template TGenome The type of genome objects in the population.
+ *
+ * @category Strategies
+ * @category Selection
+ */
+export class TruncationSelectionStrategy<TGenome extends BaseGenome> extends RandomSelectionStrategy<TGenome> {
+  protected readonly sliceThresholdRate: number;
+
+  /**
+   * Constructor of the truncation selection strategy.
+   *
+   * @param crossoverParentsCount The number of parents to select for crossover.
+   * @param sliceThresholdRate The rate at which to slice the population.
+   */
+  constructor(crossoverParentsCount: number, sliceThresholdRate: number) {
+    super(crossoverParentsCount);
+    this.sliceThresholdRate = sliceThresholdRate;
+  }
+
+  /**
+   * Selects parents for crossover.
+   *
+   * @param input The population extended with fitness scores and phenome to select parents from.
+   * @param count The number of parents to select.
+   * @returns An array of parents arrays.
+   */
+  public selectForCrossover(input: Array<EvaluatedGenome<TGenome>>, count: number): Array<TGenome[]> {
+    if (this.sliceThresholdRate) {
+      input = input.slice(0, input.length * this.sliceThresholdRate);
+    }
+    return super.selectForCrossover(input, count);
+  }
+
+  /**
+   * Selects parents for mutation.
+   *
+   * @param input The population extended with fitness scores and phenome to select parents from.
+   * @param count The number of parents to select.
+   * @returns An array of parents.
+   */
+  public selectForMutation(input: Array<EvaluatedGenome<TGenome>>, count: number): TGenome[] {
+    if (this.sliceThresholdRate) {
+      input = input.slice(0, input.length * this.sliceThresholdRate);
+    }
+    return super.selectForMutation(input, count);
   }
 }
 
@@ -367,5 +414,96 @@ export class TournamentSelectionStrategy<TGenome extends BaseGenome> implements 
     // Sort participants and select the best
     tournamentParticipants.sort((lhs, rhs) => rhs.fitness - lhs.fitness);
     return tournamentParticipants[0]; // Best participant
+  }
+}
+
+/**
+ * A proportional selection strategy.
+ *
+ * This selection strategy selects parents for mutation and crossover based on their fitness proportion.
+ *
+ * @template TGenome The type of genome objects in the population.
+ *
+ * @category Strategies
+ * @category Selection
+ */
+export class ProportionalSelectionStrategy<TGenome extends BaseGenome> implements SelectionStrategyInterface<TGenome> {
+  protected crossoverParentsCount: number;
+
+  /**
+   * Constructor of the proportional selection strategy.
+   *
+   * @param crossoverParentsCount The number of parents to select for crossover.
+   */
+  constructor(crossoverParentsCount: number) {
+    this.crossoverParentsCount = crossoverParentsCount;
+  }
+
+  /**
+   * Selects parents for crossover using proportional selection.
+   *
+   * @param input The population extended with fitness scores and phenome to select parents from.
+   * @param count The number of parents to select.
+   * @returns An array of parents arrays.
+   */
+  public selectForCrossover(input: Array<EvaluatedGenome<TGenome>>, count: number): Array<TGenome[]> {
+    const result: Array<TGenome[]> = [];
+
+    // Calculate total fitness of the population
+    const totalFitness = input.reduce((acc, evaluatedGenome) => acc + evaluatedGenome.fitness, 0);
+
+    for (let i = 0; i < count; i++) {
+      const parents: TGenome[] = [];
+      for (let j = 0; j < this.crossoverParentsCount; j++) {
+        // Roulette wheel selection based on fitness proportion
+        const selectedGenome = this.selectByFitness(input, totalFitness);
+        parents.push(selectedGenome.genome);
+      }
+      result.push(parents);
+    }
+
+    return result;
+  }
+
+  /**
+   * Selects parents for mutation using proportional selection.
+   *
+   * @param input The population extended with fitness scores and phenome to select parents from.
+   * @param count The number of parents to select.
+   * @returns An array of parents.
+   */
+  public selectForMutation(input: Array<EvaluatedGenome<TGenome>>, count: number): TGenome[] {
+    const result: TGenome[] = [];
+
+    // Calculate total fitness of the population
+    const totalFitness = input.reduce((acc, evaluatedGenome) => acc + evaluatedGenome.fitness, 0);
+
+    for (let i = 0; i < count; i++) {
+      // Roulette wheel selection based on fitness proportion
+      const selectedGenome = this.selectByFitness(input, totalFitness);
+      result.push(selectedGenome.genome);
+    }
+
+    return result;
+  }
+
+  /**
+   * Helper method to select an individual based on fitness proportion.
+   *
+   * @param input The population.
+   * @param totalFitness The sum of all fitness scores in the population.
+   * @returns A selected `EvaluatedGenome`.
+   */
+  private selectByFitness(input: Array<EvaluatedGenome<TGenome>>, totalFitness: number): EvaluatedGenome<TGenome> {
+    let randomValue = Math.random() * totalFitness;
+    let result: EvaluatedGenome<TGenome> = input[input.length - 1]; // Fallback value in case of floating-point imprecisions
+    for (const evaluatedGenome of input) {
+      randomValue -= evaluatedGenome.fitness;
+      if (randomValue <= 0) {
+        result = evaluatedGenome;
+        break;
+      }
+    }
+    return result;
   }
 }

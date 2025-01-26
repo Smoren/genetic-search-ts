@@ -10,6 +10,8 @@ import {
   SimplePhenomeCache,
   DescendingSortingStrategy,
   RandomSelectionStrategy,
+  ProportionalSelectionStrategy,
+  TruncationSelectionStrategy,
 } from "../../src";
 import {
   TravelingCrossoverStrategy,
@@ -30,7 +32,124 @@ import { TournamentSelectionStrategy } from "../../src";
 describe.each([
   ...dataProviderForTravelingSalesman(),
 ] as Array<[number[][]]>)(
-  'Traveling Salesman Single Process Test',
+  'Traveling Salesman With Random Selection Test',
+  (distanceMatrix) => {
+    it('', async () => {
+      const config: GeneticSearchConfig = {
+        populationSize: 30,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      };
+
+      const strategies: GeneticSearchStrategyConfig<TravelingGenome> = {
+        populate: new TravelingPopulateStrategy(distanceMatrix.length),
+        phenome: new TravelingSinglePhenomeStrategy({
+          task: travelingPhenomeTask,
+          distanceMatrix,
+        }),
+        fitness: new TravelingFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
+        selection: new RandomSelectionStrategy(2),
+        mutation: new TravelingMutationStrategy(),
+        crossover: new TravelingCrossoverStrategy(),
+        cache: new DummyPhenomeCache(),
+      }
+
+      const search = new GeneticSearch<TravelingGenome>(config, strategies);
+      await search.fit({ generationsCount: 30 });
+      const bestGenome = search.bestGenome;
+
+      const expectedMinDistance = getPermutations(distanceMatrix.length)
+        .map((path) => calcPathDistance(path, distanceMatrix))
+        .sort((a, b) => a - b)[0];
+
+      expect(calcPathDistance(bestGenome.path, distanceMatrix)).toBeCloseTo(expectedMinDistance);
+    });
+  },
+);
+
+describe.each([
+  ...dataProviderForTravelingSalesman(),
+] as Array<[number[][]]>)(
+  'Traveling Salesman With Truncation Selection Test',
+  (distanceMatrix) => {
+    it('', async () => {
+      const config: GeneticSearchConfig = {
+        populationSize: 30,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      };
+
+      const strategies: GeneticSearchStrategyConfig<TravelingGenome> = {
+        populate: new TravelingPopulateStrategy(distanceMatrix.length),
+        phenome: new TravelingSinglePhenomeStrategy({
+          task: travelingPhenomeTask,
+          distanceMatrix,
+        }),
+        fitness: new TravelingFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
+        selection: new TruncationSelectionStrategy(2, config.survivalRate),
+        mutation: new TravelingMutationStrategy(),
+        crossover: new TravelingCrossoverStrategy(),
+        cache: new DummyPhenomeCache(),
+      }
+
+      const search = new GeneticSearch<TravelingGenome>(config, strategies);
+      await search.fit({ generationsCount: 30 });
+      const bestGenome = search.bestGenome;
+
+      const expectedMinDistance = getPermutations(distanceMatrix.length)
+        .map((path) => calcPathDistance(path, distanceMatrix))
+        .sort((a, b) => a - b)[0];
+
+      expect(calcPathDistance(bestGenome.path, distanceMatrix)).toBeCloseTo(expectedMinDistance);
+    });
+  },
+);
+
+describe.each([
+  ...dataProviderForTravelingSalesman(),
+] as Array<[number[][]]>)(
+  'Traveling Salesman With Proportional Selection Test',
+  (distanceMatrix) => {
+    it('', async () => {
+      const config: GeneticSearchConfig = {
+        populationSize: 30,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      };
+
+      const strategies: GeneticSearchStrategyConfig<TravelingGenome> = {
+        populate: new TravelingPopulateStrategy(distanceMatrix.length),
+        phenome: new TravelingSinglePhenomeStrategy({
+          task: travelingPhenomeTask,
+          distanceMatrix,
+        }),
+        fitness: new TravelingFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
+        selection: new ProportionalSelectionStrategy(2),
+        mutation: new TravelingMutationStrategy(),
+        crossover: new TravelingCrossoverStrategy(),
+        cache: new DummyPhenomeCache(),
+      }
+
+      const search = new GeneticSearch<TravelingGenome>(config, strategies);
+      await search.fit({ generationsCount: 30 });
+      const bestGenome = search.bestGenome;
+
+      const expectedMinDistance = getPermutations(distanceMatrix.length)
+        .map((path) => calcPathDistance(path, distanceMatrix))
+        .sort((a, b) => a - b)[0];
+
+      expect(calcPathDistance(bestGenome.path, distanceMatrix)).toBeCloseTo(expectedMinDistance);
+    });
+  },
+);
+
+describe.each([
+  ...dataProviderForTravelingSalesman(),
+] as Array<[number[][]]>)(
+  'Traveling Salesman With Tournament Selection Test',
   (distanceMatrix) => {
     it('', async () => {
       const config: GeneticSearchConfig = {
@@ -69,7 +188,7 @@ describe.each([
 describe.each([
   ...dataProviderForTravelingSalesman(),
 ] as Array<[number[][]]>)(
-  'Traveling Salesman Single Process Simple Cached Test',
+  'Traveling Salesman Simple Cached Test',
   (distanceMatrix) => {
     it('', async () => {
       const config: GeneticSearchConfig = {
@@ -108,7 +227,7 @@ describe.each([
 describe.each([
   ...dataProviderForTravelingSalesman(),
 ] as Array<[number[][]]>)(
-  'Traveling Salesman Single Process Average Cached Test',
+  'Traveling Salesman Average Cached Test',
   (distanceMatrix) => {
     it('', async () => {
       const config: GeneticSearchConfig = {
@@ -147,7 +266,7 @@ describe.each([
 describe.each([
   ...dataProviderForTravelingSalesman(),
 ] as Array<[number[][]]>)(
-  'Traveling Salesman Composed Single Process Test',
+  'Traveling Salesman Composed Test',
   (distanceMatrix) => {
     it('', async () => {
       const config: ComposedGeneticSearchConfig = {

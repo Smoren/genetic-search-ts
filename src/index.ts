@@ -69,7 +69,9 @@ import {
   AscendingSortingStrategy,
   DescendingSortingStrategy,
   RandomSelectionStrategy,
+  TruncationSelectionStrategy,
   TournamentSelectionStrategy,
+  ProportionalSelectionStrategy,
 } from './strategies';
 
 import {
@@ -128,7 +130,9 @@ export {
   AscendingSortingStrategy,
   DescendingSortingStrategy,
   RandomSelectionStrategy,
+  TruncationSelectionStrategy,
   TournamentSelectionStrategy,
+  ProportionalSelectionStrategy,
   IdGenerator,
   DummyPhenomeCache,
   SimplePhenomeCache,
