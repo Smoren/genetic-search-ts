@@ -196,8 +196,8 @@ describe.each([
   ([a, b], [x, y]) => {
     it('', async () => {
       const config: GeneticSearchConfig = {
-        populationSize: 100,
-        survivalRate: 0.5,
+        populationSize: 200,
+        survivalRate: 0.3,
         crossoverRate: 0.5,
       };
 
@@ -217,17 +217,17 @@ describe.each([
 
       const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
       expect(search.cache).toBeInstanceOf(DummyPhenomeCache);
-      expect(search.partitions).toEqual([50, 25, 25]);
+      expect(search.partitions).toEqual([60, 70, 70]);
 
       await search.fit({
         generationsCount: 200,
         beforeStep: () => void 0,
         afterStep: () => {
           const summary = search.getPopulationSummary();
-          expect(summary.fitnessSummary.count).toBe(100);
+          expect(summary.fitnessSummary.count).toBe(200);
 
           const roundedSummary = search.getPopulationSummary(4);
-          expect(roundedSummary.fitnessSummary.count).toBe(100);
+          expect(roundedSummary.fitnessSummary.count).toBe(200);
         },
       });
 
@@ -237,7 +237,7 @@ describe.each([
       expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
 
       const population = search.population;
-      expect(population.length).toBe(100);
+      expect(population.length).toBe(200);
 
       {
         const oldFirstIdx = population[0].id;
