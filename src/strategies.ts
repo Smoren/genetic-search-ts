@@ -152,7 +152,7 @@ export class ReferenceLossFitnessStrategy implements FitnessStrategyInterface {
     this.referenceConfig = referenceConfig;
   }
 
-  public score(results: GenerationPhenomeMatrix): GenerationFitnessColumn {
+  public async score(results: GenerationPhenomeMatrix): Promise<GenerationFitnessColumn> {
     const normalizedLosses = this.formatLosses(results);
     return normalizedLosses.map((x) => -arraySum(x));
   }

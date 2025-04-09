@@ -218,7 +218,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     const phenomeMatrix = await this.strategy.phenome.collect(this._population, this.strategy.cache);
 
     // Calculate fitness for the population.
-    const fitnessColumn = this.strategy.fitness.score(phenomeMatrix);
+    const fitnessColumn = await this.strategy.fitness.score(phenomeMatrix);
 
     // Update genome statistics.
     this.genomeStatsManager.update(this.population, phenomeMatrix, fitnessColumn);

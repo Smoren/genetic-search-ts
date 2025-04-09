@@ -123,7 +123,7 @@ export class TravelingSinglePhenomeStrategy extends BasePhenomeStrategy<
 }
 
 export class TravelingFitnessStrategy implements FitnessStrategyInterface {
-  score(results: GenerationPhenomeMatrix): GenerationFitnessColumn {
+  async score(results: GenerationPhenomeMatrix): Promise<GenerationFitnessColumn> {
     return results.map((result) => result[0]);
   }
 }

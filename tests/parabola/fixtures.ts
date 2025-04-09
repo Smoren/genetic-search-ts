@@ -67,7 +67,7 @@ export class ParabolaReferenceFitnessStrategy extends ReferenceLossFitnessStrate
 }
 
 export class ParabolaMaxValueFitnessStrategy implements FitnessStrategyInterface {
-  score(results: GenerationPhenomeMatrix): GenerationFitnessColumn {
+  async score(results: GenerationPhenomeMatrix): Promise<GenerationFitnessColumn> {
     return results.map((result) => result[0]);
   }
 }
