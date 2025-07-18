@@ -189,6 +189,11 @@ export interface GeneticSearchConfig {
   populationSize: number;
 
   /**
+   * The size of the initial population of genomes.
+   */
+  startPopulationSize?: number;
+
+  /**
    * The rate of survival for the genomes in the population.
    */
   survivalRate: number;

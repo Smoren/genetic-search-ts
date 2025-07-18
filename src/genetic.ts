@@ -67,7 +67,7 @@ export class GeneticSearch<TGenome extends BaseGenome> implements GeneticSearchI
     this.populationSummaryManager = new PopulationSummaryManager();
     this.strategy = strategy;
     this.config = config;
-    this._population = strategy.populate.populate(config.populationSize, this.idGenerator);
+    this._population = strategy.populate.populate(config.startPopulationSize ?? config.populationSize, this.idGenerator);
     this._populationBuffer = this.population;
   }
 

@@ -112,6 +112,60 @@ describe.each([
   },
 );
 
+
+describe.each([
+  ...dataProviderForGetParabolaMax(),
+] as Array<[[number, number], [number, number]]>)(
+  'Get Parabola With Random Selection Max (startPopulationSize > populationSize) Test',
+  ([a, b], [x, y]) => {
+    it('', async () => {
+      const config: GeneticSearchConfig = {
+        populationSize: 100,
+        startPopulationSize: 200,
+        survivalRate: 0.5,
+        crossoverRate: 0.5,
+      };
+
+      const strategies: GeneticSearchStrategyConfig<ParabolaArgumentGenome> = {
+        populate: new ParabolaPopulateStrategy(),
+        phenome: new ParabolaSinglePhenomeStrategy({
+          task: async (data: ParabolaTaskConfig) => [-((data[0]+a)**2) + b],
+          onTaskResult: () => void 0,
+        }),
+        fitness: new ParabolaMaxValueFitnessStrategy(),
+        sorting: new DescendingSortingStrategy(),
+        selection: new RandomSelectionStrategy(2),
+        mutation: new ParabolaMutationStrategy(),
+        crossover: new ParabolaCrossoverStrategy(),
+        cache: new DummyPhenomeCache(),
+      }
+
+      const search = new GeneticSearch<ParabolaArgumentGenome>(config, strategies, new IdGenerator());
+      expect(search.cache).toBeInstanceOf(DummyPhenomeCache);
+
+      await search.fit({
+        generationsCount: 200,
+        beforeStep: () => void 0,
+        afterStep: (generation: number) => {
+          const summary = search.getPopulationSummary();
+          expect(summary.fitnessSummary.count).toBe(generation === 1 ? 200 : 100);
+
+          const roundedSummary = search.getPopulationSummary(4);
+          expect(roundedSummary.fitnessSummary.count).toBe(generation === 1 ? 200 : 100);
+        },
+      });
+
+      const bestGenome = search.bestGenome;
+
+      expect(bestGenome.x).toBeCloseTo(x);
+      expect(-((bestGenome.x+a)**2) + b).toBeCloseTo(y);
+
+      const population = search.population;
+      expect(population.length).toBe(100);
+    });
+  },
+);
+
 describe.each([
   ...dataProviderForGetParabolaMax(),
 ] as Array<[[number, number], [number, number]]>)(
