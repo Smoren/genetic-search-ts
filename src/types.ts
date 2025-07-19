@@ -687,7 +687,7 @@ export interface FitnessStrategyInterface {
    *
    * @param results The results of the phenome collection.
    */
-  score(results: GenerationPhenomeMatrix): GenerationFitnessColumn;
+  score(results: GenerationPhenomeMatrix): Promise<GenerationFitnessColumn>;
 }
 
 /**
